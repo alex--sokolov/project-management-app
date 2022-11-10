@@ -17,13 +17,20 @@
     "react-scripts": "5.0.1",
     "sass": "^1.56.1",
     "typescript": "^4.8.4",
+    "uuid": "^9.0.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "prepare": "husky install",
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "test:all": "react-scripts test --coverage --watchAll",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettier": "prettier --write src/**/*.ts{,x}",
+    "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
+    "lint:fix": "eslint --fix src",
+    "prepare2": "cd ../ && husky install ./components/.husky"
   },
   "eslintConfig": {
     "extends": [
@@ -45,6 +52,7 @@
   },
   "devDependencies": {
     "@types/react-router-dom": "^5.3.3",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "^5.42.1",
     "eslint": "^8.27.0",
