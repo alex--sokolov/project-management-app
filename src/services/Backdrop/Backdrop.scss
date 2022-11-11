@@ -1,0 +1,25 @@
+button {
+  width: auto;
+  height: 3rem;
+  border: none;
+  outline: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: 1.25px;
+  cursor: default;
+  font-family: "Montserrat", sans-serif;
+}
+
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: #000000e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: hidden;
+}

@@ -1,0 +1,51 @@
+:root {
+  --dark: #101315;
+  --light: #eeeeee;
+  --gradient: linear-gradient(10deg, #ffaa00, #ff6a00);
+  --gradient2: linear-gradient(15deg, #04ea00, #00d17d);
+  --gradient3: linear-gradient(15deg, #b648ff, #ef5dff);
+  font-size: 1rem;
+}
+
+.modal {
+  width: clamp(50%, 700px, 90%);
+  height: min(50%, 300px);
+
+  margin: auto;
+  padding: 0 2rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.orange-gradient {
+  background: var(--gradient);
+}
+
+.button {
+  width: auto;
+  height: 3rem;
+  border: none;
+  outline: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: 1.25px;
+  cursor: default;
+  font-family: "Montserrat", sans-serif;
+}
+
+.modal__button {
+  position: relative;
+  bottom: 1.5rem;
+  padding: 0 3rem;
+  min-height: 3rem;
+  margin: auto auto 0 auto;
+  background: var(--dark);
+  color: var(--light);
+  cursor: pointer;
+  &:hover {
+    opacity: 0.9;
+  }
+}

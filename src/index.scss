@@ -11,3 +11,20 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+button {
+  width: auto;
+  height: 3rem;
+  border: none;
+  outline: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: 1.25px;
+  cursor: default;
+  font-family: "Montserrat", sans-serif;
+  &:hover {
+    opacity: 0.9;
+    cursor: pointer;
+  }
+}
