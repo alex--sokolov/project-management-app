@@ -1,16 +1,18 @@
 import useModal from '../../../hooks/useModal';
-import Modal from '../../../services/Modal/Modal';
+import Modal from '../../../services/modalService/Modal/Modal';
 
 export const Home = () => {
-  const { modalOpen, close, open } = useModal();
+  const { isModalOpen, close, open } = useModal();
   const modalType = 'Are you sure?';
 
   return (
     <>
-      <button onClick={open}>open modal</button>
+      <button onClick={open} className="button">
+        open modal
+      </button>
       <div>
-        {modalOpen && (
-          <Modal modalOpen={modalOpen} text={modalType} type={modalType} handleClose={close} />
+        {isModalOpen && (
+          <Modal isModalOpen={isModalOpen} text={modalType} type={modalType} handleClose={close} />
         )}
       </div>
     </>

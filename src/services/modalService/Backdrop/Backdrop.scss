@@ -1,5 +1,6 @@
-button {
-  width: auto;
+@import '../../../assets/styles/colors.scss';
+
+.button {
   height: 3rem;
   border: none;
   outline: none;
@@ -8,7 +9,6 @@ button {
   font-size: 1.25rem;
   letter-spacing: 1.25px;
   cursor: default;
-  font-family: "Montserrat", sans-serif;
 }
 
 .backdrop {
@@ -17,7 +17,8 @@ button {
   left: 0;
   height: 100%;
   width: 100%;
-  background: #000000e1;
+  background: $dark-color;
+  opacity: 0.8;
   display: flex;
   align-items: center;
   justify-content: center;

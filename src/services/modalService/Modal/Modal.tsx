@@ -23,8 +23,14 @@ const dropIn = {
   },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const Modal = ({ handleClose, text }: any) => {
+type Props = {
+  handleClose: () => void;
+  isModalOpen: boolean;
+  text: string;
+  type: string;
+};
+
+const Modal = ({ handleClose, text }: Props) => {
   return (
     <Backdrop onClick={handleClose}>
       <motion.div

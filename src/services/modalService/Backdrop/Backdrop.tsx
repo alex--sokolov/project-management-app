@@ -1,10 +1,14 @@
-import { useEffect } from 'react';
-import { stateLogger } from '../stateLogger';
+import { ReactNode, useEffect } from 'react';
+import { stateLogger } from '../../stateLogger';
 import { motion } from 'framer-motion';
 import './Backdrop.scss';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const Backdrop = ({ children, onClick }: any) => {
+type Props = {
+  onClick: () => void;
+  children: ReactNode;
+};
+
+const Backdrop = ({ children, onClick }: Props) => {
   // Log state
   useEffect(() => {
     stateLogger('Backdrop', true);
