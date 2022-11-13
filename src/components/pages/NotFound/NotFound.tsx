@@ -1,11 +1,21 @@
-import { useUsers } from '../../../hooks/useUsers';
-import { IUser, IUserUpdate } from '../../../data/models';
+import { IUser, IUserLogin, IUserUpdate } from '../../../data/models';
 import { AxiosError } from 'axios';
 import Button from '@mui/material/Button';
-import { useUser } from '../../../hooks/useUser';
+import {
+  useUser,
+  useUsers,
+  useUserUpdate,
+  useUserDelete,
+  useUserSignUp,
+  useUserSignIn,
+} from '../../../hooks';
 import { useState } from 'react';
-import { useUserUpdate } from '../../../hooks/useUserUpdate';
-import { useUserDelete } from '../../../hooks/useUserDelete';
+
+const newUser: Omit<IUserUpdate, '_id'> = {
+  name: 'Freddy Mercury',
+  login: 'freddy@us.com2',
+  password: 'freddy4ever',
+};
 
 const userInfo: IUserUpdate = {
   _id: '6370327d3c2bcb29c5b2cad3',
@@ -41,6 +51,15 @@ export const NotFound = () => {
   const userDelete = useUserDelete();
   const onHandleDelete = async (id: string) => {
     await userDelete.mutateAsync(id);
+  };
+
+  const userRegister = useUserSignUp();
+  const onHandleRegister = async (user: Omit<IUserUpdate, '_id'>) => {
+    await userRegister.mutateAsync(user);
+  };
+  const userLogin = useUserSignIn();
+  const onHandleLogin = async (user: IUserLogin) => {
+    await userLogin.mutateAsync(user);
   };
 
   return (
@@ -96,7 +115,20 @@ export const NotFound = () => {
         <Button variant="contained" onClick={() => onHandleDelete(userInfo._id)}>
           DeleteUser
         </Button>
-        <Button variant="contained">Register new user</Button>
+        <Button variant="contained" onClick={() => onHandleRegister(newUser)}>
+          Register new user
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() =>
+            onHandleLogin({
+              login: newUser.login,
+              password: newUser.password,
+            })
+          }
+        >
+          Login
+        </Button>
       </div>
       <div>
         <b>Get user by id:</b>
@@ -105,11 +137,19 @@ export const NotFound = () => {
       <div>
         <b>Update user:</b>
       </div>
-      {userUpdate.user ? userUpdate.user?.name : 'nothing'}
+      {userUpdate.user ? userUpdate.user.name : 'nothing'}
       <div>
         <b>After delete:</b>
       </div>
-      {userDelete.user ? userDelete.user?.name : 'nothing'}
+      {userDelete.user ? userDelete.user.name : 'nothing'}
+      <div>
+        <b>Registration:</b>
+      </div>
+      {userRegister.user ? userRegister.user.name : 'nothing'}
+      <div>
+        <b>Login:</b>
+      </div>
+      {userLogin.data ? userLogin.data.token : 'nothing'}
     </>
   );
 };

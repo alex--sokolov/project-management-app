@@ -4,6 +4,11 @@ export interface IUser {
   login: string;
 }
 
+export interface IUserLogin {
+  login: string;
+  password: string;
+}
+
 export interface IUserUpdate extends IUser {
   password: string;
 }
