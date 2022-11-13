@@ -1,5 +1,5 @@
-import { IUserLogin, IUserUpdate } from '../../data/models';
-import { request } from '../../utils/axios-utils';
+import { IUserLogin, IUserUpdate } from '@/data/models';
+import { request } from '@/utils/axios-utils';
 import axios from 'axios';
 
 axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL;

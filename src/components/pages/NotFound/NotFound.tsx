@@ -1,4 +1,4 @@
-import { IUser, IUserLogin, IUserUpdate } from '../../../data/models';
+import { IUser, IUserLogin, IUserUpdate } from '@/data/models';
 import { AxiosError } from 'axios';
 import Button from '@mui/material/Button';
 import {
@@ -53,10 +53,13 @@ export const NotFound = () => {
     await userDelete.mutateAsync(id);
   };
 
+  // Example of register new user
   const userRegister = useUserSignUp();
   const onHandleRegister = async (user: Omit<IUserUpdate, '_id'>) => {
     await userRegister.mutateAsync(user);
   };
+
+  // Example of login
   const userLogin = useUserSignIn();
   const onHandleLogin = async (user: IUserLogin) => {
     await userLogin.mutateAsync(user);
@@ -139,7 +142,7 @@ export const NotFound = () => {
       </div>
       {userUpdate.user ? userUpdate.user.name : 'nothing'}
       <div>
-        <b>After delete:</b>
+        <b>Delete user:</b>
       </div>
       {userDelete.user ? userDelete.user.name : 'nothing'}
       <div>

@@ -1,11 +1,11 @@
 import { FC, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import { Home } from './components/pages/Home/Home';
-import { Profile } from './components/pages/Profile/Profile';
-import { Boards } from './components/pages/Boards/Boards';
-import { Board } from './components/pages/Board/Board';
-import { NotFound } from './components/pages/NotFound/NotFound';
-import PrivateRoutes from './utils/PrivateRoutes';
+import { Home } from '@/components/pages/Home/Home';
+import { Profile } from '@/components/pages/Profile/Profile';
+import { Boards } from '@/components/pages/Boards/Boards';
+import { Board } from '@/components/pages/Board/Board';
+import { NotFound } from '@/components/pages/NotFound/NotFound';
+import PrivateRoutes from '@/utils/PrivateRoutes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 

@@ -1,5 +1,5 @@
-import { IUserUpdate } from '../../data/models';
-import { request } from '../../utils/axios-utils';
+import { IUserUpdate } from '@/data/models';
+import { request } from '@/utils/axios-utils';
 
 export const UsersService = {
   async fetchUsers() {

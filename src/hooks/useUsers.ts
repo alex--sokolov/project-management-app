@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { UsersService } from '../services/api/UsersService';
+import { UsersService } from '@/services/api/UsersService';
 
 // Leave this commented code for testing purposes
 

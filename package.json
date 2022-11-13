@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@craco/craco": "^7.0.0",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mui/material": "^5.10.13",
@@ -29,11 +30,11 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "craco start",
+    "build": "craco build",
     "test:all": "react-scripts test --coverage --watchAll",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "test": "craco test",
+    "eject": "craco eject",
     "prettier": "prettier --write src/**/*.ts{,x}",
     "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
     "lint:fix": "eslint --fix src",
