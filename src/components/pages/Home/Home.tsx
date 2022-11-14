@@ -1,7 +1,7 @@
 import { ToastContainer } from 'react-toastify';
-import { dataFetching, taskNotCompleted, taskSucceed } from '@/services/toastService';
+import { dataFetching, taskNotCompleted, taskSucceed } from '@/services/toasts/toasts';
 import useModal from '@/hooks/useModal';
-import Modal from '@/services/modalService/Modal/Modal';
+import { Modal } from '@/services/modals';
 
 export const Home = () => {
   const { isModalOpen, close, open } = useModal();
