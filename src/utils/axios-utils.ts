@@ -5,7 +5,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 // For now I'm using constant value
 
 const token =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzAzMjdkM2MyYmNiMjljNWIyY2FkMyIsImxvZ2luIjoiSU1hc2siLCJpYXQiOjE2NjgyOTczNDUsImV4cCI6MTY2ODM0MDU0NX0.iUx-ZfeSA8Me6twLYKapzDGpyRR1N9zVK0ugzk9vL1w';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNzEyN2M1M2MyYmNiMjljNWIyY2IxZCIsImxvZ2luIjoiZnJlZGR5QHVzLmNvbTIiLCJpYXQiOjE2NjgzNjAxNTIsImV4cCI6MTY2ODQwMzM1Mn0.jl5oHB1RwtoIBUhwldgoUJvVHpXaowVHqZql1X4sAeQ';
 
 const client = axios.create({ baseURL: process.env.REACT_APP_BACKEND_URL });
 
