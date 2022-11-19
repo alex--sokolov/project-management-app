@@ -2,10 +2,10 @@ import { useState } from 'react';
 
 // Centralizes modal control
 const useModal = () => {
-  const [isModalOpen, setModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const close = () => setModalOpen(false);
-  const open = () => setModalOpen(true);
+  const close = () => setIsModalOpen(false);
+  const open = () => setIsModalOpen(true);
 
   return { isModalOpen, close, open };
 };

@@ -30,7 +30,7 @@ type Props = {
   type: string;
 };
 
-const Modal = ({ handleClose, text }: Props) => {
+export const Modal = ({ handleClose, text }: Props) => {
   return (
     <Backdrop onClick={handleClose}>
       <motion.div
@@ -49,5 +49,3 @@ const Modal = ({ handleClose, text }: Props) => {
     </Backdrop>
   );
 };
-
-export default Modal;
