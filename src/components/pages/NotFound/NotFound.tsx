@@ -12,9 +12,9 @@ import {
 import { useState } from 'react';
 
 const newUser: Omit<IUserUpdate, '_id'> = {
-  name: 'Freddy Mercury',
-  login: 'freddy@us.com2',
-  password: 'freddy4ever',
+  name: 'rocca rocca',
+  login: 'rocca@us.com',
+  password: 'rocca4ever',
 };
 
 const userInfo: IUserUpdate = {

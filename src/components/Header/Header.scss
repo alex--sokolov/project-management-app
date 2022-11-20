@@ -1,4 +1,4 @@
-@import '../../assets/styles/colors.scss';
+@import '@/assets/styles/colors.scss';
 
 .header__wrapper {
   display: flex;
@@ -25,6 +25,13 @@
   display: flex;
   list-style: none;
   width: 40vw;
+}
+
+.header__burger-list {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  width: 150px;
 }
 
 .header__list-item {

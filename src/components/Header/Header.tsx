@@ -1,19 +1,22 @@
 import { motion, useMotionTemplate, useMotionValue, useTransform, useScroll } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import FormGroup from '@mui/material/FormGroup';
 import Switch from '@mui/material/Switch';
 import './Header.scss';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { PropsType } from '@/data/models';
+import HeaderBurger from './HeaderBurger/HeaderBurger';
+import { HeaderMenu } from './HeaderMenu/HeaderMenu';
+
+export enum EMenu {
+  row = 'header__list',
+  column = 'header__burger-list',
+}
 
 const scrollThreshold = [0, 50];
 
 const label = { inputProps: { 'aria-label': 'Switch demo' } };
-
-type PropsType = {
-  open: () => void;
-};
 
 export default function Header({ open }: PropsType) {
   const { scrollY } = useScroll();
@@ -21,8 +24,7 @@ export default function Header({ open }: PropsType) {
   const lastPixelsScrolled = useRef<number>(0);
   const lastScrollDirection = useRef<string>();
   const pixelsScrolled = useMotionValue(0);
-  const height = useTransform(pixelsScrolled, scrollThreshold, [120, 70]);
-  const logoHeight = useTransform(pixelsScrolled, scrollThreshold, [34, 30]);
+  const height = useTransform(pixelsScrolled, scrollThreshold, [130, 70]);
   const backgroundOpacity = useTransform(pixelsScrolled, scrollThreshold, [1, 0.4]);
   const backgroundColorTemplate = useMotionTemplate`rgba(116 109 117 / ${backgroundOpacity})`;
 
@@ -53,7 +55,7 @@ export default function Header({ open }: PropsType) {
       pixelsScrolled.set(newPixelsScrolled);
       lastScrollDirection.current = scrollDirection;
     });
-  }, [height, logoHeight, pixelsScrolled, scrollY]);
+  }, [height, pixelsScrolled, scrollY]);
 
   return (
     <>
@@ -64,33 +66,10 @@ export default function Header({ open }: PropsType) {
           position: 'fixed',
           width: '100%',
         }}
-        className="fixed header"
+        className="header"
       >
         <div className="header__wrapper">
           <h1 className="header__logo">Project Management System</h1>
-          <nav className="header__nav">
-            <ul className="header__list">
-              <li className="header__list-item">
-                <button className="button">
-                  <Link to="/profile" className="header__link">
-                    edit profile
-                  </Link>
-                </button>
-              </li>
-              <li className="header__list-item">
-                <button className="button">
-                  <Link to="/" className="header__link">
-                    sign out
-                  </Link>
-                </button>
-              </li>
-              <li className="header__list-item">
-                <button className="button" onClick={open}>
-                  create new board
-                </button>
-              </li>
-            </ul>
-          </nav>
           <FormGroup>
             <Stack direction="row" alignItems="center">
               <Typography>RU</Typography>
@@ -98,6 +77,8 @@ export default function Header({ open }: PropsType) {
               <Typography>EN</Typography>
             </Stack>
           </FormGroup>
+          <HeaderMenu open={open}></HeaderMenu>
+          <HeaderBurger open={open}></HeaderBurger>
         </div>
       </motion.header>
     </>
