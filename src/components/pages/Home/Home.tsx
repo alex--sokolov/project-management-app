@@ -2,6 +2,7 @@ import { ToastContainer } from 'react-toastify';
 import { dataFetching, taskNotCompleted, taskSucceed } from '@/services/toasts/toasts';
 import useModal from '@/hooks/useModal';
 import { Modal } from '@/services/modals';
+import { Link } from 'react-router-dom';
 
 export const Home = () => {
   const { isModalOpen, close, open } = useModal();
@@ -20,6 +21,12 @@ export const Home = () => {
       </button>
       <button onClick={dataFetching} className="button">
         data fetching
+      </button>
+      <button className="button">
+        <Link to="/auth/signup">Sign Up</Link>
+      </button>
+      <button className="button">
+        <Link to="/auth/signin">Sign In</Link>
       </button>
       <ToastContainer />
       <div>

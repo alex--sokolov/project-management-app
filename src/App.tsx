@@ -8,6 +8,8 @@ import { NotFound } from '@/components/pages/NotFound/NotFound';
 import PrivateRoutes from '@/utils/PrivateRoutes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Authorization } from './components/pages/Authorization/Authorization';
+import { Auth } from './types';
 
 export const App: FC = () => {
   const [queryClient] = useState(
@@ -18,6 +20,11 @@ export const App: FC = () => {
             refetchOnWindowFocus: false,
             staleTime: 1000 * 20,
           },
+        },
+        logger: {
+          log: console.log,
+          warn: console.warn,
+          error: () => {},
         },
       })
   );
@@ -32,6 +39,8 @@ export const App: FC = () => {
             <Route path="/boards" element={<Boards />} />
             <Route path="/board" element={<Board />} />
           </Route>
+          <Route path="auth/signin" element={<Authorization formType={Auth.Login} />} />
+          <Route path="auth/signup" element={<Authorization formType={Auth.Register} />} />
           <Route path="/404" element={<NotFound />} />
           <Route path="/*" element={<Navigate to="/404" />} />
         </Routes>

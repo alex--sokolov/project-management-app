@@ -1,12 +1,15 @@
-import { FC } from 'react';
+import { IUser, IUserLogin, IUserUpdate } from '@/data/models';
+import { useUserSignIn, useUserSignUp } from '@/hooks';
+import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Auth, userData } from '../../../types';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import { Auth, ResponseError } from '../../../types';
 import './Authorization.scss';
 
 const defaultFields = {
   name: '',
   login: '',
-  mail: '',
   password: '',
 };
 
@@ -33,60 +36,101 @@ const makeValidationObj = (minLength: number, pattern?: RegExp, emailErrMsg?: st
 };
 
 export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
+  const userRegister = useUserSignUp();
+  const userLogin = useUserSignIn();
   const {
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors },
     clearErrors,
-  } = useForm<userData>({
+  } = useForm<Omit<IUserUpdate, '_id'>>({
     defaultValues: defaultFields,
   });
 
-  const onSubmit: SubmitHandler<userData> = (data) => {
-    if (formType === Auth.Login) console.log('login');
-    if (formType === Auth.Register) console.log('Register');
+  const [showSubmitBtn, setShowSubmitButton] = useState(false);
 
-    console.log(data);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthorized) {
+      navigate('/');
+    }
+  }, [isAuthorized]);
+
+  const loginUser = async (user: IUserLogin) => {
+    return await userLogin.mutateAsync(user);
   };
+
+  const registerUser = async (user: Omit<IUserUpdate, '_id'>) => {
+    return await userRegister.mutateAsync(user);
+  };
+
+  const onSubmit: SubmitHandler<Omit<IUserUpdate, '_id'>> = async (data) => {
+    if (formType === Auth.Login) {
+      setShowSubmitButton(true);
+
+      try {
+        await toast.promise(loginUser(data), {
+          pending: 'Trying to login...',
+          success: 'Success!',
+          error: 'Authorization error...',
+        });
+        setIsAuthorized(true);
+      } catch (error) {
+        setShowSubmitButton(false);
+      }
+    }
+    if (formType === Auth.Register) {
+      setShowSubmitButton(true);
+      try {
+        await toast.promise<IUser, ResponseError, unknown>(registerUser(data), {
+          pending: 'Trying to register...',
+          success: 'Success!',
+          error: {
+            render({ data }) {
+              return `${data?.message}`;
+            },
+          },
+        });
+        await toast.promise(loginUser(data), {
+          pending: 'Trying to login...',
+          success: 'Success!',
+          error: 'Authorization error...',
+        });
+        setIsAuthorized(true);
+      } catch (error) {
+        setShowSubmitButton(false);
+      }
+    }
+  };
+  console.log('data');
 
   return (
     <div className="auth">
       <form onSubmit={handleSubmit(onSubmit)} className="auth__form">
         {formType === Auth.Register && (
-          <>
-            <div className="auth__element">
-              <input
-                className="auth__input"
-                type="text"
-                {...register('name', makeValidationObj(2, onlyWordsPattern, onlyWordsErrMsg))}
-                placeholder="Name"
-              />
-              <p className="error">
-                {errors.name && <span className="error__show">{errors.name.message}</span>}
-              </p>
-            </div>
-            <div className="auth__element">
-              <input
-                className="auth__input"
-                type="text"
-                {...register('mail', makeValidationObj(4, emailPattern, emailErrMsg))}
-                placeholder="E-mail"
-              />
-              <p className="error">
-                {errors.mail && <span className="error__show">{errors.mail.message}</span>}
-              </p>
-            </div>
-          </>
+          <div className="auth__element">
+            <input
+              className="auth__input"
+              type="text"
+              {...register('name', makeValidationObj(2, onlyWordsPattern, onlyWordsErrMsg))}
+              placeholder="Name"
+            />
+            <p className="error">
+              {errors.name && <span className="error__show">{errors.name.message}</span>}
+            </p>
+          </div>
         )}
 
         <div className="auth__element">
           <input
             className="auth__input"
             type="text"
-            {...register('login', makeValidationObj(4, onlyWordsPattern, onlyWordsErrMsg))}
-            placeholder="Login"
+            {...register('login', makeValidationObj(0, emailPattern, emailErrMsg))}
+            placeholder="E-mail"
           />
           <p className="error">
             {errors.login && <span className="error__show">{errors.login.message}</span>}
@@ -96,15 +140,18 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
           <input
             className="auth__input"
             type="password"
-            {...register('password', makeValidationObj(8))}
+            {...register('password', makeValidationObj(4))}
             placeholder="Password"
           />
           <p className="error">
             {errors.password && <span className="error__show">{errors.password.message}</span>}
           </p>
         </div>
-        <button className="auth__submit">Submit</button>
+        <button className="auth__submit" disabled={showSubmitBtn}>
+          Submit
+        </button>
       </form>
+      <ToastContainer />
     </div>
   );
 };
