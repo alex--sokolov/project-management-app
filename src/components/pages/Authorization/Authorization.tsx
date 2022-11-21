@@ -2,7 +2,7 @@ import { IUser, IUserLogin, IUserUpdate } from '@/data/models';
 import { useUserSignIn, useUserSignUp } from '@/hooks';
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import { Auth, ResponseError } from '../../../types';
 import './Authorization.scss';
@@ -41,9 +41,7 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
-    clearErrors,
   } = useForm<Omit<IUserUpdate, '_id'>>({
     defaultValues: defaultFields,
   });
@@ -58,7 +56,7 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
     if (isAuthorized) {
       navigate('/');
     }
-  }, [isAuthorized]);
+  }, [isAuthorized, navigate]);
 
   const loginUser = async (user: IUserLogin) => {
     return await userLogin.mutateAsync(user);
@@ -106,8 +104,6 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
       }
     }
   };
-  console.log('data');
-
   return (
     <div className="auth">
       <form onSubmit={handleSubmit(onSubmit)} className="auth__form">
