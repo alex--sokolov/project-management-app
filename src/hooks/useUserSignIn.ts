@@ -8,8 +8,7 @@ export const useUserSignIn = () => {
     mutationFn: (user: IUserLogin) => AuthService.loginUser(user),
     onSuccess: (data) => {
       console.log('token', data.token);
-      localStorage.setItem(LS_DATE_KEY, `${new Date().getTime()}`);
-      localStorage.setItem(LS_TOKEN_KEY, data.token);
+      AuthService.saveToken(data.token);
     },
     retry: 0,
   });
