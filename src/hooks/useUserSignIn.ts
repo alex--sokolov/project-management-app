@@ -6,7 +6,6 @@ export const useUserSignIn = () => {
   const { isLoading, data, isError, error, mutateAsync } = useMutation({
     mutationFn: (user: IUserLogin) => AuthService.loginUser(user),
     onSuccess: (data) => {
-      console.log(data);
       AuthService.saveToken(data.token);
     },
     retry: 0,

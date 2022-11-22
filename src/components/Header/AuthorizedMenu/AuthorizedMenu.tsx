@@ -1,5 +1,4 @@
 import { PropsType } from '@/data/models';
-import { useAuthUser } from '@/hooks/useAuthUser';
 import { Link } from 'react-router-dom';
 
 export const AuthorizedMenu = (props: PropsType) => {

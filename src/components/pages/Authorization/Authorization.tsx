@@ -2,7 +2,6 @@ import { IUser, IUserLogin, IUserUpdate } from '@/data/models';
 import { useUserSignIn, useUserSignUp } from '@/hooks';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import { AuthService } from '@/services/api/AuthService';
-import { useQueryClient } from '@tanstack/react-query';
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -40,6 +39,7 @@ const makeValidationObj = (minLength: number, pattern?: RegExp, emailErrMsg?: st
 
 export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
   const userRegister = useUserSignUp();
+
   const userLogin = useUserSignIn();
   const {
     register,
@@ -49,19 +49,15 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
     defaultValues: defaultFields,
   });
 
-  const [showSubmitBtn, setShowSubmitButton] = useState(false);
-
-  // const navigate = useNavigate();
-  // const queryClient = useQueryClient();
-  // const authUser = queryClient.getQueryData(['authUser']);
-
-  // useEffect(() => {
-  //   if (authUser) {
-  //     navigate('/');
-  //   }
-  // }, [authUser, navigate]);
   const authUserObj = useAuthUser();
   const navigate = useNavigate();
+
+  const [showSubmitBtn, setShowSubmitButton] = useState(false);
+  useEffect(() => {
+    if (formType === Auth.Logout) {
+      navigate('/');
+    }
+  }, [formType, navigate]);
   const loginUser = async (user: IUserLogin) => {
     return await userLogin.mutateAsync(user);
   };
@@ -113,7 +109,6 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
   if (formType === Auth.Logout) {
     AuthService.logOutUser();
     authUserObj.refetch();
-    navigate('/');
     return null;
   }
 
