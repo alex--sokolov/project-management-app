@@ -11,10 +11,10 @@ import './Home.scss';
 export const Home = () => {
   const { isModalOpen, close, open } = useModal();
   const modalType = 'Are you sure?';
-  useAuthUser();
-  const queryClient = useQueryClient();
-  const authUser = queryClient.getQueryData(['authUser']);
-  console.log(authUser);
+  // useAuthUser();
+  // const queryClient = useQueryClient();
+  // const authUser = queryClient.getQueryData(['authUser']);
+  // console.log(authUser);
   return (
     <>
       <button onClick={open} className="button">

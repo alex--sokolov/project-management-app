@@ -1,5 +1,8 @@
 import { IUser, IUserLogin, IUserUpdate } from '@/data/models';
 import { useUserSignIn, useUserSignUp } from '@/hooks';
+import { useAuthUser } from '@/hooks/useAuthUser';
+import { AuthService } from '@/services/api/AuthService';
+import { useQueryClient } from '@tanstack/react-query';
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -48,16 +51,17 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
 
   const [showSubmitBtn, setShowSubmitButton] = useState(false);
 
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  // const navigate = useNavigate();
+  // const queryClient = useQueryClient();
+  // const authUser = queryClient.getQueryData(['authUser']);
 
+  // useEffect(() => {
+  //   if (authUser) {
+  //     navigate('/');
+  //   }
+  // }, [authUser, navigate]);
+  const authUserObj = useAuthUser();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isAuthorized) {
-      navigate('/');
-    }
-  }, [isAuthorized, navigate]);
-
   const loginUser = async (user: IUserLogin) => {
     return await userLogin.mutateAsync(user);
   };
@@ -76,7 +80,8 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
           success: 'Success!',
           error: 'Authorization error...',
         });
-        setIsAuthorized(true);
+        authUserObj.refetch();
+        navigate('/');
       } catch (error) {
         setShowSubmitButton(false);
       }
@@ -98,12 +103,20 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
           success: 'Success!',
           error: 'Authorization error...',
         });
-        setIsAuthorized(true);
+        authUserObj.refetch();
+        navigate('/');
       } catch (error) {
         setShowSubmitButton(false);
       }
     }
   };
+  if (formType === Auth.Logout) {
+    AuthService.logOutUser();
+    authUserObj.refetch();
+    navigate('/');
+    return null;
+  }
+
   return (
     <div className="auth">
       <form onSubmit={handleSubmit(onSubmit)} className="auth__form">
@@ -120,7 +133,6 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
             </p>
           </div>
         )}
-
         <div className="auth__element">
           <input
             className="auth__input"

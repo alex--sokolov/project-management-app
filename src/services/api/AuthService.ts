@@ -44,6 +44,11 @@ export const AuthService = {
     return localStorage.getItem(LS_TOKEN_KEY);
   },
 
+  logOutUser() {
+    localStorage.removeItem(LS_TOKEN_KEY);
+    localStorage.removeItem(LS_DATE_KEY);
+  },
+
   getTokenDate() {
     return localStorage.getItem(LS_DATE_KEY);
   },

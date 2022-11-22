@@ -22,11 +22,11 @@ export const App: FC = () => {
             staleTime: 1000 * 20,
           },
         },
-        logger: {
-          log: console.log,
-          warn: console.warn,
-          error: () => {},
-        },
+        // logger: {
+        //   log: console.log,
+        //   warn: console.warn,
+        //   error: () => {},
+        // },
       })
   );
 
@@ -44,6 +44,7 @@ export const App: FC = () => {
             </Route>
             <Route path="auth/signin" element={<Authorization formType={Auth.Login} />} />
             <Route path="auth/signup" element={<Authorization formType={Auth.Register} />} />
+            <Route path="auth/signout" element={<Authorization formType={Auth.Logout} />} />
             <Route path="/404" element={<NotFound />} />
             <Route path="/*" element={<Navigate to="/404" />} />
           </Route>

@@ -16,7 +16,6 @@ export interface IUserUpdate extends IUser {
 }
 
 export type PropsType = {
-  open: () => void;
   direction?: string;
 };
 

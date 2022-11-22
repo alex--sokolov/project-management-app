@@ -1,4 +1,5 @@
 import { PropsType } from '@/data/models';
+import { useAuthUser } from '@/hooks/useAuthUser';
 import { Link } from 'react-router-dom';
 
 export const AuthorizedMenu = (props: PropsType) => {
@@ -6,35 +7,27 @@ export const AuthorizedMenu = (props: PropsType) => {
     <nav className="header__nav">
       <ul className={props.direction}>
         <li className="header__list-item">
-          <button className="button">
-            <Link to="/" className="header__link">
-              main page
-            </Link>
-          </button>
+          <Link to="/" className="header__link">
+            <button className="button">main page</button>
+          </Link>
         </li>
         <li className="header__list-item">
-          <button className="button">
-            <Link to="/boards" className="header__link">
-              boards
-            </Link>
-          </button>
+          <Link to="/boards" className="header__link">
+            <button className="button">boards</button>
+          </Link>
         </li>
         <li className="header__list-item">
-          <button className="button">
-            <Link to="/profile" className="header__link">
-              profile
-            </Link>
-          </button>
+          <Link to="/profile" className="header__link">
+            <button className="button">profile</button>
+          </Link>
         </li>
         <li>
           <div>name</div>
         </li>
         <li className="header__list-item">
-          <button className="button" onClick={props.open}>
-            <Link to="/" className="header__link">
-              sign out
-            </Link>
-          </button>
+          <Link to="/auth/signout" className="header__link">
+            <button className="button">sign out</button>
+          </Link>
         </li>
       </ul>
     </nav>

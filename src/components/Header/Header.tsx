@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography';
 import { PropsType } from '@/data/models';
 import HeaderBurger from './HeaderBurger/HeaderBurger';
 import { HeaderMenu } from './HeaderMenu/HeaderMenu';
+import useModal from '@/hooks/useModal';
+import { useQueryClient } from '@tanstack/react-query';
 
 export enum EMenu {
   row = 'header__list',
@@ -18,7 +20,7 @@ const scrollThreshold = [0, 50];
 
 const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
-export default function Header({ open }: PropsType) {
+export default function Header() {
   const { scrollY } = useScroll();
   const scrollYOnDirectionChange = useRef(scrollY.get());
   const lastPixelsScrolled = useRef<number>(0);
@@ -77,8 +79,8 @@ export default function Header({ open }: PropsType) {
               <Typography>EN</Typography>
             </Stack>
           </FormGroup>
-          <HeaderMenu open={open}></HeaderMenu>
-          <HeaderBurger open={open}></HeaderBurger>
+          <HeaderMenu />
+          <HeaderBurger />
         </div>
       </motion.header>
     </>

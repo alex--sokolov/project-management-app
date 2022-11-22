@@ -17,7 +17,7 @@ const theme = createTheme({
   },
 });
 
-export default function HeaderBurger({ open }: PropsType) {
+export default function HeaderBurger() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openIt = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -55,7 +55,7 @@ export default function HeaderBurger({ open }: PropsType) {
         onClose={handleClose}
         TransitionComponent={Fade}
       >
-        <AuthorizedMenu open={open} direction={EMenu.column}></AuthorizedMenu>
+        <AuthorizedMenu direction={EMenu.column}></AuthorizedMenu>
       </Menu>
     </Box>
   );
