@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Authorization } from './components/pages/Authorization/Authorization';
 import { Auth } from './types';
+import { Layout } from './components/Layout';
 
 export const App: FC = () => {
   const [queryClient] = useState(
@@ -33,16 +34,19 @@ export const App: FC = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route element={<PrivateRoutes />}>
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/boards" element={<Boards />} />
-            <Route path="/board" element={<Board />} />
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+
+            <Route element={<PrivateRoutes />}>
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/boards" element={<Boards />} />
+              <Route path="/board" element={<Board />} />
+            </Route>
+            <Route path="auth/signin" element={<Authorization formType={Auth.Login} />} />
+            <Route path="auth/signup" element={<Authorization formType={Auth.Register} />} />
+            <Route path="/404" element={<NotFound />} />
+            <Route path="/*" element={<Navigate to="/404" />} />
           </Route>
-          <Route path="auth/signin" element={<Authorization formType={Auth.Login} />} />
-          <Route path="auth/signup" element={<Authorization formType={Auth.Register} />} />
-          <Route path="/404" element={<NotFound />} />
-          <Route path="/*" element={<Navigate to="/404" />} />
         </Routes>
       </BrowserRouter>
       <ReactQueryDevtools initialIsOpen={false} />
