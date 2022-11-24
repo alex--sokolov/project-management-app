@@ -5,12 +5,11 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 // we need to get token from localStorage or cookies
 // For now I'm using constant value
 
-const token = localStorage.getItem(LS_TOKEN_KEY) ?? '';
-
 const client = axios.create({ baseURL: process.env.REACT_APP_BACKEND_URL });
 
 export const request = ({ ...options }, isToken = true) => {
   if (isToken) {
+    const token = localStorage.getItem(LS_TOKEN_KEY) ?? '';
     client.defaults.headers.common.Authorization = `Bearer ${token}`;
   }
   const onSuccess = (response: AxiosResponse) => response.data;

@@ -2,19 +2,12 @@ import { ToastContainer } from 'react-toastify';
 import { dataFetching, taskNotCompleted, taskSucceed } from '@/services/toasts/toasts';
 import useModal from '@/hooks/useModal';
 import { Modal } from '@/services/modals';
-import { Link } from 'react-router-dom';
-import { useAuthUser } from '@/hooks/useAuthUser';
-import { useQueryClient } from '@tanstack/react-query';
-import Header from '@/components/Header/Header';
 import './Home.scss';
 
 export const Home = () => {
   const { isModalOpen, close, open } = useModal();
   const modalType = 'Are you sure?';
-  // useAuthUser();
-  // const queryClient = useQueryClient();
-  // const authUser = queryClient.getQueryData(['authUser']);
-  // console.log(authUser);
+
   return (
     <>
       <button onClick={open} className="button">

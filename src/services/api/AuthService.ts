@@ -1,7 +1,7 @@
 import { IUserLogin, IUserUpdate } from '@/data/models';
 import { request } from '@/utils/axios-utils';
 import axios from 'axios';
-import { LS_DATE_KEY, LS_TOKEN_KEY } from '@/configs/localStorage';
+import { LS_DATE_KEY, LS_TOKEN_KEY, LS_UNAME_KEY } from '@/configs/localStorage';
 
 axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL;
 
@@ -36,12 +36,19 @@ export const AuthService = {
   },
 
   saveToken(token: string) {
-    localStorage.setItem(LS_DATE_KEY, `${new Date().getTime()}`);
     localStorage.setItem(LS_TOKEN_KEY, token);
   },
 
   getToken() {
     return localStorage.getItem(LS_TOKEN_KEY);
+  },
+
+  getSavedUserName() {
+    return localStorage.getItem(LS_UNAME_KEY);
+  },
+
+  saveUserName(name: string) {
+    return localStorage.setItem(LS_UNAME_KEY, name);
   },
 
   logOutUser() {

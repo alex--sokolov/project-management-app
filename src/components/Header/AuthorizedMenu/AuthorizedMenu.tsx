@@ -21,7 +21,7 @@ export const AuthorizedMenu = (props: PropsType) => {
           </Link>
         </li>
         <li>
-          <div>name</div>
+          <div>{props.name}</div>
         </li>
         <li className="header__list-item">
           <Link to="/auth/signout" className="header__link">

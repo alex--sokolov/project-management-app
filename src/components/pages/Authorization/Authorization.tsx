@@ -1,12 +1,14 @@
 import { IUser, IUserLogin, IUserUpdate } from '@/data/models';
-import { useUserSignIn, useUserSignUp } from '@/hooks';
+import { useUser, useUserSignIn, useUserSignUp } from '@/hooks';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import { AuthService } from '@/services/api/AuthService';
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
-import { Auth, ResponseError } from '../../../types';
+import { Auth, AuthUser, ResponseError } from '../../../types';
+import jwt_decode from 'jwt-decode';
+
 import './Authorization.scss';
 
 const defaultFields = {
@@ -58,8 +60,16 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
       navigate('/');
     }
   }, [formType, navigate]);
+
   const loginUser = async (user: IUserLogin) => {
-    return await userLogin.mutateAsync(user);
+    const userData = await userLogin.mutateAsync(user);
+    // if (data) {
+    //   const userData: AuthUser = jwt_decode(data.token as string);
+    //   id = userData.id;
+    // }
+    // console.log(userLogin.data);
+
+    return userData;
   };
 
   const registerUser = async (user: Omit<IUserUpdate, '_id'>) => {

@@ -1,22 +1,25 @@
 import { AuthService } from '@/services/api/AuthService';
+import { AuthUser } from '@/types';
 import { useQuery } from '@tanstack/react-query';
+import jwt_decode from 'jwt-decode';
 
 export const useAuthUser = () => {
   const { data, refetch } = useQuery({
     queryKey: ['authUser'],
     queryFn: () => {
       const token = AuthService.getToken();
-
-      let tokenDate: number;
-      if (token) {
-        tokenDate = Number(AuthService.getTokenDate());
-        if (new Date().getTime() - tokenDate < 39600000) {
-          return true;
+      try {
+        const userData: AuthUser = jwt_decode(token as string);
+        if (userData.exp * 1000 > new Date().getTime()) {
+          userData.name = AuthService.getSavedUserName() ?? '';
+          return userData;
         }
-      }
-      return false;
+      } catch (error) {}
+
+      return null;
     },
     retry: 0,
   });
+
   return { data, refetch };
 };

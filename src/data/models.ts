@@ -17,6 +17,7 @@ export interface IUserUpdate extends IUser {
 
 export type PropsType = {
   direction?: string;
+  name?: string;
 };
 
 export type ClassNameType = {
