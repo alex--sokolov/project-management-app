@@ -2,7 +2,6 @@ import * as React from 'react';
 import Menu from '@mui/material/Menu';
 import Fade from '@mui/material/Fade';
 
-import { PropsType } from '@/data/models';
 import { Box, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { createTheme, ThemeProvider } from '@mui/material/styles';

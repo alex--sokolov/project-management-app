@@ -1,4 +1,3 @@
-import { PropsType } from '@/data/models';
 import { Link } from 'react-router-dom';
 
 export const UnAuthorizedMenu = () => {

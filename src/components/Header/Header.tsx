@@ -5,11 +5,8 @@ import Switch from '@mui/material/Switch';
 import './Header.scss';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { PropsType } from '@/data/models';
 import HeaderBurger from './HeaderBurger/HeaderBurger';
 import { HeaderMenu } from './HeaderMenu/HeaderMenu';
-import useModal from '@/hooks/useModal';
-import { useQueryClient } from '@tanstack/react-query';
 
 export enum EMenu {
   row = 'header__list',

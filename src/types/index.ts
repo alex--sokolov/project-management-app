@@ -13,5 +13,5 @@ export interface AuthUser {
   iat: number;
   id: string;
   login: string;
-  name?: string;
+  name: string;
 }

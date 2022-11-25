@@ -62,7 +62,7 @@ export const NotFound = () => {
   // Example of login
   const userLogin = useUserSignIn();
   const onHandleLogin = async (user: IUserLogin) => {
-    await userLogin.mutateAsync(user);
+    userLogin.mutate(user);
   };
 
   return (

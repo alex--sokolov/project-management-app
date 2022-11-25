@@ -11,7 +11,6 @@ export const useAuthUser = () => {
       try {
         const userData: AuthUser = jwt_decode(token as string);
         if (userData.exp * 1000 > new Date().getTime()) {
-          userData.name = AuthService.getSavedUserName() ?? '';
           return userData;
         }
       } catch (error) {}
