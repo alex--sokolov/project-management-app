@@ -2,7 +2,6 @@ import * as React from 'react';
 import Menu from '@mui/material/Menu';
 import Fade from '@mui/material/Fade';
 
-import { PropsType } from '@/data/models';
 import { Box, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -17,7 +16,7 @@ const theme = createTheme({
   },
 });
 
-export default function HeaderBurger({ open }: PropsType) {
+export default function HeaderBurger() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openIt = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -55,7 +54,7 @@ export default function HeaderBurger({ open }: PropsType) {
         onClose={handleClose}
         TransitionComponent={Fade}
       >
-        <AuthorizedMenu open={open} direction={EMenu.column}></AuthorizedMenu>
+        <AuthorizedMenu direction={EMenu.column}></AuthorizedMenu>
       </Menu>
     </Box>
   );

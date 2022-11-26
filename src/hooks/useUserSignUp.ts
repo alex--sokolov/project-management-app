@@ -1,13 +1,20 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { IUser, IUserUpdate } from '@/data/models';
 import { AuthService } from '@/services/api/AuthService';
+import { useRef } from 'react';
+import { Id, toast } from 'react-toastify';
+import { ResponseError } from '@/types';
 
 export const useUserSignUp = () => {
+  const toastId = useRef<Id | undefined>(undefined);
+
   const queryClient = useQueryClient();
   const { isLoading, data, isError, error, mutateAsync } = useMutation({
-    mutationFn: (user: Omit<IUserUpdate, '_id'>) => AuthService.registerUser(user),
+    mutationFn: (user: Omit<IUserUpdate, '_id'>) => {
+      toastId.current = toast.loading('Trying to register...');
+      return AuthService.registerUser(user);
+    },
     onSuccess: (newUser: IUser) => {
-      console.log('newUser', newUser);
       // ✅ update all the lists that contain this user
       queryClient.setQueriesData(
         ['users', 'list', { filters: 'all' }],
@@ -21,6 +28,24 @@ export const useUserSignUp = () => {
       queryClient.invalidateQueries({
         queryKey: ['users', 'list'],
       });
+      if (toastId.current) {
+        toast.update(toastId.current, {
+          render: 'Registration success!',
+          autoClose: 3000,
+          type: 'success',
+          isLoading: false,
+        });
+      }
+    },
+    onError: (error: ResponseError) => {
+      if (toastId.current) {
+        toast.update(toastId.current, {
+          render: error.message,
+          autoClose: 3000,
+          type: 'error',
+          isLoading: false,
+        });
+      }
     },
     retry: 0,
   });

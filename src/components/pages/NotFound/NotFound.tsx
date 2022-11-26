@@ -12,16 +12,16 @@ import {
 import { useState } from 'react';
 
 const newUser: Omit<IUserUpdate, '_id'> = {
-  name: 'rocca rocca',
-  login: 'rocca@us.com',
-  password: 'rocca4ever',
+  name: 'potter',
+  login: 'potter@mail.com',
+  password: '12345',
 };
 
 const userInfo: IUserUpdate = {
   _id: '6370327d3c2bcb29c5b2cad3',
-  name: 'Ilon Mask Updated2',
-  login: 'IMask',
-  password: 'someNewPassword',
+  name: 'potter',
+  login: 'potter@mail.com',
+  password: '12345',
 };
 
 export const NotFound = () => {
@@ -62,7 +62,7 @@ export const NotFound = () => {
   // Example of login
   const userLogin = useUserSignIn();
   const onHandleLogin = async (user: IUserLogin) => {
-    await userLogin.mutateAsync(user);
+    userLogin.mutate(user);
   };
 
   return (
