@@ -1,12 +1,9 @@
-import { IUserLogin, IUserUpdate } from '@/data/models';
 import { request } from '@/utils/axios-utils';
-import axios from 'axios';
-import { LS_TOKEN_KEY } from '@/configs/localStorage';
 
-axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL;
+import { UserLogin, UserUpdate } from '@/data/models';
 
 export const AuthService = {
-  async registerUser(user: Omit<IUserUpdate, '_id'>) {
+  async registerUser(user: Omit<UserUpdate, '_id'>) {
     return await request(
       {
         url: `auth/signup`,
@@ -21,7 +18,7 @@ export const AuthService = {
     );
   },
 
-  async loginUser(user: IUserLogin) {
+  async loginUser(user: UserLogin) {
     return await request(
       {
         url: `auth/signin`,
@@ -33,17 +30,5 @@ export const AuthService = {
       },
       false
     );
-  },
-
-  saveToken(token: string) {
-    localStorage.setItem(LS_TOKEN_KEY, token);
-  },
-
-  getToken() {
-    return localStorage.getItem(LS_TOKEN_KEY);
-  },
-
-  logOutUser() {
-    localStorage.removeItem(LS_TOKEN_KEY);
   },
 };

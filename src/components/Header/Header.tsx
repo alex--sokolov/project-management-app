@@ -1,23 +1,24 @@
-import { motion, useMotionTemplate, useMotionValue, useTransform, useScroll } from 'framer-motion';
+import './Header.scss';
+
 import { useEffect, useRef } from 'react';
+import { motion, useMotionTemplate, useMotionValue, useTransform, useScroll } from 'framer-motion';
 import FormGroup from '@mui/material/FormGroup';
 import Switch from '@mui/material/Switch';
-import './Header.scss';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import HeaderBurger from './HeaderBurger/HeaderBurger';
-import { HeaderMenu } from './HeaderMenu/HeaderMenu';
 
-export enum EMenu {
-  row = 'header__list',
-  column = 'header__burger-list',
-}
+import { AuthUserToken } from '@/types';
+import { useQueryClient } from '@tanstack/react-query';
+import { HeaderMenu, HeaderBurger } from '@/components/Header';
 
 const scrollThreshold = [0, 50];
 
 const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
-export default function Header() {
+export function Header() {
+  const queryClient = useQueryClient();
+  const authUser: AuthUserToken | null | undefined = queryClient.getQueryData(['authUser']);
+
   const { scrollY } = useScroll();
   const scrollYOnDirectionChange = useRef(scrollY.get());
   const lastPixelsScrolled = useRef<number>(0);
@@ -76,8 +77,8 @@ export default function Header() {
               <Typography>EN</Typography>
             </Stack>
           </FormGroup>
-          <HeaderMenu />
-          <HeaderBurger />
+          <HeaderMenu authUser={authUser} />
+          <HeaderBurger authUser={authUser} />
         </div>
       </motion.header>
     </>

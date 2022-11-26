@@ -1,25 +1,22 @@
-import { EMenu } from '@/components/Header/Header';
-
-export interface IUser {
+export interface User {
   _id: string;
   name: string;
   login: string;
 }
 
-export interface IUserLogin {
+export interface UserLogin {
   login: string;
   password: string;
 }
 
-export interface IUserUpdate extends IUser {
+export interface UserUpdate extends User {
   password: string;
 }
 
-export type PropsType = {
-  direction?: string;
-  name?: string;
-};
-
-export type ClassNameType = {
-  direction: string;
-};
+export interface Board {
+  _id: string;
+  title: string;
+  description: string;
+  owner: string;
+  users: string[];
+}

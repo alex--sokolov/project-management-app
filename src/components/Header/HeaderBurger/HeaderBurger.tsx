@@ -1,12 +1,13 @@
 import * as React from 'react';
 import Menu from '@mui/material/Menu';
 import Fade from '@mui/material/Fade';
-
 import { Box, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { AuthorizedMenu } from '../AuthorizedMenu/AuthorizedMenu';
-import { EMenu } from '../Header';
+
+import { AuthorizedMenu, UnAuthorizedMenu } from '@/components/Header';
+
+import { AuthUserToken, EMenu } from '@/types';
 
 const theme = createTheme({
   palette: {
@@ -16,7 +17,7 @@ const theme = createTheme({
   },
 });
 
-export default function HeaderBurger() {
+export function HeaderBurger({ authUser }: { authUser: AuthUserToken | null | undefined }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openIt = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -54,7 +55,11 @@ export default function HeaderBurger() {
         onClose={handleClose}
         TransitionComponent={Fade}
       >
-        <AuthorizedMenu direction={EMenu.column}></AuthorizedMenu>
+        {!!authUser ? (
+          <AuthorizedMenu direction={EMenu.column} name={authUser?.name} />
+        ) : (
+          <UnAuthorizedMenu />
+        )}
       </Menu>
     </Box>
   );
