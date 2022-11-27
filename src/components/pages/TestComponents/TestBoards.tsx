@@ -23,7 +23,7 @@ export const TestBoards = () => {
       title: 'New board',
       description: 'with description',
       owner: existUserId,
-      users: [existUserId],
+      users: [],
     };
     const createBoard = await BoardsService.createNewBoard(newBoard);
     setBoardId(createBoard._id);
@@ -36,7 +36,7 @@ export const TestBoards = () => {
       title: 'New board update',
       description: 'with description update',
       owner: existUserId,
-      users: [existUserId],
+      users: [],
     };
     const updatedBoard = await BoardsService.updateBoardById(newBoardData);
     console.log('updateBoard: ', updatedBoard);

@@ -48,7 +48,7 @@ export const ColumnsService = {
   },
 
   async changeColumnsOrderInListOfColumns(
-    columns: Omit<Column, '_id' | 'boardId'>[]
+    columns: Omit<Column, 'title' | 'boardId'>[]
   ): Promise<Column[]> {
     return await request({ url: '/columnsSet', method: 'patch', data: columns });
   },

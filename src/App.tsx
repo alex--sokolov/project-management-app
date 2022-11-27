@@ -14,6 +14,7 @@ import { Layout } from './components/layout';
 import { TestAuthProfile } from '@/components/pages/TestComponents/TestAuthProfile';
 import { TestModalToasts } from '@/components/pages/TestComponents/TestModalToasts';
 import { TestBoards } from './components/pages/TestComponents/TestBoards';
+import { TestColumns } from './components/pages/TestComponents/TestColumns';
 
 export const App: FC = () => {
   const [queryClient] = useState(
@@ -53,6 +54,7 @@ export const App: FC = () => {
             <Route path="modal" element={<TestModalToasts />} />
             <Route path="toasts" element={<TestModalToasts />} />
             <Route path="boards/test" element={<TestBoards />} />
+            <Route path="columns/test" element={<TestColumns />} />
             {/* Test components end */}
             <Route path="/404" element={<NotFound />} />
             <Route path="/*" element={<Navigate to="/404" />} />
