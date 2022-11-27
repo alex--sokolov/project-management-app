@@ -10,7 +10,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Authorization } from './components/pages/Authorization/Authorization';
 import { Auth } from './types';
-import { Layout } from './components/Layout';
+import { Layout } from './components/layout';
 import { TestAuthProfile } from '@/components/pages/TestComponents/TestAuthProfile';
 import { TestModalToasts } from '@/components/pages/TestComponents/TestModalToasts';
 import { TestBoards } from './components/pages/TestComponents/TestBoards';

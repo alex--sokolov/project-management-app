@@ -61,7 +61,7 @@ export const TestBoards = () => {
 
   return (
     <>
-      <div>Results in console: </div>
+      <div>Results in console </div>
       <Button variant="contained" onClick={onGetAll}>
         Get all boards
       </Button>

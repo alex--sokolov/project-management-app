@@ -1,4 +1,5 @@
 import { request } from '@/utils/axios-utils';
+
 import { Board } from '@/data/models';
 
 export const BoardsService = {

@@ -1,15 +1,15 @@
 import './Header.scss';
 
 import { useEffect, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { motion, useMotionTemplate, useMotionValue, useTransform, useScroll } from 'framer-motion';
 import FormGroup from '@mui/material/FormGroup';
 import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 
+import Typography from '@mui/material/Typography';
 import { AuthUserToken } from '@/types';
-import { useQueryClient } from '@tanstack/react-query';
-import { HeaderMenu, HeaderBurger } from '@/components/Header';
+import { HeaderMenu, HeaderBurger } from '@/components/layout/Header';
 
 const scrollThreshold = [0, 50];
 

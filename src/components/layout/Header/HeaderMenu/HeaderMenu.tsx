@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 
-import { AuthorizedMenu, UnAuthorizedMenu } from '@/components/Header';
+import { AuthorizedMenu, UnAuthorizedMenu } from '@/components/layout/Header';
 
 import { AuthUserToken, EMenu } from '@/types';
 
