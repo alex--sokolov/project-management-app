@@ -1,16 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
+
 import { UsersService } from '@/services/api/UsersService';
 
-// Leave this commented code for testing purposes
-
-// import { IUser, IUserUpdate } from '../data/models';
-// import { request } from '../utils/axios-utils';
-// import { AxiosError } from 'axios';
-
-export const useUsers = () => {
+export const useUsersList = () => {
   const { isLoading, data, isError, error } = useQuery({
     queryKey: ['users', 'list', { filters: 'all' }],
-    queryFn: UsersService.fetchUsers,
+    queryFn: UsersService.getAllUsers,
 
     // onSuccess: (data) => {
     //   console.log('data', data);

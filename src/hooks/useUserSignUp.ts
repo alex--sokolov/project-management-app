@@ -1,24 +1,27 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { IUser, IUserUpdate } from '@/data/models';
-import { AuthService } from '@/services/api/AuthService';
 import { useRef } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Id, toast } from 'react-toastify';
+
+import { AuthService } from '@/services/api/AuthService';
+
+import { User, UserUpdate } from '@/data/models';
 import { ResponseError } from '@/types';
+import { TIME_AUTO_CLOSE } from '@/configs/toasts';
 
 export const useUserSignUp = () => {
   const toastId = useRef<Id | undefined>(undefined);
 
   const queryClient = useQueryClient();
-  const { isLoading, data, isError, error, mutateAsync } = useMutation({
-    mutationFn: (user: Omit<IUserUpdate, '_id'>) => {
+  const { data, mutateAsync } = useMutation({
+    mutationFn: (user: Omit<UserUpdate, '_id'>) => {
       toastId.current = toast.loading('Trying to register...');
       return AuthService.registerUser(user);
     },
-    onSuccess: (newUser: IUser) => {
+    onSuccess: (newUser: User) => {
       // ✅ update all the lists that contain this user
       queryClient.setQueriesData(
         ['users', 'list', { filters: 'all' }],
-        (previous: IUser[] | undefined) =>
+        (previous: User[] | undefined) =>
           !!previous
             ? previous.map((user) => (user._id === newUser._id ? newUser : user))
             : previous
@@ -31,7 +34,7 @@ export const useUserSignUp = () => {
       if (toastId.current) {
         toast.update(toastId.current, {
           render: 'Registration success!',
-          autoClose: 3000,
+          autoClose: TIME_AUTO_CLOSE,
           type: 'success',
           isLoading: false,
         });
@@ -41,7 +44,7 @@ export const useUserSignUp = () => {
       if (toastId.current) {
         toast.update(toastId.current, {
           render: error.message,
-          autoClose: 3000,
+          autoClose: TIME_AUTO_CLOSE,
           type: 'error',
           isLoading: false,
         });
@@ -58,5 +61,5 @@ export const useUserSignUp = () => {
       }
     : null;
 
-  return { isLoading, user, isError, error, mutateAsync };
+  return { user, mutateAsync };
 };

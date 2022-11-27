@@ -1,10 +1,13 @@
 import { toast } from 'react-toastify';
+
 import 'react-toastify/dist/ReactToastify.css';
+
 import { sleep } from '@/utils/sleep';
+
 import { TIME_AUTO_CLOSE, TIME_DATA_FETCHING } from '@/configs/toasts';
 
 export const taskSucceed = () => {
-  toast.success('Task is succesfully created', { position: toast.POSITION.BOTTOM_CENTER });
+  toast.success('Task is successfully created', { position: toast.POSITION.BOTTOM_CENTER });
 };
 
 export const taskNotCompleted = () => {
@@ -15,7 +18,7 @@ export const taskNotCompleted = () => {
 };
 
 export const dataFetching = () => {
-  toast.promise(sleep(TIME_DATA_FETCHING), {
+  return toast.promise(sleep(TIME_DATA_FETCHING), {
     pending: 'Promise is pending',
     success: 'Promise resolved 👌',
     error: 'Promise rejected 🤯',

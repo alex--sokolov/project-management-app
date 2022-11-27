@@ -10,7 +10,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Authorization } from './components/pages/Authorization/Authorization';
 import { Auth } from './types';
-import { Layout } from './components/Layout';
+import { Layout } from './components/layout';
+import { TestAuthProfile } from '@/components/pages/TestComponents/TestAuthProfile';
+import { TestModalToasts } from '@/components/pages/TestComponents/TestModalToasts';
+import { TestBoards } from './components/pages/TestComponents/TestBoards';
+import { TestColumns } from './components/pages/TestComponents/TestColumns';
+import { TestTasks } from '@/components/pages/TestComponents/TestTasks';
 
 export const App: FC = () => {
   const [queryClient] = useState(
@@ -36,7 +41,6 @@ export const App: FC = () => {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
-
             <Route element={<PrivateRoutes />}>
               <Route path="/profile" element={<Profile />} />
               <Route path="/boards" element={<Boards />} />
@@ -45,6 +49,15 @@ export const App: FC = () => {
             <Route path="auth/signin" element={<Authorization formType={Auth.Login} />} />
             <Route path="auth/signup" element={<Authorization formType={Auth.Register} />} />
             <Route path="auth/signout" element={<Authorization formType={Auth.Logout} />} />
+            {/* Test components start */}
+            <Route path="auth/test" element={<TestAuthProfile />} />
+            <Route path="profile/test" element={<TestAuthProfile />} />
+            <Route path="modal" element={<TestModalToasts />} />
+            <Route path="toasts" element={<TestModalToasts />} />
+            <Route path="boards/test" element={<TestBoards />} />
+            <Route path="columns/test" element={<TestColumns />} />
+            <Route path="tasks/test" element={<TestTasks />} />
+            {/* Test components end */}
             <Route path="/404" element={<NotFound />} />
             <Route path="/*" element={<Navigate to="/404" />} />
           </Route>

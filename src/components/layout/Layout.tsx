@@ -1,13 +1,15 @@
-import { useAuthUser } from '@/hooks/useAuthUser';
 import { Outlet } from 'react-router-dom';
-import Header from './Header/Header';
+
+import { useAuthUser } from '@/hooks/useAuthUser';
+
+import { Header } from './Header';
 
 export const Layout = () => {
   useAuthUser();
 
   return (
     <>
-      <Header></Header>
+      <Header />
       <main className="main">
         <Outlet />
       </main>
