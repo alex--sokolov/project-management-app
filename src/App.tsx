@@ -13,6 +13,7 @@ import { Auth } from './types';
 import { Layout } from './components/Layout';
 import { TestAuthProfile } from '@/components/pages/TestComponents/TestAuthProfile';
 import { TestModalToasts } from '@/components/pages/TestComponents/TestModalToasts';
+import { TestBoards } from './components/pages/TestComponents/TestBoards';
 
 export const App: FC = () => {
   const [queryClient] = useState(
@@ -51,6 +52,7 @@ export const App: FC = () => {
             <Route path="profile/test" element={<TestAuthProfile />} />
             <Route path="modal" element={<TestModalToasts />} />
             <Route path="toasts" element={<TestModalToasts />} />
+            <Route path="boards/test" element={<TestBoards />} />
             {/* Test components end */}
             <Route path="/404" element={<NotFound />} />
             <Route path="/*" element={<Navigate to="/404" />} />
