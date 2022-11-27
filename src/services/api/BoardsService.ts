@@ -12,19 +12,16 @@ export const BoardsService = {
   },
 
   async createNewBoard(board: Omit<Board, '_id'>): Promise<Board> {
-    return await request(
-      {
-        url: `/boards`,
-        method: 'post',
-        data: {
-          title: board.title,
-          description: board.description,
-          owner: board.owner,
-          users: board.users,
-        },
+    return await request({
+      url: `/boards`,
+      method: 'post',
+      data: {
+        title: board.title,
+        description: board.description,
+        owner: board.owner,
+        users: board.users,
       },
-      false
-    );
+    });
   },
 
   async updateBoardById(board: Board): Promise<Board> {
