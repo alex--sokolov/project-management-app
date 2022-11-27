@@ -37,7 +37,7 @@ export const BoardsService = {
     });
   },
 
-  async deleteBoardById(id: string) {
+  async deleteBoardById(id: string): Promise<Board> {
     return await request({ url: `/boards/${id}`, method: 'delete' });
   },
 

@@ -27,3 +27,14 @@ export interface Column {
   boardId: string;
   order: number;
 }
+
+export interface Task {
+  _id: string;
+  title: string;
+  description: string;
+  boardId: string;
+  columnId: string;
+  userId: string;
+  users: string[];
+  order: number;
+}

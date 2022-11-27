@@ -1,6 +1,7 @@
-import { BoardsService } from '@/services/api/BoardsService';
-import Button from '@mui/material/Button';
 import { useState } from 'react';
+import Button from '@mui/material/Button';
+
+import { BoardsService } from '@/services/api/BoardsService';
 
 const existUserId = '6380a07bb5205b69e9479661';
 const existBoardId = '638263b82a31e4ffb30e4ff7';
@@ -61,7 +62,7 @@ export const TestBoards = () => {
 
   return (
     <>
-      <div>Results in console </div>
+      <div>Results in console</div>
       <Button variant="contained" onClick={onGetAll}>
         Get all boards
       </Button>

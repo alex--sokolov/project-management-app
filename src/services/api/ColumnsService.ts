@@ -1,6 +1,6 @@
 import { request } from '@/utils/axios-utils';
 
-import { Column } from '@/data/models';
+import { Column, Task } from '@/data/models';
 
 export const ColumnsService = {
   async getAllColumns(boardId: string): Promise<Column[]> {
@@ -33,18 +33,16 @@ export const ColumnsService = {
     });
   },
 
-  async deleteColumnById(boardId: string, columnId: string) {
+  async deleteColumnById(boardId: string, columnId: string): Promise<Task> {
     return await request({ url: `/boards/${boardId}/columns/${columnId}`, method: 'delete' });
   },
 
   async getColumnsByListOfColumnsIdsOrIdUser(ids?: string[], userId?: string): Promise<Column[]> {
     const paramIds = ids ? `ids=[${ids.toString()}]` : null;
     const paramUserId = userId ? `userId=${userId}` : null;
-
-    const params =
-      paramIds && paramUserId ? `${paramIds}&${paramUserId}` : paramIds ? paramIds : paramUserId;
-
-    return await request({ url: `/columnsSet?${params}` });
+    const params = [paramIds, paramUserId].filter((param) => param !== null);
+    const paramStr = params.length > 0 ? `?${params.join('&')}` : '';
+    return await request({ url: `/columnsSet${paramStr}` });
   },
 
   async changeColumnsOrderInListOfColumns(

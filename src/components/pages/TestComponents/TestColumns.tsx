@@ -1,9 +1,9 @@
-import { ColumnsService } from '@/services/api/ColumnsService';
-import Button from '@mui/material/Button';
 import { useState } from 'react';
+import Button from '@mui/material/Button';
+
+import { ColumnsService } from '@/services/api/ColumnsService';
 
 const existUserId = '6383689e2a31e4ffb30e50af';
-const existOtherUserId = '63822b732a31e4ffb30e4fcf';
 const existBoardId = '638368cc2a31e4ffb30e50b2';
 const existColumnId = '638369772a31e4ffb30e50b4';
 
