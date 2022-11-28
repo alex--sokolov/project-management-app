@@ -1,8 +1,9 @@
-import { IUserUpdate } from '@/data/models';
 import { request } from '@/utils/axios-utils';
 
+import { UserUpdate } from '@/data/models';
+
 export const UsersService = {
-  async fetchUsers() {
+  async getAllUsers() {
     return await request({ url: '/users' });
   },
 
@@ -10,7 +11,7 @@ export const UsersService = {
     return await request({ url: `/users/${id}` });
   },
 
-  async updateUser(user: IUserUpdate) {
+  async updateUser(user: UserUpdate) {
     return await request({
       url: `/users/${user._id}`,
       method: 'put',

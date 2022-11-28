@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 import { UsersService } from '@/services/api/UsersService';
-import { IUser } from '@/data/models';
+
+import { User } from '@/data/models';
 
 export const useUserDelete = () => {
   const queryClient = useQueryClient();
@@ -13,7 +15,7 @@ export const useUserDelete = () => {
       // ✅ update all the lists that contain this user
       queryClient.setQueriesData(
         ['users', 'list', { filters: 'all' }],
-        (previous: IUser[] | undefined) =>
+        (previous: User[] | undefined) =>
           !!previous ? previous.filter((user) => user._id !== newUser._id) : previous
       );
 

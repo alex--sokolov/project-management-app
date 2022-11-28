@@ -1,42 +1,26 @@
-import { IUserLogin, IUserUpdate } from '@/data/models';
-import { useUserSignIn, useUserSignUp } from '@/hooks';
-import { useAuthUser } from '@/hooks/useAuthUser';
-import { AuthService } from '@/services/api/AuthService';
-import { FC, useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import { Auth } from '../../../types';
-
 import './Authorization.scss';
 
-const defaultFields = {
-  name: '',
-  login: '',
-  password: '',
-};
+import { FC, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
-const onlyWordsPattern = /^[a-zа-я\d]+$/i;
-const onlyWordsErrMsg = 'you must use only letters and digits';
-const emailPattern =
-  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i;
-const emailErrMsg = 'invalid e-mail';
+import { ToastContainer } from 'react-toastify';
+import { useUserSignIn, useUserSignUp, useAuthUser } from '@/hooks';
+import { UserLogin, UserUpdate } from '@/data/models';
 
-const makeValidationObj = (minLength: number, pattern?: RegExp, emailErrMsg?: string) => {
-  return {
-    required: 'this field is required',
-    minLength: {
-      value: minLength,
-      message: `you must enter at least ${minLength} letters`,
-    },
-    pattern: pattern
-      ? {
-          value: pattern,
-          message: emailErrMsg ?? '',
-        }
-      : undefined,
-  };
-};
+import { LocalStorageService } from '@/services/localStorage';
+import {
+  makeValidationObj,
+  defaultRegisterFields,
+  emailErrMsg,
+  emailPattern,
+  onlyWordsErrMsg,
+  onlyWordsPattern,
+} from '@/services/validate';
+
+import { Auth } from '@/types';
+
+import { LOGIN_MIN_LENGTH, NAME_MIN_LENGTH, PASSWORD_MIN_LENGTH } from '@/configs/forms';
 
 export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
   const navigate = useNavigate();
@@ -63,28 +47,28 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Omit<IUserUpdate, '_id'>>({
-    defaultValues: defaultFields,
+  } = useForm<Omit<UserUpdate, '_id'>>({
+    defaultValues: defaultRegisterFields,
   });
 
-  const loginUser = async (user: IUserLogin) => {
+  const loginUser = async (user: UserLogin) => {
     userLogin.mutate(user);
   };
 
-  const registerUser = async (user: Omit<IUserUpdate, '_id'>) => {
+  const registerUser = async (user: Omit<UserUpdate, '_id'>) => {
     return await userRegister.mutateAsync(user);
   };
 
-  const onSubmit: SubmitHandler<Omit<IUserUpdate, '_id'>> = async (data) => {
+  const onSubmit: SubmitHandler<Omit<UserUpdate, '_id'>> = async (data) => {
     if (formType === Auth.Login) {
       setShowSubmitButton(false);
-      loginUser(data);
+      await loginUser(data);
     }
     if (formType === Auth.Register) {
       setShowSubmitButton(false);
       try {
         await registerUser(data);
-        loginUser(data);
+        await loginUser(data);
       } catch (error) {
         setShowSubmitButton(true);
       }
@@ -92,8 +76,10 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
   };
 
   if (formType === Auth.Logout) {
-    AuthService.logOutUser();
-    authUserObj.refetch();
+    LocalStorageService.logOutUser();
+    (async function () {
+      await authUserObj.refetch();
+    })();
     return null;
   }
 
@@ -105,7 +91,10 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
             <input
               className="auth__input"
               type="text"
-              {...register('name', makeValidationObj(2, onlyWordsPattern, onlyWordsErrMsg))}
+              {...register(
+                'name',
+                makeValidationObj(NAME_MIN_LENGTH, onlyWordsPattern, onlyWordsErrMsg)
+              )}
               placeholder="Name"
             />
             <p className="error">
@@ -117,7 +106,7 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
           <input
             className="auth__input"
             type="text"
-            {...register('login', makeValidationObj(0, emailPattern, emailErrMsg))}
+            {...register('login', makeValidationObj(LOGIN_MIN_LENGTH, emailPattern, emailErrMsg))}
             placeholder="E-mail"
           />
           <p className="error">
@@ -128,7 +117,7 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
           <input
             className="auth__input"
             type="password"
-            {...register('password', makeValidationObj(4))}
+            {...register('password', makeValidationObj(PASSWORD_MIN_LENGTH))}
             placeholder="Password"
           />
           <p className="error">

@@ -1,3 +1,5 @@
+import { Outlet } from 'react-router-dom';
+
 import { useAuthUser } from '@/hooks/useAuthUser';
 import { Outlet } from 'react-router-dom';
 import Footer from './Footer/Footer';
@@ -8,7 +10,7 @@ export const Layout = () => {
 
   return (
     <>
-      <Header></Header>
+      <Header />
       <main className="main">
         <Outlet />
       </main>

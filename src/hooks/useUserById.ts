@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
+
 import { UsersService } from '@/services/api/UsersService';
 
-export const useUser = (id: string | undefined) => {
+export const useUserById = (id: string | undefined) => {
   const { isLoading, data, isError, error, refetch } = useQuery({
     queryKey: ['users', 'detail', id],
     queryFn: () => UsersService.getUserById(id as string),
