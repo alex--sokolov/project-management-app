@@ -1,0 +1,85 @@
+@import '@/assets/styles/mixins.scss';
+@import '@/assets/styles/colors.scss';
+
+.footer {
+  &__wrapper {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 20px;
+    height: inherit;
+    color: $dark-font-color;
+    background-color: $header-color;
+
+    @include small-tablet {
+      height: 140px;
+    }
+
+    @include smart {
+      height: 180px;
+      flex-direction: column;
+    }
+  }
+
+  &__authors {
+    width: 400px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    color: $dark-font-color;
+
+    @include small-tablet {
+      flex-direction: column;
+      justify-content: flex-start;
+      margin-bottom: 10px;
+      margin-top: 10px;
+    }
+  }
+
+  &__year {
+    width: 200px;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  &__rs {
+    width: 400px;
+    display: flex;
+    justify-content: center;
+  }
+
+  &__rs > * {
+    text-decoration: none;
+    color: $dark-font-color;
+  }
+
+  &__link {
+    display: flex;
+    height: 30px;
+    font-size: 18px;
+    font-weight: normal;
+    text-decoration: none;
+
+    @include small-tablet {
+      font-size: 14px;
+    }
+
+    &-img {
+      height: 30px;
+
+      @include small-tablet {
+        height: 25px;
+      }
+    }
+
+    & > p {
+      margin-left: 4px;
+      align-self: center;
+      color: $dark-font-color;
+    }
+  }
+}
