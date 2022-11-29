@@ -56,7 +56,13 @@ export function Header() {
       lastScrollDirection.current = scrollDirection;
     });
   }, [height, pixelsScrolled, scrollY]);
-
+  /*
+  useEffect(() => {
+    if (formType === Auth.Logout) {
+      navigate('/');
+    }
+  }, [formType, navigate]);
+*/
   return (
     <>
       <motion.header
