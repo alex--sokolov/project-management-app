@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { ToastContainer } from 'react-toastify';
-import { useAuthUser, useUserDelete, useUserUpdate } from '@/hooks';
+import { useAuthUser, useModal, useUserDelete, useUserUpdate } from '@/hooks';
 import { UserUpdate } from '@/data/models';
 
 import { LocalStorageService } from '@/services/localStorage';
@@ -24,30 +24,33 @@ import { LOGIN_MIN_LENGTH, NAME_MIN_LENGTH, PASSWORD_MIN_LENGTH } from '@/config
 
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { Modal } from '@/services/modals';
+import { userDeleted, userEdited } from '@/services/toasts/toasts';
 
 export const Profile: FC = () => {
   const navigate = useNavigate();
   const authUserObj = useAuthUser();
   const [showSubmitBtn, setShowSubmitButton] = useState(true);
 
-  // UPDATE
+  const { isModalOpen, close, open } = useModal();
+  const modalType = 'Do you want to delete the user?';
 
   const userUpdate = useUserUpdate();
   const editUser = async (user: UserUpdate) => {
     return await userUpdate.mutateAsync(user);
   };
 
-  // DELETE
-
   const userDelete = useUserDelete();
   const deleteUser = async (/*id: string*/) => {
     const token = LocalStorageService.getToken();
     const user: AuthUserToken = jwt_decode(token as string);
+    open();
     try {
       await userDelete.mutateAsync(user.id);
     } catch (error) {
       console.error(error);
     } finally {
+      userDeleted();
       LocalStorageService.logOutUser();
       navigate('/');
       (async function () {
@@ -71,9 +74,18 @@ export const Profile: FC = () => {
     data._id = userData.id;
     try {
       await editUser(data);
+      userEdited();
     } catch (error) {
       setShowSubmitButton(true);
     }
+  };
+
+  const handleClick = (value: string) => {
+    if (value === 'yes') {
+      deleteUser();
+    }
+    close();
+    return value;
   };
 
   return (
@@ -115,7 +127,7 @@ export const Profile: FC = () => {
             {errors.password && <span className="error__show">{errors.password.message}</span>}
           </p>
         </div>
-        <IconButton aria-label="delete" onClick={deleteUser}>
+        <IconButton aria-label="delete" onClick={open}>
           <DeleteIcon />
         </IconButton>
         <button className="profile__submit" disabled={!showSubmitBtn}>
@@ -123,6 +135,15 @@ export const Profile: FC = () => {
         </button>
       </form>
       <ToastContainer />
+      <div>
+        {isModalOpen && (
+          <Modal
+            isModalOpen={isModalOpen}
+            text={modalType}
+            handleClick={(value) => handleClick(value)}
+          />
+        )}
+      </div>
     </div>
   );
 };

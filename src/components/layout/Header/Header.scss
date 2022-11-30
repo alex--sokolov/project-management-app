@@ -15,6 +15,11 @@
   }
 }
 
+.header__logo-link, .header__logo {
+  color: $dark-font-color;
+  text-decoration: none;
+}
+
 @media (max-width: 1000px) {
   .header__logo {
     font-size: 26px;
@@ -36,6 +41,11 @@
 
 .header__list-item {
   margin: 0 5px;
+}
+
+.header__list-item_user {
+  align-self: center;
+  padding-left: 10px;
 }
 
 .header__link {

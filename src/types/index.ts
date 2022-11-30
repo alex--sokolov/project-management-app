@@ -30,7 +30,7 @@ export enum EMenu {
   column = 'header__burger-list',
 }
 
-export enum EProfile {
-  Edit,
-  Delete,
+export enum EModal {
+  yes = 'yes',
+  no = 'no',
 }

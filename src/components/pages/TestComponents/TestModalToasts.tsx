@@ -10,6 +10,11 @@ export const TestModalToasts = () => {
   const { isModalOpen, close, open } = useModal();
   const modalType = 'Are you sure?';
 
+  const handleClick = (value: string) => {
+    close();
+    return value;
+  };
+
   return (
     <>
       <button onClick={open} className="button">
@@ -32,7 +37,11 @@ export const TestModalToasts = () => {
       <ToastContainer />
       <div>
         {isModalOpen && (
-          <Modal isModalOpen={isModalOpen} text={modalType} type={modalType} handleClose={close} />
+          <Modal
+            isModalOpen={isModalOpen}
+            text={modalType}
+            handleClick={(modalType) => handleClick(modalType)}
+          />
         )}
       </div>
     </>
