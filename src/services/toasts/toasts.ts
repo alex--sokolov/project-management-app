@@ -10,6 +10,14 @@ export const taskSucceed = () => {
   toast.success('Task is successfully created', { position: toast.POSITION.BOTTOM_CENTER });
 };
 
+export const userDeleted = () => {
+  toast.success('User is successfully deleted', { position: toast.POSITION.BOTTOM_CENTER });
+};
+
+export const userEdited = () => {
+  toast.success(`User's data is successfully edited`, { position: toast.POSITION.BOTTOM_CENTER });
+};
+
 export const taskNotCompleted = () => {
   toast.error('Error notification', {
     position: toast.POSITION.BOTTOM_CENTER,

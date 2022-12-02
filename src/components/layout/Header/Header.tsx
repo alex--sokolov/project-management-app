@@ -10,6 +10,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { AuthUserToken } from '@/types';
 import { HeaderMenu, HeaderBurger } from '@/components/layout/Header';
+import { Link } from 'react-router-dom';
 
 const scrollThreshold = [0, 50];
 
@@ -69,7 +70,9 @@ export function Header() {
         className="header"
       >
         <div className="header__wrapper">
-          <h1 className="header__logo">Project Management System</h1>
+          <Link to="/" className="header__logo-link">
+            <h1 className="header__logo">Project Management System</h1>
+          </Link>
           <FormGroup>
             <Stack direction="row" alignItems="center">
               <Typography>RU</Typography>

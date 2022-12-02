@@ -38,4 +38,5 @@ code {
 
 .main {
   padding-top: 130px;
+  min-height: calc(100vh - (130px + 80px));
 }

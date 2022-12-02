@@ -29,3 +29,8 @@ export enum EMenu {
   row = 'header__list',
   column = 'header__burger-list',
 }
+
+export enum EModal {
+  yes = 'yes',
+  no = 'no',
+}

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Backdrop } from '@/services/modals';
 import './Modal.scss';
+import { EModal } from '@/types';
 
 const dropIn = {
   hidden: {
@@ -24,15 +25,14 @@ const dropIn = {
 };
 
 type Props = {
-  handleClose: () => void;
+  handleClick: (value: string) => string;
   isModalOpen: boolean;
   text: string;
-  type: string;
 };
 
-export const Modal = ({ handleClose, text }: Props) => {
+export const Modal = ({ handleClick, text }: Props) => {
   return (
-    <Backdrop onClick={handleClose}>
+    <Backdrop onClick={() => handleClick}>
       <motion.div
         onClick={(e) => e.stopPropagation()}
         className="modal orange-gradient"
@@ -42,8 +42,11 @@ export const Modal = ({ handleClose, text }: Props) => {
         exit="exit"
       >
         <p>{text}</p>
-        <button className="button modal__button" onClick={handleClose}>
-          Close
+        <button className="button modal__button" onClick={() => handleClick('yes')}>
+          {EModal.yes}
+        </button>
+        <button className="button modal__button" onClick={() => handleClick('no')}>
+          {EModal.no}
         </button>
       </motion.div>
     </Backdrop>
