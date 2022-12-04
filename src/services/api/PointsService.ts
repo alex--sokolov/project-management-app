@@ -2,25 +2,20 @@ import { request } from '@/utils/axios-utils';
 
 import { Point } from '@/data/models';
 
-export const TasksService = {
+export const PointsService = {
   async getPointsByTaskId(taskId: string): Promise<Point[]> {
     return await request({ url: `/points/${taskId}` });
   },
 
-  async createNewPoint(title: string, taskId: string, boardId: string, done: true): Promise<Point> {
+  async createNewPoint(point: Omit<Point, '_id'>): Promise<Point> {
     return await request({
       url: `/points`,
       method: 'post',
-      data: {
-        title,
-        taskId,
-        boardId,
-        done,
-      },
+      data: point,
     });
   },
 
-  async updatePointById(pointId: string, title: string, done: true): Promise<Point> {
+  async updatePointById(pointId: string, title: string, done: boolean): Promise<Point> {
     return await request({
       url: `/points/${pointId}`,
       method: 'patch',
@@ -31,7 +26,7 @@ export const TasksService = {
     });
   },
 
-  async updateSetOfPoints(points: Pick<Point, '_id' | 'done'>): Promise<Point[]> {
+  async updateSetOfPoints(points: Pick<Point, '_id' | 'done'>[]): Promise<Point[]> {
     return await request({
       url: `/points`,
       method: 'patch',

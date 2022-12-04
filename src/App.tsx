@@ -16,6 +16,8 @@ import { TestModalToasts } from '@/components/pages/TestComponents/TestModalToas
 import { TestBoards } from './components/pages/TestComponents/TestBoards';
 import { TestColumns } from './components/pages/TestComponents/TestColumns';
 import { TestTasks } from '@/components/pages/TestComponents/TestTasks';
+import { TestPoints } from '@/components/pages/TestComponents/TestPoints';
+import { TestFiles } from '@/components/pages/TestComponents/TestFiles';
 
 export const App: FC = () => {
   const [queryClient] = useState(
@@ -57,6 +59,8 @@ export const App: FC = () => {
             <Route path="boards/test" element={<TestBoards />} />
             <Route path="columns/test" element={<TestColumns />} />
             <Route path="tasks/test" element={<TestTasks />} />
+            <Route path="points/test" element={<TestPoints />} />
+            <Route path="files/test" element={<TestFiles />} />
             {/* Test components end */}
             <Route path="/404" element={<NotFound />} />
             <Route path="/*" element={<Navigate to="/404" />} />
