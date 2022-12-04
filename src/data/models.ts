@@ -38,3 +38,19 @@ export interface Task {
   users: string[];
   order: number;
 }
+
+export interface File {
+  _id: string;
+  name: string;
+  taskId: string;
+  boardId: string;
+  path: string;
+}
+
+export interface Point {
+  _id: string;
+  title: string;
+  taskId: string;
+  boardId: string;
+  done: boolean;
+}
