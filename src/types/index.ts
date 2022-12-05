@@ -1,3 +1,5 @@
+import { TFunction } from 'i18next';
+
 export enum Auth {
   Login,
   Register,
@@ -34,3 +36,11 @@ export enum EModal {
   yes = 'yes',
   no = 'no',
 }
+
+export type LangType = {
+  lang: (language: string) => void;
+};
+
+export type TType = {
+  t: TFunction<'translation', undefined>;
+};
