@@ -25,7 +25,6 @@ export const BoardForm: FC<{
   const [isFormOpened, setIsFormOpened] = useState(false);
   const onCreateBtnHandler = () => {
     setIsFormOpened(true);
-    // createBoard();
   };
   const onSubmit: SubmitHandler<Omit<Board, '_id' | 'owner' | 'users'>> = (data) => {
     if (userId) {
