@@ -17,6 +17,7 @@ const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
 export function Header(props: { userInfo: AuthUserState }) {
   const { authUser, isLoading } = props.userInfo;
+
   const { scrollY } = useScroll();
   const scrollYOnDirectionChange = useRef(scrollY.get());
   const lastPixelsScrolled = useRef<number>(0);
