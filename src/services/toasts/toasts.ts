@@ -14,6 +14,13 @@ export const userDeleted = () => {
   toast.success('User is successfully deleted', { position: toast.POSITION.BOTTOM_CENTER });
 };
 
+export const userLoggedOut = () => {
+  toast.success('You have logged out successfully', {
+    position: toast.POSITION.TOP_RIGHT,
+    autoClose: TIME_AUTO_CLOSE,
+  });
+};
+
 export const userEdited = () => {
   toast.success(`User's data is successfully edited`, { position: toast.POSITION.BOTTOM_CENTER });
 };

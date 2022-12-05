@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { ToastContainer } from 'react-toastify';
-import { useUserSignIn, useUserSignUp, useAuthUser } from '@/hooks';
+import { useUserSignIn, useUserSignUp } from '@/hooks';
 import { UserLogin, UserUpdate } from '@/data/models';
 
 import { LocalStorageService } from '@/services/localStorage';
@@ -21,13 +21,20 @@ import {
 import { Auth } from '@/types';
 
 import { LOGIN_MIN_LENGTH, NAME_MIN_LENGTH, PASSWORD_MIN_LENGTH } from '@/configs/forms';
+import { userLoggedOut } from '@/services/toasts/toasts';
+import { TIME_AUTO_CLOSE, TIME_LOGOUT_DELAY } from '@/configs/toasts';
 
 export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
     if (formType === Auth.Logout) {
-      navigate('/');
+      console.log('toast fired');
+      userLoggedOut();
+      LocalStorageService.logOutUser();
+      setTimeout(() => {
+        navigate(-1);
+      }, TIME_AUTO_CLOSE + TIME_LOGOUT_DELAY);
     }
   }, [formType, navigate]);
 
@@ -40,8 +47,6 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
   };
 
   const userLogin = useUserSignIn(submitButtonHandler);
-
-  const authUserObj = useAuthUser();
 
   const {
     register,
@@ -75,60 +80,67 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
     }
   };
 
-  if (formType === Auth.Logout) {
-    LocalStorageService.logOutUser();
-    (async function () {
-      await authUserObj.refetch();
-    })();
-    return null;
-  }
-
   return (
-    <div className="auth">
-      <form onSubmit={handleSubmit(onSubmit)} className="auth__form">
-        {formType === Auth.Register && (
-          <div className="auth__element">
-            <input
-              className="auth__input"
-              type="text"
-              {...register(
-                'name',
-                makeValidationObj(NAME_MIN_LENGTH, onlyWordsPattern, onlyWordsErrMsg)
-              )}
-              placeholder="Name"
-            />
-            <p className="error">
-              {errors.name && <span className="error__show">{errors.name.message}</span>}
-            </p>
-          </div>
-        )}
-        <div className="auth__element">
-          <input
-            className="auth__input"
-            type="text"
-            {...register('login', makeValidationObj(LOGIN_MIN_LENGTH, emailPattern, emailErrMsg))}
-            placeholder="E-mail"
-          />
-          <p className="error">
-            {errors.login && <span className="error__show">{errors.login.message}</span>}
-          </p>
+    <>
+      {formType !== Auth.Logout ? (
+        <div className="auth">
+          <form onSubmit={handleSubmit(onSubmit)} className="auth__form">
+            {formType === Auth.Register && (
+              <div className="auth__element">
+                <input
+                  className="auth__input"
+                  type="text"
+                  {...register(
+                    'name',
+                    makeValidationObj(NAME_MIN_LENGTH, onlyWordsPattern, onlyWordsErrMsg)
+                  )}
+                  placeholder="Name"
+                />
+                <p className="error">
+                  {errors.name && <span className="error__show">{errors.name.message}</span>}
+                </p>
+              </div>
+            )}
+            <div className="auth__element">
+              <input
+                className="auth__input"
+                type="text"
+                {...register(
+                  'login',
+                  makeValidationObj(LOGIN_MIN_LENGTH, emailPattern, emailErrMsg)
+                )}
+                placeholder="E-mail"
+              />
+              <p className="error">
+                {errors.login && <span className="error__show">{errors.login.message}</span>}
+              </p>
+            </div>
+            <div className="auth__element">
+              <input
+                className="auth__input"
+                type="password"
+                {...register('password', makeValidationObj(PASSWORD_MIN_LENGTH))}
+                placeholder="Password"
+              />
+              <p className="error">
+                {errors.password && <span className="error__show">{errors.password.message}</span>}
+              </p>
+            </div>
+            <button className="auth__submit" disabled={!showSubmitBtn}>
+              Submit
+            </button>
+          </form>
+          <ToastContainer />
         </div>
-        <div className="auth__element">
-          <input
-            className="auth__input"
-            type="password"
-            {...register('password', makeValidationObj(PASSWORD_MIN_LENGTH))}
-            placeholder="Password"
-          />
-          <p className="error">
-            {errors.password && <span className="error__show">{errors.password.message}</span>}
-          </p>
-        </div>
-        <button className="auth__submit" disabled={!showSubmitBtn}>
-          Submit
-        </button>
-      </form>
-      <ToastContainer />
-    </div>
+      ) : (
+        <>
+          <h2 style={{ textAlign: 'center' }}>
+            <i>Logging out in progress...</i>
+          </h2>
+          <h1 style={{ textAlign: 'center', color: 'dodgerblue' }}>Thank you for being with us!</h1>
+          <ToastContainer />
+        </>
+      )}
+    </>
   );
 };

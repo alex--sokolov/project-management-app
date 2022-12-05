@@ -1,15 +1,18 @@
-import { FC, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import './Profile.scss';
 
+import { FC, useRef, useState } from 'react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
+
+import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { ToastContainer } from 'react-toastify';
-import { useAuthUser, useModal, useUserDelete, useUserUpdate } from '@/hooks';
-import { UserUpdate } from '@/data/models';
 
+import { useModal, useUserDelete, useUserUpdate } from '@/hooks';
+
+import { User, UserUpdate } from '@/data/models';
 import { LocalStorageService } from '@/services/localStorage';
+
 import {
   makeValidationObj,
-  defaultRegisterFields,
   emailErrMsg,
   emailPattern,
   onlyWordsErrMsg,
@@ -18,29 +21,36 @@ import {
 
 import { AuthUserToken } from '@/types';
 import jwt_decode from 'jwt-decode';
-import './Profile.scss';
 
 import { LOGIN_MIN_LENGTH, NAME_MIN_LENGTH, PASSWORD_MIN_LENGTH } from '@/configs/forms';
 
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Modal } from '@/services/modals';
-import { userDeleted, userEdited } from '@/services/toasts/toasts';
+import { userDeleted } from '@/services/toasts/toasts';
+import Button from '@mui/material/Button';
+import { TIME_AUTO_CLOSE } from '@/configs/toasts';
+import { sleep } from '@/utils/sleep';
 
 export const Profile: FC = () => {
   const navigate = useNavigate();
-  const authUserObj = useAuthUser();
-  const [showSubmitBtn, setShowSubmitButton] = useState(true);
+  const user = useOutletContext<User>();
+  const [userName, setUserName] = useState(user.name);
+  const [userLogin, setUserLogin] = useState(user.login);
+  const [userPassword, setUserPassword] = useState('');
+
+  const submitBtn = useRef<HTMLButtonElement>(null);
 
   const { isModalOpen, close, open } = useModal();
   const modalType = 'Do you want to delete the user?';
 
   const userUpdate = useUserUpdate();
+  const userDelete = useUserDelete();
+
   const editUser = async (user: UserUpdate) => {
-    return await userUpdate.mutateAsync(user);
+    return userUpdate.mutateAsync(user);
   };
 
-  const userDelete = useUserDelete();
   const deleteUser = async (/*id: string*/) => {
     const token = LocalStorageService.getToken();
     const user: AuthUserToken = jwt_decode(token as string);
@@ -53,31 +63,30 @@ export const Profile: FC = () => {
       userDeleted();
       LocalStorageService.logOutUser();
       navigate('/');
-      (async function () {
-        await authUserObj.refetch();
-      })();
+      // (async function () {
+      //   await userData.refetch();
+      // })();
     }
   };
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting, isDirty, isValid },
+    control,
   } = useForm<UserUpdate>({
-    defaultValues: defaultRegisterFields,
+    defaultValues: {
+      name: user.name,
+      login: user.login,
+      password: '',
+    },
+    mode: 'onChange',
   });
 
   const onSubmit: SubmitHandler<UserUpdate> = async (data) => {
-    const token = LocalStorageService.getToken();
-    const userData: AuthUserToken = jwt_decode(token as string);
-    setShowSubmitButton(false);
-    data._id = userData.id;
-    try {
-      await editUser(data);
-      userEdited();
-    } catch (error) {
-      setShowSubmitButton(true);
-    }
+    data._id = user._id;
+    await editUser(data);
+    await sleep(TIME_AUTO_CLOSE);
   };
 
   const handleClick = (value: string) => {
@@ -90,50 +99,93 @@ export const Profile: FC = () => {
 
   return (
     <div className="profile">
-      <form onSubmit={handleSubmit(onSubmit)} className="profile__form">
-        <div className="profile__element">
-          <input
-            className="profile__input"
-            type="text"
-            {...register(
-              'name',
-              makeValidationObj(NAME_MIN_LENGTH, onlyWordsPattern, onlyWordsErrMsg)
-            )}
-            placeholder="Name"
-          />
-          <p className="error">
-            {errors.name && <span className="error__show">{errors.name.message}</span>}
-          </p>
-        </div>
-        <div className="profile__element">
-          <input
-            className="profile__input"
-            type="text"
-            {...register('login', makeValidationObj(LOGIN_MIN_LENGTH, emailPattern, emailErrMsg))}
-            placeholder="E-mail"
-          />
-          <p className="error">
-            {errors.login && <span className="error__show">{errors.login.message}</span>}
-          </p>
-        </div>
-        <div className="profile__element">
-          <input
-            className="profile__input"
-            type="password"
-            {...register('password', makeValidationObj(PASSWORD_MIN_LENGTH))}
-            placeholder="Password"
-          />
-          <p className="error">
-            {errors.password && <span className="error__show">{errors.password.message}</span>}
-          </p>
-        </div>
-        <IconButton aria-label="delete" onClick={open}>
-          <DeleteIcon />
-        </IconButton>
-        <button className="profile__submit" disabled={!showSubmitBtn}>
-          Submit
-        </button>
-      </form>
+      <h4 style={{ textAlign: 'center', color: 'dodgerblue' }}>You can change your info</h4>
+      {user ? (
+        <form onSubmit={handleSubmit(onSubmit)} className="profile__form">
+          <div className="profile__element">
+            <label htmlFor="name">User name:</label>
+            <Controller
+              control={control}
+              name={'name'}
+              rules={makeValidationObj(NAME_MIN_LENGTH, onlyWordsPattern, onlyWordsErrMsg)}
+              render={({ field: { onChange, name } }) => (
+                <input
+                  type="text"
+                  className="profile__input"
+                  value={userName}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    onChange({ target: { name, value: value } });
+                    setUserName(value);
+                  }}
+                />
+              )}
+            />
+            <p className="error">
+              {errors.name && <span className="error__show">{errors.name.message}</span>}
+            </p>
+          </div>
+          <div className="profile__element">
+            <label htmlFor="login">User email:</label>
+            <Controller
+              control={control}
+              name={'login'}
+              rules={makeValidationObj(LOGIN_MIN_LENGTH, emailPattern, emailErrMsg)}
+              render={({ field: { onChange, name } }) => (
+                <input
+                  type="text"
+                  className="profile__input"
+                  value={userLogin}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    onChange({ target: { name, value: value } });
+                    setUserLogin(value);
+                  }}
+                />
+              )}
+            />
+            <p className="error">
+              {errors.login && <span className="error__show">{errors.login.message}</span>}
+            </p>
+          </div>
+          <div className="profile__element">
+            <label htmlFor="password">New password:</label>
+            <Controller
+              control={control}
+              name={'password'}
+              rules={makeValidationObj(PASSWORD_MIN_LENGTH)}
+              render={({ field: { onChange, name } }) => (
+                <input
+                  type="password"
+                  className="profile__input"
+                  value={userPassword}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    onChange({ target: { name, value: value } });
+                    setUserPassword(value);
+                  }}
+                />
+              )}
+            />
+            <p className="error">
+              {errors.password && <span className="error__show">{errors.password.message}</span>}
+            </p>
+          </div>
+          <IconButton aria-label="delete" onClick={open}>
+            <DeleteIcon />
+          </IconButton>
+          <Button
+            ref={submitBtn}
+            variant="contained"
+            type="submit"
+            disabled={isSubmitting || !isValid}
+          >
+            Update user
+          </Button>
+        </form>
+      ) : (
+        <></>
+      )}
       <ToastContainer />
       <div>
         {isModalOpen && (

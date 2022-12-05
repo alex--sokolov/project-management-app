@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import Button from '@mui/material/Button';
 
 import { FilesService } from '@/services/api/FilesService';
-import Spinner from '@/components/ui/Spinner';
+import { Spinner } from '@/components/shared/Spinner';
 
 const existUserId = '638498d52a31e4ffb30e5173';
 const existBoardId = '638498ed2a31e4ffb30e5177';

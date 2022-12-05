@@ -1,16 +1,16 @@
 import { FC, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+import { Layout } from './components/layout';
 import { Home } from '@/components/pages/Home/Home';
 import { Profile } from '@/components/pages/Profile/Profile';
 import { Boards } from '@/components/pages/Boards/Boards';
 import { Board } from '@/components/pages/Board/Board';
 import { NotFound } from '@/components/pages/NotFound/NotFound';
-import PrivateRoutes from '@/utils/PrivateRoutes';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { PrivateRoutes } from '@/components/shared/PrivateRoutes';
 import { Authorization } from './components/pages/Authorization/Authorization';
-import { Auth } from './types';
-import { Layout } from './components/layout';
 import { TestAuthProfile } from '@/components/pages/TestComponents/TestAuthProfile';
 import { TestModalToasts } from '@/components/pages/TestComponents/TestModalToasts';
 import { TestBoards } from './components/pages/TestComponents/TestBoards';
@@ -18,6 +18,8 @@ import { TestColumns } from './components/pages/TestComponents/TestColumns';
 import { TestTasks } from '@/components/pages/TestComponents/TestTasks';
 import { TestPoints } from '@/components/pages/TestComponents/TestPoints';
 import { TestFiles } from '@/components/pages/TestComponents/TestFiles';
+
+import { Auth } from './types';
 
 export const App: FC = () => {
   const [queryClient] = useState(
