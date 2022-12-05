@@ -25,11 +25,10 @@ const getAuthUserId = () => {
 
 export const useAuthUser = () => {
   const id = getAuthUserId();
-  console.log('id', id);
   const toastId = useRef<Id | undefined>(undefined);
   const navigate = useNavigate();
 
-  const { data, refetch } = useQuery({
+  const { data } = useQuery({
     queryKey: ['authUser'],
     queryFn: () => UsersService.getUserById(id as string),
     onError: (error: ResponseError) => {
@@ -45,8 +44,7 @@ export const useAuthUser = () => {
     },
     enabled: !!id,
     retry: 0,
-    staleTime: 10000,
   });
 
-  return { data, refetch };
+  return { data };
 };
