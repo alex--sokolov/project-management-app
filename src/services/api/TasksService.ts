@@ -67,4 +67,8 @@ export const TasksService = {
     const paramStr = params.length > 0 ? `?${params.join('&')}` : '';
     return await request({ url: `/tasksSet${paramStr}` });
   },
+
+  async getAllTasksByBoardId(boardId: string): Promise<Task[]> {
+    return await request({ url: `/tasksSet/${boardId}` });
+  },
 };
