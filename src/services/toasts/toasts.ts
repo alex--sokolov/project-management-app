@@ -11,7 +11,10 @@ export const taskSucceed = () => {
 };
 
 export const userDeleted = () => {
-  toast.success('User is successfully deleted', { position: toast.POSITION.BOTTOM_CENTER });
+  toast.success('User is successfully deleted', {
+    position: toast.POSITION.TOP_RIGHT,
+    autoClose: TIME_AUTO_CLOSE,
+  });
 };
 
 export const userLoggedOut = () => {

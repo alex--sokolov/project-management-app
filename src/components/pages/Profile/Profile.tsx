@@ -19,9 +19,6 @@ import {
   onlyWordsPattern,
 } from '@/services/validate';
 
-import { AuthUserToken } from '@/types';
-import jwt_decode from 'jwt-decode';
-
 import { LOGIN_MIN_LENGTH, NAME_MIN_LENGTH, PASSWORD_MIN_LENGTH } from '@/configs/forms';
 
 import IconButton from '@mui/material/IconButton';
@@ -29,7 +26,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Modal } from '@/services/modals';
 import { userDeleted } from '@/services/toasts/toasts';
 import Button from '@mui/material/Button';
-import { TIME_AUTO_CLOSE } from '@/configs/toasts';
+import { TIME_AUTO_CLOSE, TIME_LOGOUT_DELAY } from '@/configs/toasts';
 import { sleep } from '@/utils/sleep';
 
 export const Profile: FC = () => {
@@ -51,28 +48,28 @@ export const Profile: FC = () => {
     return userUpdate.mutateAsync(user);
   };
 
-  const deleteUser = async (/*id: string*/) => {
-    const token = LocalStorageService.getToken();
-    const user: AuthUserToken = jwt_decode(token as string);
+  const deleteUser = () => {
     open();
-    try {
-      await userDelete.mutateAsync(user.id);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      userDeleted();
-      LocalStorageService.logOutUser();
-      navigate('/');
-      // (async function () {
-      //   await userData.refetch();
-      // })();
+    userDelete.mutate(user._id);
+  };
+
+  const onUpdate: SubmitHandler<UserUpdate> = async (data) => {
+    data._id = user._id;
+    await editUser(data);
+    await sleep(TIME_AUTO_CLOSE);
+  };
+
+  const onDelete = (value: string) => {
+    if (value === 'yes') {
+      deleteUser();
     }
+    close();
+    return value;
   };
 
   const {
-    register,
     handleSubmit,
-    formState: { errors, isSubmitting, isDirty, isValid },
+    formState: { errors, isSubmitting, isValid },
     control,
   } = useForm<UserUpdate>({
     defaultValues: {
@@ -83,25 +80,11 @@ export const Profile: FC = () => {
     mode: 'onChange',
   });
 
-  const onSubmit: SubmitHandler<UserUpdate> = async (data) => {
-    data._id = user._id;
-    await editUser(data);
-    await sleep(TIME_AUTO_CLOSE);
-  };
-
-  const handleClick = (value: string) => {
-    if (value === 'yes') {
-      deleteUser();
-    }
-    close();
-    return value;
-  };
-
   return (
     <div className="profile">
       <h4 style={{ textAlign: 'center', color: 'dodgerblue' }}>You can change your info</h4>
       {user ? (
-        <form onSubmit={handleSubmit(onSubmit)} className="profile__form">
+        <form onSubmit={handleSubmit(onUpdate)} className="profile__form">
           <div className="profile__element">
             <label htmlFor="name">User name:</label>
             <Controller
@@ -192,7 +175,7 @@ export const Profile: FC = () => {
           <Modal
             isModalOpen={isModalOpen}
             text={modalType}
-            handleClick={(value) => handleClick(value)}
+            handleClick={(value) => onDelete(value)}
           />
         )}
       </div>

@@ -1,39 +1,38 @@
+import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Id, toast } from 'react-toastify';
 
 import { UsersService } from '@/services/api/UsersService';
-
-import { User } from '@/data/models';
+import { LocalStorageService } from '@/services/localStorage';
+import { TIME_AUTO_CLOSE } from '@/configs/toasts';
+import { sleep } from '@/utils/sleep';
 
 export const useUserDelete = () => {
+  const toastId = useRef<Id | undefined>(undefined);
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { isLoading, data, mutateAsync } = useMutation({
-    mutationFn: (userId: string) => UsersService.deleteUserById(userId),
-    onSuccess: (newUser) => {
-      // ✅ update the user
-      queryClient.setQueryData(['users', 'detail', newUser._id], null);
-
-      // ✅ update all the lists that contain this user
-      queryClient.setQueriesData(
-        ['users', 'list', { filters: 'all' }],
-        (previous: User[] | undefined) =>
-          !!previous ? previous.filter((user) => user._id !== newUser._id) : previous
-      );
-
-      // 🥳 invalidate all the lists, but don't refetch the active one
-      queryClient.invalidateQueries({
-        queryKey: ['users', 'list'],
-        refetchType: 'none',
-      });
+  const { data, mutate, mutateAsync } = useMutation({
+    mutationFn: (userId: string) => {
+      toastId.current = toast.loading('Deleting the user...');
+      return UsersService.deleteUserById(userId);
+    },
+    onSuccess: async () => {
+      console.log('successful deletion');
+      // ✅ remove user
+      LocalStorageService.logOutUser();
+      if (toastId.current) {
+        await toast.update(toastId.current, {
+          render: 'User deleted successfully',
+          autoClose: TIME_AUTO_CLOSE,
+          type: 'success',
+          isLoading: false,
+        });
+      }
+      await sleep(TIME_AUTO_CLOSE);
+      queryClient.setQueryData(['authUser'], null);
     },
     retry: 0,
   });
-  const now = new Date(Date.now()).toLocaleTimeString();
-  const user = data
-    ? {
-        ...data,
-        name: `${data.name} - deleted at ${now}`,
-      }
-    : null;
-
-  return { isLoading, user, mutateAsync };
+  return { data, mutate, mutateAsync };
 };
