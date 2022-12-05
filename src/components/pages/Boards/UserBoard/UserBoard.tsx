@@ -19,7 +19,7 @@ export const UserBoard: FC<{ boardData: Board; deleteBoard: (boardId: string) =>
     open();
   };
   const boardClickHandler = () => {
-    navigate(`boards/${boardData._id}`);
+    navigate(`/boards/${boardData._id}`);
   };
 
   const handleClick = (value: string) => {

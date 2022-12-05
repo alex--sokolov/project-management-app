@@ -35,8 +35,10 @@ export const taskNotCompleted = () => {
   });
 };
 
-export const boardError = (statusCode: number, message: string) => {
-  toast.error(`${message}(${statusCode})`, {
+export const boardError = (statusCode?: number, message?: string) => {
+  const messageStr =
+    statusCode && message ? `${message}(${statusCode})` : 'Board was not found (404)';
+  toast.error(messageStr, {
     position: toast.POSITION.TOP_RIGHT,
     autoClose: TIME_AUTO_CLOSE,
   });
