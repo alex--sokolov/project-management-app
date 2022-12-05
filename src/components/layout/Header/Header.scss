@@ -13,7 +13,8 @@
   }
 }
 
-.header__logo-link, .header__logo {
+.header__logo-link,
+.header__logo {
   color: $dark-font-color;
   text-decoration: none;
 }
@@ -49,4 +50,8 @@
 .header__link {
   text-decoration: none;
   color: $font-color;
+}
+.header__list-item_name {
+  @include flexRow(center, center);
+  margin-left: auto;
 }
