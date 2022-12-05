@@ -35,6 +35,13 @@ export const taskNotCompleted = () => {
   });
 };
 
+export const boardError = (statusCode: number, message: string) => {
+  toast.error(`${message}(${statusCode})`, {
+    position: toast.POSITION.TOP_RIGHT,
+    autoClose: TIME_AUTO_CLOSE,
+  });
+};
+
 export const dataFetching = () => {
   return toast.promise(sleep(TIME_DATA_FETCHING), {
     pending: 'Promise is pending',

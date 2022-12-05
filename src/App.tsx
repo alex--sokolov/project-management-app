@@ -7,7 +7,7 @@ import { Layout } from './components/layout';
 import { Home } from '@/components/pages/Home/Home';
 import { Profile } from '@/components/pages/Profile/Profile';
 import { Boards } from '@/components/pages/Boards/Boards';
-import { Board } from '@/components/pages/Board/Board';
+import { BoardComponent } from '@/components/pages/Board/Board';
 import { NotFound } from '@/components/pages/NotFound/NotFound';
 import { PrivateRoutes } from '@/components/shared/PrivateRoutes';
 import { Authorization } from './components/pages/Authorization/Authorization';
@@ -48,7 +48,10 @@ export const App: FC = () => {
             <Route element={<PrivateRoutes />}>
               <Route path="/profile" element={<Profile />} />
               <Route path="/boards" element={<Boards />} />
-              <Route path="/board" element={<Board />} />
+              <Route path="/">
+                <Route index element={<Boards />} />
+                <Route path="/boards/:id" element={<BoardComponent />} />
+              </Route>
             </Route>
             <Route path="auth/signin" element={<Authorization formType={Auth.Login} />} />
             <Route path="auth/signup" element={<Authorization formType={Auth.Register} />} />
