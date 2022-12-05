@@ -5,7 +5,6 @@ import { Header } from './Header/Header';
 
 export const Layout = () => {
   useAuthUser();
-
   return (
     <>
       <Header />

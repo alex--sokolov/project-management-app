@@ -24,7 +24,7 @@ export const useUserSignIn = (onErrorCallBack?: () => void) => {
     onSuccess: async (data) => {
       LocalStorageService.saveToken(data.token);
       await authUser.refetch();
-      navigate('/');
+      navigate('/boards');
     },
     onError: () => {
       if (onErrorCallBack) {

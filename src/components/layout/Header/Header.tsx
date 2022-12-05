@@ -19,7 +19,6 @@ const label = { inputProps: { 'aria-label': 'Switch demo' } };
 export function Header() {
   const queryClient = useQueryClient();
   const authUser: AuthUserToken | null | undefined = queryClient.getQueryData(['authUser']);
-
   const { scrollY } = useScroll();
   const scrollYOnDirectionChange = useRef(scrollY.get());
   const lastPixelsScrolled = useRef<number>(0);
