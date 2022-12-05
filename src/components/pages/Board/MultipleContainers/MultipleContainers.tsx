@@ -47,9 +47,14 @@ import { Container } from '../Components/Container';
 import type { ContainerProps } from '../Components/Container';
 
 import { createRange } from '@/utils/createRange';
+import { ColumnWithTasks } from '@/data/models';
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
+
+const getColumnTitle = (columns: ColumnWithTasks[], id: string | number) => {
+  return columns.find((column: ColumnWithTasks) => column._id === id)?.title || '';
+};
 
 function DroppableContainer({
   children,
@@ -127,6 +132,8 @@ interface Props {
   columns?: number;
   containerStyle?: React.CSSProperties;
   coordinateGetter?: KeyboardCoordinateGetter;
+  myColumns: ColumnWithTasks[];
+
   getItemStyles?(args: {
     value: UniqueIdentifier;
     index: number;
@@ -136,7 +143,9 @@ interface Props {
     isSorting: boolean;
     isDragOverlay: boolean;
   }): React.CSSProperties;
+
   wrapperStyle?(args: { index: number }): React.CSSProperties;
+
   itemCount?: number;
   items?: Items;
   handle?: boolean;
@@ -202,9 +211,13 @@ interface SortableItemProps {
   index: number;
   handle: boolean;
   disabled?: boolean;
+
   style(args: unknown): React.CSSProperties;
+
   getIndex(id: UniqueIdentifier): number;
+
   renderItem(): React.ReactElement;
+
   wrapperStyle({ index }: { index: number }): React.CSSProperties;
 }
 
@@ -232,6 +245,7 @@ function SortableItem({
   } = useSortable({
     id,
   });
+
   function useMountStatus() {
     const [isMounted, setIsMounted] = useState(false);
 
@@ -277,10 +291,11 @@ function SortableItem({
 
 export const MultipleContainers = ({
   adjustScale = false,
-  itemCount = 3,
+  itemCount = 2,
   cancelDrop,
   columns,
   handle = false,
+  myColumns = [],
   items: initialItems,
   containerStyle,
   coordinateGetter = multipleContainersCoordinateGetter,
@@ -294,16 +309,40 @@ export const MultipleContainers = ({
   vertical = false,
   scrollable,
 }: Props) => {
+  // const myColumnsTitles = myColumns.map((column) => {
+  //   // console.log('Object.keys(column.title)', Object.keys(column.title));
+  //   return column.title;
+  // });
+
+  const myInitialItems = myColumns.reduce(
+    (a, v) => ({ ...a, [v._id]: v.tasks.map((task) => task._id) }),
+    {}
+  );
+
+  console.log('myInitialItems', myInitialItems);
+
+  // const myInitialItems = ;
+
   const [items, setItems] = useState<Items>(
     () =>
-      initialItems ?? {
+      myInitialItems ?? {
         A: createRange(itemCount, (index) => `A${index + 1}`),
         B: createRange(itemCount, (index) => `B${index + 1}`),
         C: createRange(itemCount, (index) => `C${index + 1}`),
         D: createRange(itemCount, (index) => `D${index + 1}`),
       }
   );
+
+  // const [items, setItems] = useState<Items>(() => initialItems ?? {});
+
+  // const [items, setItems] = useState<Items>({});
+
+  console.log('items', items, typeof items);
+
   const [containers, setContainers] = useState(Object.keys(items) as UniqueIdentifier[]);
+
+  console.log('containers', containers);
+
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
@@ -448,9 +487,10 @@ export const MultipleContainers = ({
   }
 
   function renderContainerDragOverlay(containerId: UniqueIdentifier) {
+    const containerTitle = getColumnTitle(myColumns, containerId);
     return (
       <Container
-        label={`Column ${containerId}`}
+        label={`Column: ${containerTitle}`}
         columns={columns}
         style={{
           height: '100%',
@@ -493,8 +533,9 @@ export const MultipleContainers = ({
   }
 
   function handleAddColumn() {
+    console.log('503');
     const newContainerId = getNextContainerId();
-
+    console.log('newContainerId', newContainerId);
     unstable_batchedUpdates(() => {
       setContainers((containers) => [...containers, newContainerId]);
       setItems((items) => ({
@@ -647,38 +688,41 @@ export const MultipleContainers = ({
           items={[...containers, PLACEHOLDER_ID]}
           strategy={vertical ? verticalListSortingStrategy : horizontalListSortingStrategy}
         >
-          {containers.map((containerId) => (
-            <DroppableContainer
-              key={containerId}
-              id={containerId}
-              label={minimal ? undefined : `Column ${containerId}`}
-              columns={columns}
-              items={items[containerId]}
-              scrollable={scrollable}
-              style={containerStyle}
-              unstyled={minimal}
-              onRemove={() => handleRemove(containerId)}
-            >
-              <SortableContext items={items[containerId]} strategy={strategy}>
-                {items[containerId].map((value, index) => {
-                  return (
-                    <SortableItem
-                      disabled={isSortingContainer}
-                      key={value}
-                      id={value}
-                      index={index}
-                      handle={handle}
-                      style={getItemStyles}
-                      wrapperStyle={wrapperStyle}
-                      renderItem={renderItem as unknown as () => React.ReactElement}
-                      containerId={containerId}
-                      getIndex={getIndex}
-                    />
-                  );
-                })}
-              </SortableContext>
-            </DroppableContainer>
-          ))}
+          {containers.map((containerId) => {
+            const containerTitle = getColumnTitle(myColumns, containerId);
+            return (
+              <DroppableContainer
+                key={containerId}
+                id={containerId}
+                label={minimal ? undefined : `Column: ${containerTitle}`}
+                columns={columns}
+                items={items[containerId]}
+                scrollable={scrollable}
+                style={containerStyle}
+                unstyled={minimal}
+                onRemove={() => handleRemove(containerId)}
+              >
+                <SortableContext items={items[containerId]} strategy={strategy}>
+                  {items[containerId].map((value, index) => {
+                    return (
+                      <SortableItem
+                        disabled={isSortingContainer}
+                        key={value}
+                        id={value}
+                        index={index}
+                        handle={handle}
+                        style={getItemStyles}
+                        wrapperStyle={wrapperStyle}
+                        renderItem={renderItem as unknown as () => React.ReactElement}
+                        containerId={containerId}
+                        getIndex={getIndex}
+                      />
+                    );
+                  })}
+                </SortableContext>
+              </DroppableContainer>
+            );
+          })}
           {minimal ? undefined : (
             <DroppableContainer
               id={PLACEHOLDER_ID}
