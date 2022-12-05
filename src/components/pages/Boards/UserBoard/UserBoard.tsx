@@ -4,29 +4,31 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { FC } from 'react';
 import './UserBoard.scss';
 import { useNavigate } from 'react-router-dom';
-// import { useModal } from '@/hooks';
-// import { Modal } from '@/services/modals';
+import { useModal } from '@/hooks';
+import { Modal } from '@/services/modals';
 
 export const UserBoard: FC<{ boardData: Board; deleteBoard: (boardId: string) => void }> = ({
   boardData,
   deleteBoard,
 }) => {
-  // const { isModalOpen, close, open } = useModal();
+  const { isModalOpen, close, open } = useModal();
   const navigate = useNavigate();
-  // const modalType = 'Are you sure?';
+  const modalType = 'Are you sure?';
 
   const deleteClickHandler = () => {
-    // open();
-    deleteBoard(boardData._id);
+    open();
   };
   const boardClickHandler = () => {
     navigate(`boards/${boardData._id}`);
   };
 
-  // const handleClick = (value: string) => {
-  //   close();
-  //   return value;
-  // };
+  const handleClick = (value: string) => {
+    if (value === 'yes') {
+      deleteBoard(boardData._id);
+    }
+    close();
+    return value;
+  };
   return (
     <>
       <div className="user-board-wrapper">
@@ -42,14 +44,14 @@ export const UserBoard: FC<{ boardData: Board; deleteBoard: (boardId: string) =>
           </Fab>
         </div>
       </div>
-      {/*
+
       {isModalOpen && (
         <Modal
           isModalOpen={isModalOpen}
           text={modalType}
           handleClick={(modalType) => handleClick(modalType)}
         />
-      )} */}
+      )}
     </>
   );
 };
