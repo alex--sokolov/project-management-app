@@ -7,12 +7,12 @@ export const AuthorizedMenu = (props: PropsType) => {
       <ul className={props.direction}>
         <li className="header__list-item">
           <Link to="/" className="header__link">
-            <button className="button">main page</button>
+            <button className="button">Welcome</button>
           </Link>
         </li>
         <li className="header__list-item">
           <Link to="/boards" className="header__link">
-            <button className="button">boards</button>
+            <button className="button">main page</button>
           </Link>
         </li>
         <li className="header__list-item">

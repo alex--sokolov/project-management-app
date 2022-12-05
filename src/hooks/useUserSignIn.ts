@@ -29,7 +29,7 @@ export const useUserSignIn = (onErrorCallBack?: () => void) => {
         });
       }
       setTimeout(() => {
-        navigate('/');
+        navigate('/boards');
       }, TIME_AUTO_CLOSE);
     },
     onError: () => {
