@@ -1,7 +1,7 @@
 import './Profile.scss';
 
 import { FC, useRef, useState } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 
 import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { ToastContainer } from 'react-toastify';
@@ -9,7 +9,6 @@ import { ToastContainer } from 'react-toastify';
 import { useModal, useUserDelete, useUserUpdate } from '@/hooks';
 
 import { User, UserUpdate } from '@/data/models';
-import { LocalStorageService } from '@/services/localStorage';
 
 import {
   makeValidationObj,
@@ -24,13 +23,11 @@ import { LOGIN_MIN_LENGTH, NAME_MIN_LENGTH, PASSWORD_MIN_LENGTH } from '@/config
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Modal } from '@/services/modals';
-import { userDeleted } from '@/services/toasts/toasts';
 import Button from '@mui/material/Button';
-import { TIME_AUTO_CLOSE, TIME_LOGOUT_DELAY } from '@/configs/toasts';
+import { TIME_AUTO_CLOSE } from '@/configs/toasts';
 import { sleep } from '@/utils/sleep';
 
 export const Profile: FC = () => {
-  const navigate = useNavigate();
   const user = useOutletContext<User>();
   const [userName, setUserName] = useState(user.name);
   const [userLogin, setUserLogin] = useState(user.login);

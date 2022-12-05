@@ -1,5 +1,4 @@
 import { useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Id, toast } from 'react-toastify';
 
@@ -10,7 +9,6 @@ import { sleep } from '@/utils/sleep';
 
 export const useUserDelete = () => {
   const toastId = useRef<Id | undefined>(undefined);
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data, mutate, mutateAsync } = useMutation({
     mutationFn: (userId: string) => {
