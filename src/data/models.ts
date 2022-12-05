@@ -28,6 +28,10 @@ export interface Column {
   order: number;
 }
 
+export interface ColumnWithTasks extends Column {
+  tasks: Task[];
+}
+
 export interface Task {
   _id: string;
   title: string;

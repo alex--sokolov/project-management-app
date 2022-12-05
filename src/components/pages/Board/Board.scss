@@ -1,0 +1,29 @@
+.board {
+  .board-header {
+    background-color: #222;
+    padding: 10px 15px;
+    margin: 10px auto;
+    box-shadow: 0 0 8px 2px #444;
+    color: #f5f5f5;
+
+    .board-header__title {
+      margin: 0;
+      color: #faf;
+      font-size: 2rem;
+      text-transform: capitalize;
+
+      .board-header__owner {
+        align-items: center;
+        color: #aaa;
+        margin-left: 15px;
+        font-size: 1rem;
+        font-style: italic;
+      }
+    }
+
+    .board-header__description {
+      margin: 5px auto;
+      color: #8a8;
+    }
+  }
+}

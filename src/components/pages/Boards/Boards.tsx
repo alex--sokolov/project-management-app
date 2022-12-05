@@ -29,7 +29,7 @@ export const Boards = () => {
   return (
     <>
       <div className="boards">
-        {boards.data?.map((board) => (
+        {boards.data?.map((board: Board) => (
           <UserBoard key={board._id} boardData={board} deleteBoard={deleteBoard} />
         ))}
         <BoardForm createBoard={createBoard} userId={user._id} />

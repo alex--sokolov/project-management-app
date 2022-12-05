@@ -35,6 +35,15 @@ export const taskNotCompleted = () => {
   });
 };
 
+export const boardError = (statusCode?: number, message?: string) => {
+  const messageStr =
+    statusCode && message ? `${message}(${statusCode})` : 'Board was not found (404)';
+  toast.error(messageStr, {
+    position: toast.POSITION.TOP_RIGHT,
+    autoClose: TIME_AUTO_CLOSE,
+  });
+};
+
 export const dataFetching = () => {
   return toast.promise(sleep(TIME_DATA_FETCHING), {
     pending: 'Promise is pending',
