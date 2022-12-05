@@ -25,7 +25,7 @@ const dropIn = {
 };
 
 type Props = {
-  handleClick: (value: string) => string;
+  handleClick: (value: string) => string | void;
   isModalOpen: boolean;
   text: string;
 };

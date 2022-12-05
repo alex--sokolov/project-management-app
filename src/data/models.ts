@@ -32,6 +32,11 @@ export interface ColumnWithTasks extends Column {
   tasks: Task[];
 }
 
+export interface MultipleProps {
+  boardData: Board;
+  columnsData: ColumnWithTasks[];
+}
+
 export interface Task {
   _id: string;
   title: string;

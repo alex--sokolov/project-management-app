@@ -47,7 +47,11 @@ import { Container } from '../Components/Container';
 import type { ContainerProps } from '../Components/Container';
 
 import { createRange } from '@/utils/createRange';
-import { ColumnWithTasks } from '@/data/models';
+import { ColumnWithTasks, MultipleProps } from '@/data/models';
+import { useUserDelete } from '@/hooks/board/useRemoveColumnById';
+import { useQueryClient } from '@tanstack/react-query';
+import { useModal } from '@/hooks';
+import { Modal } from '@/services/modals';
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -132,7 +136,7 @@ interface Props {
   columns?: number;
   containerStyle?: React.CSSProperties;
   coordinateGetter?: KeyboardCoordinateGetter;
-  myColumns: ColumnWithTasks[];
+  data: MultipleProps;
 
   getItemStyles?(args: {
     value: UniqueIdentifier;
@@ -163,14 +167,26 @@ const PLACEHOLDER_ID = 'placeholder';
 const empty: UniqueIdentifier[] = [];
 
 function getColor(id: UniqueIdentifier) {
-  switch (String(id)[0]) {
-    case 'A':
+  switch (String(id)[String(id).length - 1]) {
+    case '1':
+    case '5':
+    case '9':
+    case 'd':
       return '#7193f1';
-    case 'B':
+    case '2':
+    case '6':
+    case 'a':
+    case 'e':
       return '#ffda6c';
-    case 'C':
+    case '3':
+    case '7':
+    case 'b':
+    case 'f':
       return '#00bcd4';
-    case 'D':
+    case '4':
+    case '8':
+    case 'c':
+    case 'h':
       return '#ef769f';
   }
 
@@ -295,7 +311,7 @@ export const MultipleContainers = ({
   cancelDrop,
   columns,
   handle = false,
-  myColumns = [],
+  data,
   items: initialItems,
   containerStyle,
   coordinateGetter = multipleContainersCoordinateGetter,
@@ -309,19 +325,15 @@ export const MultipleContainers = ({
   vertical = false,
   scrollable,
 }: Props) => {
-  // const myColumnsTitles = myColumns.map((column) => {
-  //   // console.log('Object.keys(column.title)', Object.keys(column.title));
-  //   return column.title;
-  // });
-
-  const myInitialItems = myColumns.reduce(
+  // const queryClient = useQueryClient();
+  const userDeleteInfo = useUserDelete();
+  const columnsData = data.columnsData;
+  const myInitialItems = columnsData.reduce(
     (a, v) => ({ ...a, [v._id]: v.tasks.map((task) => task._id) }),
     {}
   );
 
   console.log('myInitialItems', myInitialItems);
-
-  // const myInitialItems = ;
 
   const [items, setItems] = useState<Items>(
     () =>
@@ -332,10 +344,6 @@ export const MultipleContainers = ({
         D: createRange(itemCount, (index) => `D${index + 1}`),
       }
   );
-
-  // const [items, setItems] = useState<Items>(() => initialItems ?? {});
-
-  // const [items, setItems] = useState<Items>({});
 
   console.log('items', items, typeof items);
 
@@ -487,7 +495,7 @@ export const MultipleContainers = ({
   }
 
   function renderContainerDragOverlay(containerId: UniqueIdentifier) {
-    const containerTitle = getColumnTitle(myColumns, containerId);
+    const containerTitle = getColumnTitle(columnsData, containerId);
     return (
       <Container
         label={`Column: ${containerTitle}`}
@@ -521,8 +529,15 @@ export const MultipleContainers = ({
     );
   }
 
-  function handleRemove(containerID: UniqueIdentifier) {
-    setContainers((containers) => containers.filter((id) => id !== containerID));
+  async function handleRemove(value: string, containerID: UniqueIdentifier): Promise<void> {
+    // close();
+    if (value === 'yes') {
+      await userDeleteInfo.mutateAsync({
+        boardId: data.boardData._id,
+        columnId: containerID.toString(),
+      });
+      setContainers((containers) => containers.filter((id) => id !== containerID));
+    }
   }
 
   function getNextContainerId() {
@@ -689,7 +704,7 @@ export const MultipleContainers = ({
           strategy={vertical ? verticalListSortingStrategy : horizontalListSortingStrategy}
         >
           {containers.map((containerId) => {
-            const containerTitle = getColumnTitle(myColumns, containerId);
+            const containerTitle = getColumnTitle(columnsData, containerId);
             return (
               <DroppableContainer
                 key={containerId}
@@ -700,7 +715,7 @@ export const MultipleContainers = ({
                 scrollable={scrollable}
                 style={containerStyle}
                 unstyled={minimal}
-                onRemove={() => handleRemove(containerId)}
+                onRemove={(value: string) => handleRemove(value, containerId)}
               >
                 <SortableContext items={items[containerId]} strategy={strategy}>
                   {items[containerId].map((value, index) => {
