@@ -9,7 +9,7 @@ import { sleep } from '@/utils/sleep';
 export const useBoardById = (id: string | undefined) => {
   const navigate = useNavigate();
   const { data } = useQuery({
-    queryKey: ['boards', 'detail', id],
+    queryKey: ['boards', id],
     queryFn: () => BoardsService.getBoardById(id as string),
     onError: async ({ statusCode, message }: { statusCode: number; message: string }) => {
       boardError(statusCode, message);
