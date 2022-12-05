@@ -142,15 +142,15 @@ export const TestAuthProfile = () => {
       <div>
         <b>Update user:</b>
       </div>
-      {userUpdate.user ? userUpdate.user.name : 'nothing'}
+      {userUpdate.data ? userUpdate.data.name : 'nothing'}
       <div>
         <b>Delete user:</b>
       </div>
-      {userDelete.user ? userDelete.user.name : 'nothing'}
+      {userDelete.data ? userDelete.data.name : 'nothing'}
       <div>
         <b>Registration:</b>
       </div>
-      {userRegister.user ? userRegister.user.name : 'nothing'}
+      {userRegister.data ? userRegister.data.name : 'nothing'}
       <div>
         <b>Login:</b>
       </div>

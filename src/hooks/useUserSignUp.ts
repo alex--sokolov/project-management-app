@@ -1,36 +1,24 @@
 import { useRef } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Id, toast } from 'react-toastify';
 
 import { AuthService } from '@/services/api/AuthService';
 
-import { User, UserUpdate } from '@/data/models';
+import { UserUpdate } from '@/data/models';
 import { ResponseError } from '@/types';
 import { TIME_AUTO_CLOSE } from '@/configs/toasts';
+import { useNavigate } from 'react-router-dom';
+import { sleep } from '@/utils/sleep';
 
 export const useUserSignUp = () => {
   const toastId = useRef<Id | undefined>(undefined);
-
-  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const { data, mutateAsync } = useMutation({
     mutationFn: (user: Omit<UserUpdate, '_id'>) => {
       toastId.current = toast.loading('Trying to register...');
       return AuthService.registerUser(user);
     },
-    onSuccess: (newUser: User) => {
-      // ✅ update all the lists that contain this user
-      queryClient.setQueriesData(
-        ['users', 'list', { filters: 'all' }],
-        (previous: User[] | undefined) =>
-          !!previous
-            ? previous.map((user) => (user._id === newUser._id ? newUser : user))
-            : previous
-      );
-
-      // 🥳 invalidate all the lists, but don't refetch the active one
-      queryClient.invalidateQueries({
-        queryKey: ['users', 'list'],
-      });
+    onSuccess: async () => {
       if (toastId.current) {
         toast.update(toastId.current, {
           render: 'Registration success!',
@@ -39,6 +27,8 @@ export const useUserSignUp = () => {
           isLoading: false,
         });
       }
+      await sleep(TIME_AUTO_CLOSE);
+      navigate('/');
     },
     onError: (error: ResponseError) => {
       if (toastId.current) {
@@ -53,13 +43,5 @@ export const useUserSignUp = () => {
     retry: 0,
   });
 
-  const now = new Date(Date.now()).toLocaleTimeString();
-  const user = data
-    ? {
-        ...data,
-        name: `${data.name} - created at ${now}`,
-      }
-    : null;
-
-  return { user, mutateAsync };
+  return { data, mutateAsync };
 };

@@ -1,14 +1,13 @@
 import './Header.scss';
 
 import { useEffect, useRef } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { motion, useMotionTemplate, useMotionValue, useTransform, useScroll } from 'framer-motion';
 import FormGroup from '@mui/material/FormGroup';
 import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
 
 import Typography from '@mui/material/Typography';
-import { AuthUserToken } from '@/types';
+import { AuthUserState } from '@/types';
 import { HeaderMenu, HeaderBurger } from '@/components/layout/Header';
 import { Link } from 'react-router-dom';
 
@@ -16,10 +15,8 @@ const scrollThreshold = [0, 50];
 
 const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
-export function Header() {
-  const queryClient = useQueryClient();
-  const authUser: AuthUserToken | null | undefined = queryClient.getQueryData(['authUser']);
-
+export function Header(props: { userInfo: AuthUserState }) {
+  const { authUser, isLoading } = props.userInfo;
   const { scrollY } = useScroll();
   const scrollYOnDirectionChange = useRef(scrollY.get());
   const lastPixelsScrolled = useRef<number>(0);
@@ -80,8 +77,8 @@ export function Header() {
               <Typography>EN</Typography>
             </Stack>
           </FormGroup>
-          <HeaderMenu authUser={authUser} />
-          <HeaderBurger authUser={authUser} />
+          <HeaderMenu authUser={authUser} isLoading={isLoading} />
+          <HeaderBurger authUser={authUser} isLoading={isLoading} />
         </div>
       </motion.header>
     </>

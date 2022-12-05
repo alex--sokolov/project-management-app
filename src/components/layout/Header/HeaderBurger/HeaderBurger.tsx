@@ -6,8 +6,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { AuthorizedMenu, UnAuthorizedMenu } from '@/components/layout/Header';
+import { Spinner } from '@/components/shared/Spinner';
 
-import { AuthUserToken, EMenu } from '@/types';
+import { EMenu } from '@/types';
+import { User } from '@/data/models';
 
 const theme = createTheme({
   palette: {
@@ -17,7 +19,13 @@ const theme = createTheme({
   },
 });
 
-export function HeaderBurger({ authUser }: { authUser: AuthUserToken | null | undefined }) {
+export function HeaderBurger({
+  authUser,
+  isLoading,
+}: {
+  authUser: User | null | undefined;
+  isLoading: boolean;
+}) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openIt = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -55,8 +63,12 @@ export function HeaderBurger({ authUser }: { authUser: AuthUserToken | null | un
         onClose={handleClose}
         TransitionComponent={Fade}
       >
-        {!!authUser ? (
-          <AuthorizedMenu direction={EMenu.column} name={authUser?.name} />
+        {isLoading ? (
+          <div style={{ minHeight: '160px', minWidth: '160px' }}>
+            <Spinner isLoading={true} />
+          </div>
+        ) : !!authUser ? (
+          <AuthorizedMenu direction={EMenu.row} name={authUser?.name} />
         ) : (
           <UnAuthorizedMenu />
         )}

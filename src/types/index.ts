@@ -1,4 +1,5 @@
 import { TFunction } from 'i18next';
+import { User } from '@/data/models';
 
 export enum Auth {
   Login,
@@ -16,6 +17,11 @@ export interface AuthUserToken {
   id: string;
   login: string;
   name: string;
+}
+
+export interface AuthUserState {
+  authUser: User | null;
+  isLoading: boolean;
 }
 
 export type PropsType = {
