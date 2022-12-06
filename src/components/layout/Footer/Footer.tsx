@@ -7,19 +7,32 @@ export default function Footer() {
         <ul className="footer__authors">
           <li>
             <a className="footer__link" href="https://github.com/alex--sokolov">
-              <img className="footer__link-img" src="github.svg" alt="github" />
+              <img
+                className="footer__link-img alex"
+                src="../../../assets/images/github.svg"
+                alt="github"
+              />
               <p>Alexander</p>
             </a>
           </li>
           <li>
             <a className="footer__link" href="https://github.com/AlionaMu">
-              <img className="footer__link-img" src="github.svg" alt="github" />
+              <img
+                className="footer__link-img andrei"
+                src="../../../assets/images/github.svg"
+                alt="github"
+              />
+
               <p>Aliona</p>
             </a>
           </li>
           <li>
             <a className="footer__link" href="https://github.com/atmoranso">
-              <img className="footer__link-img" src="github.svg" alt="github" />
+              <img
+                className="footer__link-img andrei"
+                src="../../../assets/images/github.svg"
+                alt="github"
+              />
               <p>Andrei</p>
             </a>
           </li>
@@ -27,7 +40,11 @@ export default function Footer() {
         <p className="footer__year">2022</p>
         <div className="footer__rs">
           <a href="https://rs.school/react/">
-            <img className="footer__link-img" src="rs-school-js.svg" alt="RSSchool" />
+            <img
+              className="footer__link-img"
+              src="../../../assets/images/rs-school-js.svg"
+              alt="RSSchool"
+            />
           </a>
         </div>
       </div>

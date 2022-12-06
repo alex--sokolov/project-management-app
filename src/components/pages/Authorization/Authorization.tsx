@@ -29,7 +29,6 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
 
   useEffect(() => {
     if (formType === Auth.Logout) {
-      console.log('toast fired');
       userLoggedOut();
       LocalStorageService.logOutUser();
       setTimeout(() => {

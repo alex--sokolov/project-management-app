@@ -1,33 +1,33 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
 import {
   CancelDrop,
-  closestCenter,
-  pointerWithin,
-  rectIntersection,
-  CollisionDetection,
+  // closestCenter,
+  // pointerWithin,
+  // rectIntersection,
+  // CollisionDetection,
   DndContext,
   DragOverlay,
-  DropAnimation,
-  getFirstCollision,
+  // DropAnimation,
+  // getFirstCollision,
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
   Modifiers,
-  useDroppable,
+  // useDroppable,
   UniqueIdentifier,
   useSensors,
   useSensor,
   MeasuringStrategy,
   KeyboardCoordinateGetter,
-  defaultDropAnimationSideEffects,
+  // defaultDropAnimationSideEffects,
 } from '@dnd-kit/core';
 import {
-  AnimateLayoutChanges,
+  // AnimateLayoutChanges,
   SortableContext,
   useSortable,
   arrayMove,
-  defaultAnimateLayoutChanges,
+  // defaultAnimateLayoutChanges,
   verticalListSortingStrategy,
   SortingStrategy,
   horizontalListSortingStrategy,
@@ -41,13 +41,14 @@ import type { ContainerProps } from '../Components/Container';
 
 import { ColumnWithTasks, MultipleProps } from '@/data/models';
 import { useRemoveColumnById } from '@/hooks/board/useRemoveColumnById';
-import { useQueryClient } from '@tanstack/react-query';
 import { useChangeColumnsOrder } from '@/hooks/board/useChangeOrdersInColumns';
 import { ColumnForm } from '@/components/pages/Board/Components/Forms';
 import { useCreateColumn } from '@/hooks/board/useCreateColumn';
+import { TaskForm } from '../Components/Forms/TaskForm';
+import { useCreateTask } from '@/hooks/board/useCreateTask';
 
-const animateLayoutChanges: AnimateLayoutChanges = (args) =>
-  defaultAnimateLayoutChanges({ ...args, wasDragging: true });
+// const animateLayoutChanges: AnimateLayoutChanges = (args) =>
+//   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
 const getColumnTitle = (columns: ColumnWithTasks[], id: string | number) => {
   return columns.find((column: ColumnWithTasks) => column._id === id)?.title || '';
@@ -72,7 +73,7 @@ function DroppableContainer({
     attributes,
     isDragging,
     listeners,
-    over,
+    // over,
     setNodeRef,
     transition,
     transform,
@@ -111,15 +112,15 @@ function DroppableContainer({
   );
 }
 
-const dropAnimation: DropAnimation = {
-  sideEffects: defaultDropAnimationSideEffects({
-    styles: {
-      active: {
-        opacity: '0.5',
-      },
-    },
-  }),
-};
+// const dropAnimation: DropAnimation = {
+//   sideEffects: defaultDropAnimationSideEffects({
+//     styles: {
+//       active: {
+//         opacity: '0.5',
+//       },
+//     },
+//   }),
+// };
 
 type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
 
@@ -186,33 +187,33 @@ function getColor(id: UniqueIdentifier) {
   return undefined;
 }
 
-function Trash({ id }: { id: UniqueIdentifier }) {
-  const { setNodeRef, isOver } = useDroppable({
-    id,
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'fixed',
-        left: '50%',
-        marginLeft: -150,
-        bottom: 20,
-        width: 300,
-        height: 60,
-        borderRadius: 5,
-        border: '1px solid',
-        borderColor: isOver ? 'red' : '#DDD',
-      }}
-    >
-      Drop here to delete
-    </div>
-  );
-}
+// function Trash({ id }: { id: UniqueIdentifier }) {
+//   const { setNodeRef, isOver } = useDroppable({
+//     id,
+//   });
+//
+//   return (
+//     <div
+//       ref={setNodeRef}
+//       style={{
+//         display: 'flex',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         position: 'fixed',
+//         left: '50%',
+//         marginLeft: -150,
+//         bottom: 20,
+//         width: 300,
+//         height: 60,
+//         borderRadius: 5,
+//         border: '1px solid',
+//         borderColor: isOver ? 'red' : '#DDD',
+//       }}
+//     >
+//       Drop here to delete
+//     </div>
+//   );
+// }
 
 interface SortableItemProps {
   containerId: UniqueIdentifier;
@@ -243,7 +244,7 @@ function SortableItem({
 }: SortableItemProps) {
   const {
     setNodeRef,
-    setActivatorNodeRef,
+    // setActivatorNodeRef,
     listeners,
     isDragging,
     isSorting,
@@ -299,30 +300,30 @@ function SortableItem({
 }
 
 export const MultipleContainers = ({
-  adjustScale = false,
-  itemCount = 2,
-  cancelDrop,
+  // adjustScale = false,
+  // itemCount = 2,
+  // cancelDrop,
   columns,
   handle = false,
   data,
-  items: initialItems,
+  // items: initialItems,
   containerStyle,
   coordinateGetter = multipleContainersCoordinateGetter,
   getItemStyles = () => ({}),
   wrapperStyle = () => ({}),
   minimal = false,
-  modifiers,
+  // modifiers,
   renderItem,
   strategy = verticalListSortingStrategy,
-  trashable = false,
+  // trashable = false,
   vertical = false,
   scrollable,
 }: Props) => {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   const columnDelete = useRemoveColumnById();
   const columnCreate = useCreateColumn();
+  const taskCreate = useCreateTask();
   const columnsData = data.columnsData;
-  const columnsRefetch = columnsData.refetch;
   const columnsArr = columnsData.columns;
 
   const myItems = useMemo(
@@ -330,14 +331,9 @@ export const MultipleContainers = ({
     [columnsArr]
   );
 
-  console.log('columnsArr: ', columnsArr);
-  console.log('myItems: ', myItems);
-
   const [items, setItems] = useState<Items>(myItems);
 
   const columnsOrder = useChangeColumnsOrder();
-
-  console.log('items', items, typeof items);
 
   const [containers, setContainers] = useState(Object.keys(items) as UniqueIdentifier[]);
 
@@ -352,84 +348,71 @@ export const MultipleContainers = ({
     setContainers(Object.keys(myItems) as UniqueIdentifier[]);
   }, [myItems]);
 
-  console.log('containers', containers);
-
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-  const lastOverId = useRef<UniqueIdentifier | null>(null);
+  // const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
   const isSortingContainer = activeId ? containers.includes(activeId) : false;
 
-  /**
-   * Custom collision detection strategy optimized for multiple containers
-   *
-   * - First, find any droppable containers intersecting with the pointer.
-   * - If there are none, find intersecting containers with the active draggable.
-   * - If there are no intersecting containers, return the last matched intersection
-   *
-   */
-  useEffect(() => {
-    console.log('called', items);
-  }, [items]);
-  const collisionDetectionStrategy: CollisionDetection = useCallback(
-    (args) => {
-      if (activeId && activeId in items) {
-        return closestCenter({
-          ...args,
-          droppableContainers: args.droppableContainers.filter(
-            (container) => container.id in items
-          ),
-        });
-      }
-
-      // Start by finding any intersecting droppable
-      const pointerIntersections = pointerWithin(args);
-      const intersections =
-        pointerIntersections.length > 0
-          ? // If there are droppables intersecting with the pointer, return those
-            pointerIntersections
-          : rectIntersection(args);
-      let overId = getFirstCollision(intersections, 'id');
-
-      if (overId != null) {
-        if (overId === TRASH_ID) {
-          // If the intersecting droppable is the trash, return early
-          // Remove this if you're not using trashable functionality in your app
-          return intersections;
-        }
-
-        if (overId in items) {
-          const containerItems = items[overId];
-
-          // If a container is matched and it contains items (columns 'A', 'B', 'C')
-          if (containerItems.length > 0) {
-            // Return the closest droppable within that container
-            overId = closestCenter({
-              ...args,
-              droppableContainers: args.droppableContainers.filter(
-                (container) => container.id !== overId && containerItems.includes(container.id)
-              ),
-            })[0]?.id;
-          }
-        }
-
-        lastOverId.current = overId;
-
-        return [{ id: overId }];
-      }
-
-      // When a draggable item moves to a new container, the layout may shift
-      // and the `overId` may become `null`. We manually set the cached `lastOverId`
-      // to the id of the draggable item that was moved to the new container, otherwise
-      // the previous `overId` will be returned which can cause items to incorrectly shift positions
-      if (recentlyMovedToNewContainer.current) {
-        lastOverId.current = activeId;
-      }
-
-      // If no droppable is matched, return the last match
-      return lastOverId.current ? [{ id: lastOverId.current }] : [];
-    },
-    [activeId, items]
-  );
+  // const collisionDetectionStrategy: CollisionDetection = useCallback(
+  //   (args) => {
+  //     if (activeId && activeId in items) {
+  //       return closestCenter({
+  //         ...args,
+  //         droppableContainers: args.droppableContainers.filter(
+  //           (container) => container.id in items
+  //         ),
+  //       });
+  //     }
+  //
+  //     // Start by finding any intersecting droppable
+  //     const pointerIntersections = pointerWithin(args);
+  //     const intersections =
+  //       pointerIntersections.length > 0
+  //         ? // If there are droppables intersecting with the pointer, return those
+  //           pointerIntersections
+  //         : rectIntersection(args);
+  //     let overId = getFirstCollision(intersections, 'id');
+  //
+  //     if (overId != null) {
+  //       if (overId === TRASH_ID) {
+  //         // If the intersecting droppable is the trash, return early
+  //         // Remove this if you're not using trashable functionality in your app
+  //         return intersections;
+  //       }
+  //
+  //       if (overId in items) {
+  //         const containerItems = items[overId];
+  //
+  //         // If a container is matched and it contains items (columns 'A', 'B', 'C')
+  //         if (containerItems.length > 0) {
+  //           // Return the closest droppable within that container
+  //           overId = closestCenter({
+  //             ...args,
+  //             droppableContainers: args.droppableContainers.filter(
+  //               (container) => container.id !== overId && containerItems.includes(container.id)
+  //             ),
+  //           })[0]?.id;
+  //         }
+  //       }
+  //
+  //       lastOverId.current = overId;
+  //
+  //       return [{ id: overId }];
+  //     }
+  //
+  //     // When a draggable item moves to a new container, the layout may shift
+  //     // and the `overId` may become `null`. We manually set the cached `lastOverId`
+  //     // to the id of the draggable item that was moved to the new container, otherwise
+  //     // the previous `overId` will be returned which can cause items to incorrectly shift positions
+  //     if (recentlyMovedToNewContainer.current) {
+  //       lastOverId.current = activeId;
+  //     }
+  //
+  //     // If no droppable is matched, return the last match
+  //     return lastOverId.current ? [{ id: lastOverId.current }] : [];
+  //   },
+  //   [activeId, items]
+  // );
   const [clonedItems, setClonedItems] = useState<Items | null>(null);
   const sensors = useSensors(
     useSensor(MouseSensor),
@@ -557,10 +540,6 @@ export const MultipleContainers = ({
     order: number;
     boardId: string;
   }): Promise<void> => {
-    console.log('572');
-    console.log('title', title);
-    console.log('order', order);
-
     await columnCreate.mutateAsync({
       boardId,
       column: {
@@ -568,17 +547,33 @@ export const MultipleContainers = ({
         order: order - 1,
       },
     });
+  };
 
-    // console.log('503');
-    // const newContainerId = getNextContainerId();
-    // console.log('newContainerId', newContainerId);
-    // unstable_batchedUpdates(() => {
-    //   setContainers((containers) => [...containers, newContainerId]);
-    //   setItems((items) => ({
-    //     ...items,
-    //     [newContainerId]: [],
-    //   }));
-    // });
+  const handleAddTask = async (
+    boardId: string,
+    columnId: string,
+    userId: string,
+    {
+      title,
+      description,
+      order,
+    }: {
+      title: string;
+      description: string;
+      order: number;
+    }
+  ): Promise<void> => {
+    await taskCreate.mutateAsync({
+      boardId,
+      columnId,
+      task: {
+        title: title,
+        description: description,
+        userId: userId,
+        order: order - 1,
+        users: [],
+      },
+    });
   };
 
   return (
@@ -775,6 +770,12 @@ export const MultipleContainers = ({
                     );
                   })}
                 </SortableContext>
+                <TaskForm
+                  createTask={handleAddTask}
+                  boardId={data.boardData._id}
+                  columnId={containerId.toString()}
+                  userId={data.userData._id}
+                />
               </DroppableContainer>
             );
           })}
@@ -783,11 +784,9 @@ export const MultipleContainers = ({
               id={PLACEHOLDER_ID}
               disabled={isSortingContainer}
               items={empty}
-              // onClick={handleAddColumn}
               placeholder
             >
               <ColumnForm createColumn={handleAddColumn} boardId={data.boardData._id} />
-              {/*+ Add column*/}
             </DroppableContainer>
           )}
         </SortableContext>

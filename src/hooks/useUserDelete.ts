@@ -16,8 +16,6 @@ export const useUserDelete = () => {
       return UsersService.deleteUserById(userId);
     },
     onSuccess: async () => {
-      console.log('successful deletion');
-      // ✅ remove user
       LocalStorageService.logOutUser();
       if (toastId.current) {
         await toast.update(toastId.current, {

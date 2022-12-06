@@ -1,4 +1,6 @@
-import { Column } from '@/data/models';
+import './TaskForm.scss';
+
+import { Task } from '@/data/models';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import { FC, useState } from 'react';
@@ -7,42 +9,50 @@ import Button from '@mui/material/Button';
 
 const defaultColumnFields = {
   title: '',
+  description: '',
   order: 0,
 };
 
-export const ColumnForm: FC<{
-  createColumn: (newColumn: Omit<Column, '_id'>) => void;
+export const TaskForm: FC<{
+  createTask: (
+    boardId: string,
+    columnId: string,
+    userId: string,
+    newTask: Pick<Task, 'title' | 'description' | 'order'>
+  ) => void;
   boardId: string | undefined;
-}> = ({ createColumn, boardId }) => {
+  columnId: string | undefined;
+  userId: string | undefined;
+}> = ({ createTask, boardId, columnId, userId }) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<Omit<Column, '_id | boardId'>>({
+  } = useForm<Pick<Task, 'title' | 'description' | 'order'>>({
     defaultValues: defaultColumnFields,
   });
   const [isFormOpened, setIsFormOpened] = useState(false);
   const onCreateBtnHandler = () => {
     setIsFormOpened(true);
   };
-  const onSubmit: SubmitHandler<Omit<Column, '_id | boardId'>> = (data) => {
-    if (boardId) {
-      const newColumnData: Omit<Column, '_id'> = { ...data, boardId };
-      createColumn(newColumnData);
+  const onSubmit: SubmitHandler<Pick<Task, 'title' | 'description' | 'order'>> = (data) => {
+    if (boardId && columnId && userId) {
+      const newTaskData: Pick<Task, 'title' | 'description' | 'order'> = { ...data };
+      createTask(boardId, columnId, userId, newTaskData);
       setIsFormOpened(false);
       reset();
     }
   };
 
   return (
-    <div className="user-board user-board_add-btn">
+    <div className="add-task add-task-btn">
       {!isFormOpened ? (
         <>
           <Fab color="secondary" aria-label="edit" onClick={onCreateBtnHandler}>
             <AddIcon />
           </Fab>{' '}
-          + Add column
+          + Add Task
         </>
       ) : (
         <>
@@ -68,7 +78,29 @@ export const ColumnForm: FC<{
                 {errors.title && <span className="error__show">{errors.title.message}</span>}
               </p>
             </div>
-
+            <div className="auth__element">
+              <input
+                className="auth__input"
+                type="text"
+                {...register('description', {
+                  required: 'this field is required',
+                  minLength: {
+                    value: 10,
+                    message: `you must enter at least 10 letters`,
+                  },
+                  maxLength: {
+                    value: 25,
+                    message: `you must enter less, than 25 letters`,
+                  },
+                })}
+                placeholder="Description"
+              />
+              <p className="error">
+                {errors.description && (
+                  <span className="error__show">{errors.description.message}</span>
+                )}
+              </p>
+            </div>
             <div className="auth__element">
               <input
                 className="auth__input"

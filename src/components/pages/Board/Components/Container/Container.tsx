@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, useState } from 'react';
+import React, { ForwardedRef, forwardRef } from 'react';
 import classNames from 'classnames';
 
 import { Handle } from '../Handle';

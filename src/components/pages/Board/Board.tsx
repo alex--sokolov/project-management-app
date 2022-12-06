@@ -1,18 +1,17 @@
 import './Board.scss';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useOutletContext, useLocation, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 import { useBoardById } from '@/hooks/board/useBoardById';
-import { User, Board, ColumnWithTasks, Column, Task, MultipleProps } from '@/data/models';
+import { User, Board, Column, Task, MultipleProps } from '@/data/models';
 import { boardError } from '@/services/toasts/toasts';
 import { sleep } from '@/utils/sleep';
 import { TIME_AUTO_CLOSE, TIME_LOGOUT_DELAY } from '@/configs/toasts';
 import { MultipleContainers } from './MultipleContainers/MultipleContainers';
 import { useColumnsByBoardId } from '@/hooks/board/useColumnsByBoardId';
 import { useTasksByBoardId } from '@/hooks/board/useTasksByBoardId';
-import { Modal } from '@/services/modals';
 
 export const BoardComponent = () => {
   const navigate = useNavigate();
@@ -72,6 +71,7 @@ export const BoardComponent = () => {
         };
       });
       setBoardData({
+        userData: user as User,
         boardData: board as Board,
         columnsData: {
           refetch: columns.refetch,
@@ -80,10 +80,6 @@ export const BoardComponent = () => {
       });
     }
   }, [columns, tasks]);
-
-  // console.log('columnsFetch: ', columnsFetch);
-  // console.log('columns: ', columns);
-  console.log('boardData: ', boardData);
 
   return (
     <section className="board">

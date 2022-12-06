@@ -30,12 +30,6 @@ export const TestAuthProfile = () => {
   // Example how to get all users
   const { isLoading, data, isError, error } = useUsersList();
 
-  // console.log('isError', isError);
-  // console.log('isLoading', isLoading);
-  // console.log('users', data);
-  // console.log('data.code', data?.code);
-  // console.log('data.status', data?.response?.status);
-
   // Example how to get user by id with button click
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const user = useUserById(userId);

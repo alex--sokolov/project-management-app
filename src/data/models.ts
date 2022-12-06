@@ -35,6 +35,7 @@ export interface ColumnWithTasks extends Column {
 }
 
 export interface MultipleProps {
+  userData: User;
   boardData: Board;
   columnsData: {
     refetch: () => Promise<QueryObserverResult<Column[], unknown>>;
