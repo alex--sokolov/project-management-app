@@ -2,6 +2,15 @@
 
 Final Task React
 
+# collaborators
+
+# Alex
+https://github.com/alex--sokolov
+# Aliona
+https://github.com/AlionaMu
+# Andrey
+https://github.com/atmoranso
+
 ## Available Scripts
 
 In the project directory, you can run:
