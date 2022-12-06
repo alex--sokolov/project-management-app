@@ -1,3 +1,5 @@
+import { QueryObserverResult } from '@tanstack/react-query';
+
 export interface User {
   _id: string;
   name: string;
@@ -34,7 +36,10 @@ export interface ColumnWithTasks extends Column {
 
 export interface MultipleProps {
   boardData: Board;
-  columnsData: ColumnWithTasks[];
+  columnsData: {
+    refetch: () => Promise<QueryObserverResult<Column[], unknown>>;
+    columns: ColumnWithTasks[];
+  };
 }
 
 export interface Task {

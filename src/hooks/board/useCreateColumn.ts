@@ -7,18 +7,24 @@ import { TIME_AUTO_CLOSE } from '@/configs/toasts';
 import { sleep } from '@/utils/sleep';
 import { Column } from '@/data/models';
 
-export const useRemoveColumnById = () => {
+export const useCreateColumn = () => {
   const toastId = useRef<Id | undefined>(undefined);
   const queryClient = useQueryClient();
   const { data, mutate, mutateAsync } = useMutation({
-    mutationFn: ({ boardId, columnId }: { boardId: string; columnId: string }) => {
-      toastId.current = toast.loading('Deleting the column...');
-      return ColumnsService.deleteColumnById(boardId, columnId);
+    mutationFn: ({
+      boardId,
+      column,
+    }: {
+      boardId: string;
+      column: Omit<Column, '_id' | 'boardId'>;
+    }) => {
+      toastId.current = toast.loading('Creating new column...');
+      return ColumnsService.createNewColumn(boardId, column);
     },
-    onSuccess: async (deletedColumn) => {
+    onSuccess: async (newColumn) => {
       if (toastId.current) {
         await toast.update(toastId.current, {
-          render: 'Column deleted successfully',
+          render: 'Column was successfully created',
           autoClose: TIME_AUTO_CLOSE,
           type: 'success',
           isLoading: false,
@@ -26,17 +32,14 @@ export const useRemoveColumnById = () => {
       }
       await sleep(TIME_AUTO_CLOSE);
       queryClient.setQueriesData(
-        ['boards', deletedColumn.boardId, 'columns'],
-        (previous: Column[] | undefined) =>
-          !!previous
-            ? previous.filter((column: Column) => column._id !== deletedColumn._id)
-            : previous
+        ['boards', newColumn.boardId, 'columns'],
+        (previous: Column[] | undefined) => (!!previous ? [...previous, newColumn] : previous)
       );
     },
     onError: async () => {
       if (toastId.current) {
         toast.update(toastId.current, {
-          render: 'Column was not deleted',
+          render: 'Column was not created',
           autoClose: TIME_AUTO_CLOSE,
           type: 'error',
           isLoading: false,

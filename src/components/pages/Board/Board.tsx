@@ -47,14 +47,14 @@ export const BoardComponent = () => {
   }, [boardFetch, boardId, user, navigate]);
 
   useEffect(() => {
-    if (columnsFetch?.data && !columns?.data) {
+    if (columnsFetch?.data && columns?.data !== columnsFetch?.data) {
       columnsFetch.data.sort((a, b) => a.order - b.order);
       setColumns(columnsFetch);
     }
   }, [columnsFetch]);
 
   useEffect(() => {
-    if (tasksFetch?.data && !tasks?.data) {
+    if (tasksFetch?.data && tasks?.data !== tasksFetch?.data) {
       setTasks(tasksFetch);
     }
   }, [tasksFetch]);
@@ -63,7 +63,7 @@ export const BoardComponent = () => {
 
   useEffect(() => {
     if (Array.isArray(columns.data) && Array.isArray(tasks.data)) {
-      const columnsData = columns.data.map((column: Column) => {
+      const columnsArr = columns.data.map((column: Column) => {
         return {
           ...column,
           tasks: Array.isArray(tasks.data)
@@ -71,11 +71,19 @@ export const BoardComponent = () => {
             : [],
         };
       });
-      setBoardData({ boardData: board as Board, columnsData });
+      setBoardData({
+        boardData: board as Board,
+        columnsData: {
+          refetch: columns.refetch,
+          columns: columnsArr,
+        },
+      });
     }
   }, [columns, tasks]);
 
-  console.log('boardData', boardData);
+  // console.log('columnsFetch: ', columnsFetch);
+  // console.log('columns: ', columns);
+  console.log('boardData: ', boardData);
 
   return (
     <section className="board">

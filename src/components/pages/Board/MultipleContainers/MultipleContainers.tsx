@@ -1,11 +1,4 @@
-import React, {
-  JSXElementConstructor,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
 import {
   CancelDrop,
@@ -46,12 +39,12 @@ import { Item } from '../Components/Item';
 import { Container } from '../Components/Container';
 import type { ContainerProps } from '../Components/Container';
 
-import { createRange } from '@/utils/createRange';
 import { ColumnWithTasks, MultipleProps } from '@/data/models';
-import { useUserDelete } from '@/hooks/board/useRemoveColumnById';
+import { useRemoveColumnById } from '@/hooks/board/useRemoveColumnById';
 import { useQueryClient } from '@tanstack/react-query';
-import { useModal } from '@/hooks';
-import { Modal } from '@/services/modals';
+import { useChangeColumnsOrder } from '@/hooks/board/useChangeOrdersInColumns';
+import { ColumnForm } from '@/components/pages/Board/Components/Forms';
+import { useCreateColumn } from '@/hooks/board/useCreateColumn';
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -325,29 +318,39 @@ export const MultipleContainers = ({
   vertical = false,
   scrollable,
 }: Props) => {
-  // const queryClient = useQueryClient();
-  const userDeleteInfo = useUserDelete();
+  const queryClient = useQueryClient();
+  const columnDelete = useRemoveColumnById();
+  const columnCreate = useCreateColumn();
   const columnsData = data.columnsData;
-  const myInitialItems = columnsData.reduce(
-    (a, v) => ({ ...a, [v._id]: v.tasks.map((task) => task._id) }),
-    {}
+  const columnsRefetch = columnsData.refetch;
+  const columnsArr = columnsData.columns;
+
+  const myItems = useMemo(
+    () => columnsArr.reduce((a, v) => ({ ...a, [v._id]: v.tasks.map((task) => task._id) }), {}),
+    [columnsArr]
   );
 
-  console.log('myInitialItems', myInitialItems);
+  console.log('columnsArr: ', columnsArr);
+  console.log('myItems: ', myItems);
 
-  const [items, setItems] = useState<Items>(
-    () =>
-      myInitialItems ?? {
-        A: createRange(itemCount, (index) => `A${index + 1}`),
-        B: createRange(itemCount, (index) => `B${index + 1}`),
-        C: createRange(itemCount, (index) => `C${index + 1}`),
-        D: createRange(itemCount, (index) => `D${index + 1}`),
-      }
-  );
+  const [items, setItems] = useState<Items>(myItems);
+
+  const columnsOrder = useChangeColumnsOrder();
 
   console.log('items', items, typeof items);
 
   const [containers, setContainers] = useState(Object.keys(items) as UniqueIdentifier[]);
+
+  useEffect(() => {
+    columnsOrder.mutate(
+      columnsArr.map((column: ColumnWithTasks, index: number) => ({
+        _id: column._id,
+        order: index,
+      }))
+    );
+    setItems(myItems);
+    setContainers(Object.keys(myItems) as UniqueIdentifier[]);
+  }, [myItems]);
 
   console.log('containers', containers);
 
@@ -495,7 +498,7 @@ export const MultipleContainers = ({
   }
 
   function renderContainerDragOverlay(containerId: UniqueIdentifier) {
-    const containerTitle = getColumnTitle(columnsData, containerId);
+    const containerTitle = getColumnTitle(columnsArr, containerId);
     return (
       <Container
         label={`Column: ${containerTitle}`}
@@ -530,13 +533,11 @@ export const MultipleContainers = ({
   }
 
   async function handleRemove(value: string, containerID: UniqueIdentifier): Promise<void> {
-    // close();
     if (value === 'yes') {
-      await userDeleteInfo.mutateAsync({
+      await columnDelete.mutateAsync({
         boardId: data.boardData._id,
         columnId: containerID.toString(),
       });
-      setContainers((containers) => containers.filter((id) => id !== containerID));
     }
   }
 
@@ -547,18 +548,38 @@ export const MultipleContainers = ({
     return String.fromCharCode(lastContainerId.charCodeAt(0) + 1);
   }
 
-  function handleAddColumn() {
-    console.log('503');
-    const newContainerId = getNextContainerId();
-    console.log('newContainerId', newContainerId);
-    unstable_batchedUpdates(() => {
-      setContainers((containers) => [...containers, newContainerId]);
-      setItems((items) => ({
-        ...items,
-        [newContainerId]: [],
-      }));
+  const handleAddColumn = async ({
+    title,
+    order,
+    boardId,
+  }: {
+    title: string;
+    order: number;
+    boardId: string;
+  }): Promise<void> => {
+    console.log('572');
+    console.log('title', title);
+    console.log('order', order);
+
+    await columnCreate.mutateAsync({
+      boardId,
+      column: {
+        title: title,
+        order: order - 1,
+      },
     });
-  }
+
+    // console.log('503');
+    // const newContainerId = getNextContainerId();
+    // console.log('newContainerId', newContainerId);
+    // unstable_batchedUpdates(() => {
+    //   setContainers((containers) => [...containers, newContainerId]);
+    //   setItems((items) => ({
+    //     ...items,
+    //     [newContainerId]: [],
+    //   }));
+    // });
+  };
 
   return (
     <DndContext
@@ -625,10 +646,29 @@ export const MultipleContainers = ({
       }}
       onDragEnd={({ active, over }) => {
         if (active.id in items && over?.id) {
+          let activeIndex = 0;
+          let overIndex = 0;
+          for (let i = 0; i < columnsArr.length; i++) {
+            if (columnsArr[i]._id === active.id) {
+              activeIndex = i;
+            }
+          }
+          for (let i = 0; i < columnsArr.length; i++) {
+            if (columnsArr[i]._id === over.id) {
+              overIndex = i;
+            }
+          }
+          const movedColumns = arrayMove(columnsArr, activeIndex, overIndex);
+          columnsOrder.mutate(
+            movedColumns.map((column: ColumnWithTasks, index: number) => ({
+              _id: column._id,
+              order: index,
+            }))
+          );
+
           setContainers((containers) => {
             const activeIndex = containers.indexOf(active.id);
             const overIndex = containers.indexOf(over.id);
-
             return arrayMove(containers, activeIndex, overIndex);
           });
         }
@@ -704,7 +744,7 @@ export const MultipleContainers = ({
           strategy={vertical ? verticalListSortingStrategy : horizontalListSortingStrategy}
         >
           {containers.map((containerId) => {
-            const containerTitle = getColumnTitle(columnsData, containerId);
+            const containerTitle = getColumnTitle(columnsArr, containerId);
             return (
               <DroppableContainer
                 key={containerId}
@@ -743,10 +783,11 @@ export const MultipleContainers = ({
               id={PLACEHOLDER_ID}
               disabled={isSortingContainer}
               items={empty}
-              onClick={handleAddColumn}
+              // onClick={handleAddColumn}
               placeholder
             >
-              + Add column
+              <ColumnForm createColumn={handleAddColumn} boardId={data.boardData._id} />
+              {/*+ Add column*/}
             </DroppableContainer>
           )}
         </SortableContext>
