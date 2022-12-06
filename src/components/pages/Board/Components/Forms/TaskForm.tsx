@@ -117,7 +117,7 @@ export const TaskForm: FC<{
               </p>
             </div>
             <Button type="submit" variant="contained">
-              Add column
+              Add task
             </Button>
           </form>
         </>
