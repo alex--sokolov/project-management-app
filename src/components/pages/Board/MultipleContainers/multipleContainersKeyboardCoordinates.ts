@@ -4,10 +4,7 @@ import {
   KeyboardCode,
   DroppableContainer,
   KeyboardCoordinateGetter,
-  Active,
-  UniqueIdentifier,
 } from '@dnd-kit/core';
-import { DroppableContainersMap } from '@dnd-kit/core/dist/store/constructors';
 
 const directions: string[] = [
   KeyboardCode.Down,

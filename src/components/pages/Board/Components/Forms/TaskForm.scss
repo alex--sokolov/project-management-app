@@ -1,0 +1,54 @@
+.user-board-wrapper {
+  position: relative;
+}
+.add-task {
+  height: 250px;
+  padding: 5px 5px 10px 5px;
+  @include flexColumn(space-between);
+  gap: 10px;
+  position: relative;
+  box-shadow: 5px 5px 9px -10px rgb(0 0 0 / 66%);
+  transition: 0.3s;
+
+  &:hover {
+    cursor: pointer;
+    border-bottom-right-radius: 15px;
+    box-shadow: 6px 6px 10px -2px rgb(0 0 0 / 39%);
+  }
+  &:active {
+    background-color: #f9f9f9;
+    box-shadow: 6px 6px 16px 4px rgb(0 0 0 / 39%);
+  }
+  &.add-task-btn {
+    justify-content: center;
+    align-items: center;
+    &:hover {
+      cursor: unset;
+      border-bottom-right-radius: unset;
+      box-shadow: 5px 5px 9px -10px rgb(0 0 0 / 66%);
+    }
+    &:active {
+      background-color: #ffffff;
+      box-shadow: 5px 5px 9px -10px rgb(0 0 0 / 66%);
+    }
+  }
+}
+
+.user-board__title {
+  margin: 5px 0;
+  @include font(22px, null, bold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.user-board__desc {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-board__controls {
+  position: absolute;
+  width: fit-content;
+  left: 10px;
+  bottom: 10px;
+}

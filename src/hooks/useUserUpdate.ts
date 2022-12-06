@@ -24,21 +24,6 @@ export const useUserUpdate = () => {
           isLoading: false,
         });
       }
-      //
-      // // ✅ update all the lists that contain this user
-      // queryClient.setQueriesData(
-      //   ['users', 'list', { filters: 'all' }],
-      //   (previous: User[] | undefined) =>
-      //     !!previous
-      //       ? previous.map((user) => (user._id === newUser._id ? newUser : user))
-      //       : previous
-      // );
-      //
-      // // 🥳 invalidate all the lists, but don't refetch the active one
-      // await queryClient.invalidateQueries({
-      //   queryKey: ['users', 'list'],
-      //   refetchType: 'none',
-      // });
     },
     onError: () => {
       if (toastId.current) {

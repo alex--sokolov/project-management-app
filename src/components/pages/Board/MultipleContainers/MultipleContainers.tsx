@@ -1,40 +1,33 @@
-import React, {
-  JSXElementConstructor,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
 import {
   CancelDrop,
-  closestCenter,
-  pointerWithin,
-  rectIntersection,
-  CollisionDetection,
+  // closestCenter,
+  // pointerWithin,
+  // rectIntersection,
+  // CollisionDetection,
   DndContext,
   DragOverlay,
-  DropAnimation,
-  getFirstCollision,
+  // DropAnimation,
+  // getFirstCollision,
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
   Modifiers,
-  useDroppable,
+  // useDroppable,
   UniqueIdentifier,
   useSensors,
   useSensor,
   MeasuringStrategy,
   KeyboardCoordinateGetter,
-  defaultDropAnimationSideEffects,
+  // defaultDropAnimationSideEffects,
 } from '@dnd-kit/core';
 import {
-  AnimateLayoutChanges,
+  // AnimateLayoutChanges,
   SortableContext,
   useSortable,
   arrayMove,
-  defaultAnimateLayoutChanges,
+  // defaultAnimateLayoutChanges,
   verticalListSortingStrategy,
   SortingStrategy,
   horizontalListSortingStrategy,
@@ -46,11 +39,16 @@ import { Item } from '../Components/Item';
 import { Container } from '../Components/Container';
 import type { ContainerProps } from '../Components/Container';
 
-import { createRange } from '@/utils/createRange';
-import { ColumnWithTasks } from '@/data/models';
+import { ColumnWithTasks, MultipleProps } from '@/data/models';
+import { useRemoveColumnById } from '@/hooks/board/useRemoveColumnById';
+import { useChangeColumnsOrder } from '@/hooks/board/useChangeOrdersInColumns';
+import { ColumnForm } from '@/components/pages/Board/Components/Forms';
+import { useCreateColumn } from '@/hooks/board/useCreateColumn';
+import { TaskForm } from '../Components/Forms/TaskForm';
+import { useCreateTask } from '@/hooks/board/useCreateTask';
 
-const animateLayoutChanges: AnimateLayoutChanges = (args) =>
-  defaultAnimateLayoutChanges({ ...args, wasDragging: true });
+// const animateLayoutChanges: AnimateLayoutChanges = (args) =>
+//   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
 const getColumnTitle = (columns: ColumnWithTasks[], id: string | number) => {
   return columns.find((column: ColumnWithTasks) => column._id === id)?.title || '';
@@ -75,7 +73,7 @@ function DroppableContainer({
     attributes,
     isDragging,
     listeners,
-    over,
+    // over,
     setNodeRef,
     transition,
     transform,
@@ -114,15 +112,15 @@ function DroppableContainer({
   );
 }
 
-const dropAnimation: DropAnimation = {
-  sideEffects: defaultDropAnimationSideEffects({
-    styles: {
-      active: {
-        opacity: '0.5',
-      },
-    },
-  }),
-};
+// const dropAnimation: DropAnimation = {
+//   sideEffects: defaultDropAnimationSideEffects({
+//     styles: {
+//       active: {
+//         opacity: '0.5',
+//       },
+//     },
+//   }),
+// };
 
 type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
 
@@ -132,7 +130,7 @@ interface Props {
   columns?: number;
   containerStyle?: React.CSSProperties;
   coordinateGetter?: KeyboardCoordinateGetter;
-  myColumns: ColumnWithTasks[];
+  data: MultipleProps;
 
   getItemStyles?(args: {
     value: UniqueIdentifier;
@@ -163,47 +161,59 @@ const PLACEHOLDER_ID = 'placeholder';
 const empty: UniqueIdentifier[] = [];
 
 function getColor(id: UniqueIdentifier) {
-  switch (String(id)[0]) {
-    case 'A':
+  switch (String(id)[String(id).length - 1]) {
+    case '1':
+    case '5':
+    case '9':
+    case 'd':
       return '#7193f1';
-    case 'B':
+    case '2':
+    case '6':
+    case 'a':
+    case 'e':
       return '#ffda6c';
-    case 'C':
+    case '3':
+    case '7':
+    case 'b':
+    case 'f':
       return '#00bcd4';
-    case 'D':
+    case '4':
+    case '8':
+    case 'c':
+    case 'h':
       return '#ef769f';
   }
 
   return undefined;
 }
 
-function Trash({ id }: { id: UniqueIdentifier }) {
-  const { setNodeRef, isOver } = useDroppable({
-    id,
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'fixed',
-        left: '50%',
-        marginLeft: -150,
-        bottom: 20,
-        width: 300,
-        height: 60,
-        borderRadius: 5,
-        border: '1px solid',
-        borderColor: isOver ? 'red' : '#DDD',
-      }}
-    >
-      Drop here to delete
-    </div>
-  );
-}
+// function Trash({ id }: { id: UniqueIdentifier }) {
+//   const { setNodeRef, isOver } = useDroppable({
+//     id,
+//   });
+//
+//   return (
+//     <div
+//       ref={setNodeRef}
+//       style={{
+//         display: 'flex',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         position: 'fixed',
+//         left: '50%',
+//         marginLeft: -150,
+//         bottom: 20,
+//         width: 300,
+//         height: 60,
+//         borderRadius: 5,
+//         border: '1px solid',
+//         borderColor: isOver ? 'red' : '#DDD',
+//       }}
+//     >
+//       Drop here to delete
+//     </div>
+//   );
+// }
 
 interface SortableItemProps {
   containerId: UniqueIdentifier;
@@ -234,7 +244,7 @@ function SortableItem({
 }: SortableItemProps) {
   const {
     setNodeRef,
-    setActivatorNodeRef,
+    // setActivatorNodeRef,
     listeners,
     isDragging,
     isSorting,
@@ -290,135 +300,119 @@ function SortableItem({
 }
 
 export const MultipleContainers = ({
-  adjustScale = false,
-  itemCount = 2,
-  cancelDrop,
+  // adjustScale = false,
+  // itemCount = 2,
+  // cancelDrop,
   columns,
   handle = false,
-  myColumns = [],
-  items: initialItems,
+  data,
+  // items: initialItems,
   containerStyle,
   coordinateGetter = multipleContainersCoordinateGetter,
   getItemStyles = () => ({}),
   wrapperStyle = () => ({}),
   minimal = false,
-  modifiers,
+  // modifiers,
   renderItem,
   strategy = verticalListSortingStrategy,
-  trashable = false,
+  // trashable = false,
   vertical = false,
   scrollable,
 }: Props) => {
-  // const myColumnsTitles = myColumns.map((column) => {
-  //   // console.log('Object.keys(column.title)', Object.keys(column.title));
-  //   return column.title;
-  // });
+  // const queryClient = useQueryClient();
+  const columnDelete = useRemoveColumnById();
+  const columnCreate = useCreateColumn();
+  const taskCreate = useCreateTask();
+  const columnsData = data.columnsData;
+  const columnsArr = columnsData.columns;
 
-  const myInitialItems = myColumns.reduce(
-    (a, v) => ({ ...a, [v._id]: v.tasks.map((task) => task._id) }),
-    {}
+  const myItems = useMemo(
+    () => columnsArr.reduce((a, v) => ({ ...a, [v._id]: v.tasks.map((task) => task._id) }), {}),
+    [columnsArr]
   );
 
-  console.log('myInitialItems', myInitialItems);
+  const [items, setItems] = useState<Items>(myItems);
 
-  // const myInitialItems = ;
-
-  const [items, setItems] = useState<Items>(
-    () =>
-      myInitialItems ?? {
-        A: createRange(itemCount, (index) => `A${index + 1}`),
-        B: createRange(itemCount, (index) => `B${index + 1}`),
-        C: createRange(itemCount, (index) => `C${index + 1}`),
-        D: createRange(itemCount, (index) => `D${index + 1}`),
-      }
-  );
-
-  // const [items, setItems] = useState<Items>(() => initialItems ?? {});
-
-  // const [items, setItems] = useState<Items>({});
-
-  console.log('items', items, typeof items);
+  const columnsOrder = useChangeColumnsOrder();
 
   const [containers, setContainers] = useState(Object.keys(items) as UniqueIdentifier[]);
 
-  console.log('containers', containers);
+  useEffect(() => {
+    columnsOrder.mutate(
+      columnsArr.map((column: ColumnWithTasks, index: number) => ({
+        _id: column._id,
+        order: index,
+      }))
+    );
+    setItems(myItems);
+    setContainers(Object.keys(myItems) as UniqueIdentifier[]);
+  }, [myItems]);
 
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-  const lastOverId = useRef<UniqueIdentifier | null>(null);
+  // const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
   const isSortingContainer = activeId ? containers.includes(activeId) : false;
 
-  /**
-   * Custom collision detection strategy optimized for multiple containers
-   *
-   * - First, find any droppable containers intersecting with the pointer.
-   * - If there are none, find intersecting containers with the active draggable.
-   * - If there are no intersecting containers, return the last matched intersection
-   *
-   */
-  useEffect(() => {
-    console.log('called', items);
-  }, [items]);
-  const collisionDetectionStrategy: CollisionDetection = useCallback(
-    (args) => {
-      if (activeId && activeId in items) {
-        return closestCenter({
-          ...args,
-          droppableContainers: args.droppableContainers.filter(
-            (container) => container.id in items
-          ),
-        });
-      }
-
-      // Start by finding any intersecting droppable
-      const pointerIntersections = pointerWithin(args);
-      const intersections =
-        pointerIntersections.length > 0
-          ? // If there are droppables intersecting with the pointer, return those
-            pointerIntersections
-          : rectIntersection(args);
-      let overId = getFirstCollision(intersections, 'id');
-
-      if (overId != null) {
-        if (overId === TRASH_ID) {
-          // If the intersecting droppable is the trash, return early
-          // Remove this if you're not using trashable functionality in your app
-          return intersections;
-        }
-
-        if (overId in items) {
-          const containerItems = items[overId];
-
-          // If a container is matched and it contains items (columns 'A', 'B', 'C')
-          if (containerItems.length > 0) {
-            // Return the closest droppable within that container
-            overId = closestCenter({
-              ...args,
-              droppableContainers: args.droppableContainers.filter(
-                (container) => container.id !== overId && containerItems.includes(container.id)
-              ),
-            })[0]?.id;
-          }
-        }
-
-        lastOverId.current = overId;
-
-        return [{ id: overId }];
-      }
-
-      // When a draggable item moves to a new container, the layout may shift
-      // and the `overId` may become `null`. We manually set the cached `lastOverId`
-      // to the id of the draggable item that was moved to the new container, otherwise
-      // the previous `overId` will be returned which can cause items to incorrectly shift positions
-      if (recentlyMovedToNewContainer.current) {
-        lastOverId.current = activeId;
-      }
-
-      // If no droppable is matched, return the last match
-      return lastOverId.current ? [{ id: lastOverId.current }] : [];
-    },
-    [activeId, items]
-  );
+  // const collisionDetectionStrategy: CollisionDetection = useCallback(
+  //   (args) => {
+  //     if (activeId && activeId in items) {
+  //       return closestCenter({
+  //         ...args,
+  //         droppableContainers: args.droppableContainers.filter(
+  //           (container) => container.id in items
+  //         ),
+  //       });
+  //     }
+  //
+  //     // Start by finding any intersecting droppable
+  //     const pointerIntersections = pointerWithin(args);
+  //     const intersections =
+  //       pointerIntersections.length > 0
+  //         ? // If there are droppables intersecting with the pointer, return those
+  //           pointerIntersections
+  //         : rectIntersection(args);
+  //     let overId = getFirstCollision(intersections, 'id');
+  //
+  //     if (overId != null) {
+  //       if (overId === TRASH_ID) {
+  //         // If the intersecting droppable is the trash, return early
+  //         // Remove this if you're not using trashable functionality in your app
+  //         return intersections;
+  //       }
+  //
+  //       if (overId in items) {
+  //         const containerItems = items[overId];
+  //
+  //         // If a container is matched and it contains items (columns 'A', 'B', 'C')
+  //         if (containerItems.length > 0) {
+  //           // Return the closest droppable within that container
+  //           overId = closestCenter({
+  //             ...args,
+  //             droppableContainers: args.droppableContainers.filter(
+  //               (container) => container.id !== overId && containerItems.includes(container.id)
+  //             ),
+  //           })[0]?.id;
+  //         }
+  //       }
+  //
+  //       lastOverId.current = overId;
+  //
+  //       return [{ id: overId }];
+  //     }
+  //
+  //     // When a draggable item moves to a new container, the layout may shift
+  //     // and the `overId` may become `null`. We manually set the cached `lastOverId`
+  //     // to the id of the draggable item that was moved to the new container, otherwise
+  //     // the previous `overId` will be returned which can cause items to incorrectly shift positions
+  //     if (recentlyMovedToNewContainer.current) {
+  //       lastOverId.current = activeId;
+  //     }
+  //
+  //     // If no droppable is matched, return the last match
+  //     return lastOverId.current ? [{ id: lastOverId.current }] : [];
+  //   },
+  //   [activeId, items]
+  // );
   const [clonedItems, setClonedItems] = useState<Items | null>(null);
   const sensors = useSensors(
     useSensor(MouseSensor),
@@ -487,7 +481,7 @@ export const MultipleContainers = ({
   }
 
   function renderContainerDragOverlay(containerId: UniqueIdentifier) {
-    const containerTitle = getColumnTitle(myColumns, containerId);
+    const containerTitle = getColumnTitle(columnsArr, containerId);
     return (
       <Container
         label={`Column: ${containerTitle}`}
@@ -521,8 +515,13 @@ export const MultipleContainers = ({
     );
   }
 
-  function handleRemove(containerID: UniqueIdentifier) {
-    setContainers((containers) => containers.filter((id) => id !== containerID));
+  async function handleRemove(value: string, containerID: UniqueIdentifier): Promise<void> {
+    if (value === 'yes') {
+      await columnDelete.mutateAsync({
+        boardId: data.boardData._id,
+        columnId: containerID.toString(),
+      });
+    }
   }
 
   function getNextContainerId() {
@@ -532,18 +531,50 @@ export const MultipleContainers = ({
     return String.fromCharCode(lastContainerId.charCodeAt(0) + 1);
   }
 
-  function handleAddColumn() {
-    console.log('503');
-    const newContainerId = getNextContainerId();
-    console.log('newContainerId', newContainerId);
-    unstable_batchedUpdates(() => {
-      setContainers((containers) => [...containers, newContainerId]);
-      setItems((items) => ({
-        ...items,
-        [newContainerId]: [],
-      }));
+  const handleAddColumn = async ({
+    title,
+    order,
+    boardId,
+  }: {
+    title: string;
+    order: number;
+    boardId: string;
+  }): Promise<void> => {
+    await columnCreate.mutateAsync({
+      boardId,
+      column: {
+        title: title,
+        order: order - 1,
+      },
     });
-  }
+  };
+
+  const handleAddTask = async (
+    boardId: string,
+    columnId: string,
+    userId: string,
+    {
+      title,
+      description,
+      order,
+    }: {
+      title: string;
+      description: string;
+      order: number;
+    }
+  ): Promise<void> => {
+    await taskCreate.mutateAsync({
+      boardId,
+      columnId,
+      task: {
+        title: title,
+        description: description,
+        userId: userId,
+        order: order - 1,
+        users: [],
+      },
+    });
+  };
 
   return (
     <DndContext
@@ -610,10 +641,29 @@ export const MultipleContainers = ({
       }}
       onDragEnd={({ active, over }) => {
         if (active.id in items && over?.id) {
+          let activeIndex = 0;
+          let overIndex = 0;
+          for (let i = 0; i < columnsArr.length; i++) {
+            if (columnsArr[i]._id === active.id) {
+              activeIndex = i;
+            }
+          }
+          for (let i = 0; i < columnsArr.length; i++) {
+            if (columnsArr[i]._id === over.id) {
+              overIndex = i;
+            }
+          }
+          const movedColumns = arrayMove(columnsArr, activeIndex, overIndex);
+          columnsOrder.mutate(
+            movedColumns.map((column: ColumnWithTasks, index: number) => ({
+              _id: column._id,
+              order: index,
+            }))
+          );
+
           setContainers((containers) => {
             const activeIndex = containers.indexOf(active.id);
             const overIndex = containers.indexOf(over.id);
-
             return arrayMove(containers, activeIndex, overIndex);
           });
         }
@@ -689,7 +739,7 @@ export const MultipleContainers = ({
           strategy={vertical ? verticalListSortingStrategy : horizontalListSortingStrategy}
         >
           {containers.map((containerId) => {
-            const containerTitle = getColumnTitle(myColumns, containerId);
+            const containerTitle = getColumnTitle(columnsArr, containerId);
             return (
               <DroppableContainer
                 key={containerId}
@@ -700,7 +750,7 @@ export const MultipleContainers = ({
                 scrollable={scrollable}
                 style={containerStyle}
                 unstyled={minimal}
-                onRemove={() => handleRemove(containerId)}
+                onRemove={(value: string) => handleRemove(value, containerId)}
               >
                 <SortableContext items={items[containerId]} strategy={strategy}>
                   {items[containerId].map((value, index) => {
@@ -720,6 +770,12 @@ export const MultipleContainers = ({
                     );
                   })}
                 </SortableContext>
+                <TaskForm
+                  createTask={handleAddTask}
+                  boardId={data.boardData._id}
+                  columnId={containerId.toString()}
+                  userId={data.userData._id}
+                />
               </DroppableContainer>
             );
           })}
@@ -728,10 +784,9 @@ export const MultipleContainers = ({
               id={PLACEHOLDER_ID}
               disabled={isSortingContainer}
               items={empty}
-              onClick={handleAddColumn}
               placeholder
             >
-              + Add column
+              <ColumnForm createColumn={handleAddColumn} boardId={data.boardData._id} />
             </DroppableContainer>
           )}
         </SortableContext>

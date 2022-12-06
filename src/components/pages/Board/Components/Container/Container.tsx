@@ -5,6 +5,8 @@ import { Handle } from '../Handle';
 import { Remove } from '../Remove';
 
 import './Container.scss';
+import { Modal } from '@/services/modals';
+import { useModal } from '@/hooks';
 
 export interface Props {
   children: React.ReactNode;
@@ -19,7 +21,7 @@ export interface Props {
   placeholder?: boolean;
   unstyled?: boolean;
   onClick?(): void;
-  onRemove?(): void;
+  onRemove?(value: string): Promise<void>;
 }
 
 export const Container = forwardRef<HTMLDivElement, Props>(
@@ -43,7 +45,8 @@ export const Container = forwardRef<HTMLDivElement, Props>(
     ref: ForwardedRef<HTMLDivElement>
   ) => {
     const Component = onClick ? 'button' : 'div';
-
+    const { isModalOpen, close, open } = useModal();
+    const modalType = 'Do you want to delete the column?';
     return (
       <Component
         {...props}
@@ -71,12 +74,26 @@ export const Container = forwardRef<HTMLDivElement, Props>(
           <div className={'Header'}>
             {label}
             <div className={'Actions'}>
-              {onRemove ? <Remove onClick={onRemove} /> : undefined}
+              <Remove onClick={open} />
               <Handle {...handleProps} />
             </div>
           </div>
         ) : null}
         {placeholder ? children : <ul>{children}</ul>}
+        <div>
+          {isModalOpen && (
+            <Modal
+              isModalOpen={isModalOpen}
+              text={modalType}
+              handleClick={(value) => {
+                close();
+                if (onRemove) {
+                  onRemove(value).catch((error) => console.log(error));
+                }
+              }}
+            />
+          )}
+        </div>
       </Component>
     );
   }

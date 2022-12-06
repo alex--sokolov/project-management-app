@@ -1,10 +1,13 @@
-import { Board } from '@/data/models';
-import Fab from '@mui/material/Fab';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { FC } from 'react';
 import './UserBoard.scss';
+
+import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import DeleteIcon from '@mui/icons-material/Delete';
+import Fab from '@mui/material/Fab';
+
 import { useModal } from '@/hooks';
+import { Board } from '@/data/models';
 import { Modal } from '@/services/modals';
 
 export const UserBoard: FC<{ boardData: Board; deleteBoard: (boardId: string) => void }> = ({
