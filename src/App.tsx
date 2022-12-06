@@ -72,7 +72,7 @@ export const App: FC = () => {
           </Route>
         </Routes>
       </BrowserRouter>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/*<ReactQueryDevtools initialIsOpen={false} />*/}
     </QueryClientProvider>
   );
 };
