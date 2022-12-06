@@ -18,9 +18,9 @@
     "team": ["alexander", "aliona", "andrei"],
     "position": ["team lead, developer", "developer", "developer"],
     "role": [
-      "Teamlead, developed application architecture, routing, responsible for Husky, for boards component.Created backend services and deploy.",
-      "Responsible for localization, edit profile form, header/footer components, toasts and modal windows",
-      "Responsible for the forms: authorization, registration. Implemented boards component."
+      "Team Leader, developed application architecture, routing, Board page. Created backend services and deployed the app.",
+      "Developed Profile page, welcome page, localization, header/footer components, toasts and modal windows",
+      "Developed Boards page, implemented registration and authorization."
     ]
   }
 }

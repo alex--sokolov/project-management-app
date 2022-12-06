@@ -27,6 +27,9 @@
     color: $dark-font-color;
 
     @include small-tablet {
+      display: block;
+      width: 140px;
+      text-align: left;
       flex-direction: column;
       justify-content: flex-start;
       margin-bottom: 10px;
@@ -67,10 +70,20 @@
 
     &-img {
       height: 30px;
+      width: 30px;
+      background: url('../../../../public/github.svg') no-repeat;
+      background-size: contain;
 
       @include small-tablet {
         height: 25px;
       }
+    }
+
+    &-rsschool {
+      background: url('../../../../public/rs-school-js.svg') no-repeat;
+      width: 100px;
+      height: 30px;
+      background-size: contain;
     }
 
     & > p {
