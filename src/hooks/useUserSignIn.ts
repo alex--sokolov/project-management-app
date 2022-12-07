@@ -1,24 +1,29 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Id, toast } from 'react-toastify';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { AuthService } from '@/services/api/AuthService';
 import { LocalStorageService } from '@/services/localStorage';
 
 import { UserLogin } from '@/data/models';
 
-import { TIME_AUTO_CLOSE } from '@/configs/toasts';
+import { TIME_AUTO_CLOSE, TIME_LOGOUT_DELAY } from '@/configs/toasts';
+import { getAuthUserData } from '@/utils/getUserData';
+import { sleep } from '@/utils/sleep';
 
 export const useUserSignIn = (onErrorCallBack?: () => void) => {
   const toastId = useRef<Id | undefined>(undefined);
-  const navigate = useNavigate();
-  const { isLoading, data, isError, error, mutate } = useMutation({
+
+  let currentUser: UserLogin | null = null;
+  const { isLoading, data, isError, error, mutate, mutateAsync } = useMutation({
     mutationFn: (user: UserLogin) => {
+      currentUser = user;
       toastId.current = toast.loading('Trying to login...');
       return AuthService.loginUser(user);
     },
     onSuccess: async (data) => {
+      console.log('data.token', data.token);
       LocalStorageService.saveToken(data.token);
       if (toastId.current) {
         toast.update(toastId.current, {
@@ -28,9 +33,7 @@ export const useUserSignIn = (onErrorCallBack?: () => void) => {
           isLoading: false,
         });
       }
-      setTimeout(() => {
-        navigate('/boards');
-      }, TIME_AUTO_CLOSE);
+      await sleep(TIME_AUTO_CLOSE + TIME_LOGOUT_DELAY);
     },
     onError: () => {
       if (onErrorCallBack) {
@@ -47,5 +50,5 @@ export const useUserSignIn = (onErrorCallBack?: () => void) => {
     },
     retry: 0,
   });
-  return { isLoading, data, isError, error, mutate };
+  return { isLoading, data, isError, error, mutate, mutateAsync };
 };

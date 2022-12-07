@@ -17,6 +17,7 @@ import { TestColumns } from './components/pages/TestComponents/TestColumns';
 import { TestTasks } from '@/components/pages/TestComponents/TestTasks';
 import { TestPoints } from '@/components/pages/TestComponents/TestPoints';
 import { TestFiles } from '@/components/pages/TestComponents/TestFiles';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { Auth } from './types';
 
@@ -48,9 +49,9 @@ export const App: FC = () => {
               </Route>
             </Route>
             <Route element={<PrivateRegisterRoutes />}>
-              <Route path="auth/signin" element={<Authorization formType={Auth.Login} />} />
-              <Route path="auth/signup" element={<Authorization formType={Auth.Register} />} />
-              <Route path="auth/signout" element={<Authorization formType={Auth.Logout} />} />
+              <Route path="/auth/signin" element={<Authorization formType={Auth.Login} />} />
+              <Route path="/auth/signup" element={<Authorization formType={Auth.Register} />} />
+              <Route path="/auth/signout" element={<Authorization formType={Auth.Logout} />} />
             </Route>
             {/* Test components start */}
             <Route path="auth/test" element={<TestAuthProfile />} />
@@ -68,6 +69,7 @@ export const App: FC = () => {
           </Route>
         </Routes>
       </BrowserRouter>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 };

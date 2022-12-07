@@ -1,33 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
-import jwt_decode from 'jwt-decode';
-
-import { LocalStorageService } from '@/services/localStorage';
-
-import { AuthUserToken } from '@/types';
 import { UsersService } from '@/services/api/UsersService';
-
-const getAuthUserId = () => {
-  const token = LocalStorageService.getToken();
-  if (token) {
-    const userData: AuthUserToken = jwt_decode(token as string);
-    if (userData.exp * 1000 > new Date().getTime()) {
-      return userData.id;
-    }
-    LocalStorageService.logOutUser();
-    return null;
-  }
-  return null;
-};
+import { getAuthUserData } from '@/utils/getUserData';
 
 export const useAuthUser = () => {
-  const id = getAuthUserId();
-
-  const { data } = useQuery({
+  const userData = getAuthUserData();
+  const id = userData?.id || null;
+  const { data, refetch } = useQuery({
     queryKey: ['authUser'],
-    queryFn: () => UsersService.getUserById(id as string),
+    queryFn: () => {
+      const userData = getAuthUserData();
+      const id = userData?.id || null;
+      return UsersService.getUserById(id as string);
+    },
     enabled: !!id,
-    retry: 0,
+    retry: 3,
+    staleTime: 1,
   });
 
-  return { data };
+  return { data, refetch };
 };

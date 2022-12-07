@@ -4,7 +4,6 @@ import { FC, useRef, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 
 import { SubmitHandler, useForm, Controller } from 'react-hook-form';
-import { ToastContainer } from 'react-toastify';
 
 import { useModal, useUserDelete, useUserUpdate } from '@/hooks';
 
@@ -165,7 +164,6 @@ export const Profile: FC = () => {
       ) : (
         <></>
       )}
-      <ToastContainer />
       <div>
         {isModalOpen && (
           <Modal

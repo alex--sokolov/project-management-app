@@ -6,7 +6,6 @@ import { AuthUserState } from '@/types';
 
 export const PrivateRoutes = () => {
   const { authUser, isLoading } = useOutletContext<AuthUserState>();
-
   return LocalStorageService.getToken() ? (
     authUser ? (
       <Outlet context={authUser} />
@@ -14,6 +13,6 @@ export const PrivateRoutes = () => {
       <Spinner isLoading={isLoading} />
     )
   ) : (
-    <Navigate to="auth/signin" />
+    <Navigate to="/auth/signin" />
   );
 };

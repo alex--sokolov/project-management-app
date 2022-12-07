@@ -2,7 +2,6 @@ import './Board.scss';
 
 import { useEffect, useState } from 'react';
 import { useOutletContext, useLocation, useNavigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
 
 import { useBoardById } from '@/hooks/board/useBoardById';
 import { User, Board, Column, Task, MultipleProps } from '@/data/models';
@@ -102,7 +101,6 @@ export const BoardComponent = () => {
       ) : (
         <></>
       )}
-      <ToastContainer />
     </section>
   );
 };

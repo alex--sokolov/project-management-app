@@ -3,9 +3,10 @@ import './Authorization.scss';
 import { FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
-
+import { useQueryClient } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
-import { useUserSignIn, useUserSignUp } from '@/hooks';
+
+import { useAuthUser, useUserSignIn, useUserSignUp } from '@/hooks';
 import { UserLogin, UserUpdate } from '@/data/models';
 
 import { LocalStorageService } from '@/services/localStorage';
@@ -26,11 +27,14 @@ import { TIME_AUTO_CLOSE, TIME_LOGOUT_DELAY } from '@/configs/toasts';
 
 export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const authUser = useAuthUser();
 
   useEffect(() => {
     if (formType === Auth.Logout) {
       userLoggedOut();
       LocalStorageService.logOutUser();
+      queryClient.setQueryData(['authUser'], null);
       setTimeout(() => {
         navigate(-1);
       }, TIME_AUTO_CLOSE + TIME_LOGOUT_DELAY);
@@ -56,7 +60,9 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
   });
 
   const loginUser = async (user: UserLogin) => {
-    userLogin.mutate(user);
+    await userLogin.mutateAsync(user);
+    await authUser.refetch();
+    navigate('/boards');
   };
 
   const registerUser = async (user: Omit<UserUpdate, '_id'>) => {
@@ -67,6 +73,7 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
     if (formType === Auth.Login) {
       setShowSubmitButton(false);
       await loginUser(data);
+      setShowSubmitButton(true);
     }
     if (formType === Auth.Register) {
       setShowSubmitButton(false);
