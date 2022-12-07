@@ -78,7 +78,7 @@ export const ColumnForm: FC<{
                   valueAsNumber: true,
                   validate: (value) => value >= 0 || `Must be a positive number or 0`,
                 })}
-                placeholder="Description"
+                placeholder="Order"
               />
               <p className="error">
                 {errors.order && <span className="error__show">{errors.order.message}</span>}

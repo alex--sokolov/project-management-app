@@ -28,6 +28,19 @@ export const useUserDelete = () => {
       await sleep(TIME_AUTO_CLOSE);
       queryClient.setQueryData(['authUser'], null);
     },
+    onError: async () => {
+      LocalStorageService.logOutUser();
+      if (toastId.current) {
+        await toast.update(toastId.current, {
+          render: 'User deleted successfully',
+          autoClose: TIME_AUTO_CLOSE,
+          type: 'success',
+          isLoading: false,
+        });
+      }
+      await sleep(TIME_AUTO_CLOSE);
+      queryClient.setQueryData(['authUser'], null);
+    },
     retry: 0,
   });
   return { data, mutate, mutateAsync };

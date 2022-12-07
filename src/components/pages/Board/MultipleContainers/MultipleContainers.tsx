@@ -338,12 +338,14 @@ export const MultipleContainers = ({
   const [containers, setContainers] = useState(Object.keys(items) as UniqueIdentifier[]);
 
   useEffect(() => {
-    columnsOrder.mutate(
-      columnsArr.map((column: ColumnWithTasks, index: number) => ({
-        _id: column._id,
-        order: index,
-      }))
-    );
+    if (columnsArr.length > 0) {
+      columnsOrder.mutate(
+        columnsArr.map((column: ColumnWithTasks, index: number) => ({
+          _id: column._id,
+          order: index,
+        }))
+      );
+    }
     setItems(myItems);
     setContainers(Object.keys(myItems) as UniqueIdentifier[]);
   }, [myItems]);

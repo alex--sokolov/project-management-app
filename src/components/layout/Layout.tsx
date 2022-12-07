@@ -13,8 +13,10 @@ export const Layout = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      setAuthUser(user);
+    if (user || user === '') {
+      if (user) {
+        setAuthUser(user);
+      }
       setIsLoading(false);
     }
   }, [user]);

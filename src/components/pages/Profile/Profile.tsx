@@ -46,7 +46,6 @@ export const Profile: FC = () => {
   };
 
   const deleteUser = () => {
-    open();
     userDelete.mutate(user._id);
   };
 

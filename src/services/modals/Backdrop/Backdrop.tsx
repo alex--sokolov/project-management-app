@@ -12,10 +12,10 @@ type Props = {
 
 export const Backdrop = ({ children, onClick }: Props) => {
   // Log state
-  useEffect(() => {
-    stateLogger('Backdrop', true);
-    return () => stateLogger('Backdrop', false);
-  }, []);
+  // useEffect(() => {
+  //   stateLogger('Backdrop', true);
+  //   return () => stateLogger('Backdrop', false);
+  // }, []);
 
   return (
     <motion.div
