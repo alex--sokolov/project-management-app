@@ -20,6 +20,7 @@ import { TestFiles } from '@/components/pages/TestComponents/TestFiles';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { Auth } from './types';
+import { ToastContainer } from 'react-toastify';
 
 export const App: FC = () => {
   const [queryClient] = useState(
@@ -27,7 +28,7 @@ export const App: FC = () => {
       new QueryClient({
         defaultOptions: {
           queries: {
-            refetchOnWindowFocus: false,
+            refetchOnWindowFocus: true,
             staleTime: 1000 * 20,
           },
         },
@@ -69,6 +70,7 @@ export const App: FC = () => {
           </Route>
         </Routes>
       </BrowserRouter>
+      <ToastContainer />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

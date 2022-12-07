@@ -4,7 +4,6 @@ import { FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
-import { ToastContainer } from 'react-toastify';
 
 import { useAuthUser, useUserSignIn, useUserSignUp } from '@/hooks';
 import { UserLogin, UserUpdate } from '@/data/models';
@@ -28,18 +27,26 @@ import { TIME_AUTO_CLOSE, TIME_LOGOUT_DELAY } from '@/configs/toasts';
 export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const authUser = useAuthUser();
+
+  const [isLogoutRoute, setIslogoutRoute] = useState(false);
 
   useEffect(() => {
-    if (formType === Auth.Logout) {
-      userLoggedOut();
-      LocalStorageService.logOutUser();
-      queryClient.setQueryData(['authUser'], null);
-      setTimeout(() => {
-        navigate(-1);
-      }, TIME_AUTO_CLOSE + TIME_LOGOUT_DELAY);
+    if (formType === Auth.Logout && !isLogoutRoute) {
+      setIslogoutRoute(true);
     }
   }, [formType, navigate]);
+
+  useEffect(() => {
+    if (isLogoutRoute) {
+      setIslogoutRoute(false);
+      console.log('toasts');
+      userLoggedOut();
+      LocalStorageService.logOutUser();
+      queryClient.resetQueries(['authUser']).then((r) => {
+        navigate('/auth/signin');
+      });
+    }
+  }, [isLogoutRoute]);
 
   const userRegister = useUserSignUp();
 
@@ -61,8 +68,8 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
 
   const loginUser = async (user: UserLogin) => {
     await userLogin.mutateAsync(user);
-    await authUser.refetch();
-    navigate('/boards');
+    // await authUser.refetch();
+    // navigate('/');
   };
 
   const registerUser = async (user: Omit<UserUpdate, '_id'>) => {
@@ -136,7 +143,6 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
               Submit
             </button>
           </form>
-          <ToastContainer />
         </div>
       ) : (
         <>
@@ -144,7 +150,6 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
             <i>Logging out in progress...</i>
           </h2>
           <h1 style={{ textAlign: 'center', color: 'dodgerblue' }}>Thank you for being with us!</h1>
-          <ToastContainer />
         </>
       )}
     </>

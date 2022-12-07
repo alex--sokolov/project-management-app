@@ -1,5 +1,4 @@
 import { useBoardsList } from '@/hooks/useBoardsList';
-import { ToastContainer } from 'react-toastify';
 import './Boards.scss';
 import { UserBoard } from './UserBoard/UserBoard';
 import { useBoardCreate } from '@/hooks/useBoardCreate';
@@ -34,7 +33,6 @@ export const Boards = () => {
         ))}
         <BoardForm createBoard={createBoard} userId={user._id} />
       </div>
-      <ToastContainer />
     </>
   );
 };

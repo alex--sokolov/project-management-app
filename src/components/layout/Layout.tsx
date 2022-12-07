@@ -4,6 +4,7 @@ import { Header } from './Header/Header';
 import { useAuthUser } from '@/hooks';
 import { useEffect, useState } from 'react';
 import { LocalStorageService } from '@/services/localStorage';
+import { ToastContainer } from 'react-toastify';
 
 export const Layout = () => {
   const userData = useAuthUser();

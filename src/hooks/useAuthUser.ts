@@ -10,10 +10,9 @@ export const useAuthUser = () => {
     queryFn: () => {
       const userData = getAuthUserData();
       const id = userData?.id || null;
-      return UsersService.getUserById(id as string);
+      return id ? UsersService.getUserById(id as string) : null;
     },
     enabled: !!id,
-    retry: 3,
     staleTime: 1,
   });
 

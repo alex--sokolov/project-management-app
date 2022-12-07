@@ -11,9 +11,12 @@ import { UserLogin } from '@/data/models';
 import { TIME_AUTO_CLOSE, TIME_LOGOUT_DELAY } from '@/configs/toasts';
 import { getAuthUserData } from '@/utils/getUserData';
 import { sleep } from '@/utils/sleep';
+import { useAuthUser } from '@/hooks/useAuthUser';
 
 export const useUserSignIn = (onErrorCallBack?: () => void) => {
   const toastId = useRef<Id | undefined>(undefined);
+  const authUser = useAuthUser();
+  const navigate = useNavigate();
 
   let currentUser: UserLogin | null = null;
   const { isLoading, data, isError, error, mutate, mutateAsync } = useMutation({
@@ -33,7 +36,8 @@ export const useUserSignIn = (onErrorCallBack?: () => void) => {
           isLoading: false,
         });
       }
-      await sleep(TIME_AUTO_CLOSE + TIME_LOGOUT_DELAY);
+      await authUser.refetch();
+      navigate('/');
     },
     onError: () => {
       if (onErrorCallBack) {

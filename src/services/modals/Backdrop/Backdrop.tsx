@@ -1,9 +1,7 @@
 import './Backdrop.scss';
 
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-
-import { stateLogger } from '@/services/logger';
 
 type Props = {
   onClick: () => void;
