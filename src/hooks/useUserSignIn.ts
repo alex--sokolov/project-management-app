@@ -26,7 +26,6 @@ export const useUserSignIn = (onErrorCallBack?: () => void) => {
       return AuthService.loginUser(user);
     },
     onSuccess: async (data) => {
-      console.log('data.token', data.token);
       LocalStorageService.saveToken(data.token);
       if (toastId.current) {
         toast.update(toastId.current, {
@@ -37,7 +36,7 @@ export const useUserSignIn = (onErrorCallBack?: () => void) => {
         });
       }
       await authUser.refetch();
-      navigate('/');
+      navigate('/boards');
     },
     onError: () => {
       if (onErrorCallBack) {

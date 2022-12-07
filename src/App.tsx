@@ -29,7 +29,7 @@ export const App: FC = () => {
         defaultOptions: {
           queries: {
             refetchOnWindowFocus: true,
-            staleTime: 1000 * 20,
+            staleTime: 1000 * 200,
           },
         },
       })
@@ -70,7 +70,6 @@ export const App: FC = () => {
           </Route>
         </Routes>
       </BrowserRouter>
-      <ToastContainer />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

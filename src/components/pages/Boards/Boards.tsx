@@ -27,6 +27,7 @@ export const Boards = () => {
 
   return (
     <>
+      <h2>Your boards:</h2>
       <div className="boards">
         {boards.data?.map((board: Board) => (
           <UserBoard key={board._id} boardData={board} deleteBoard={deleteBoard} />

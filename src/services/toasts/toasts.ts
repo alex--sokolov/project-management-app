@@ -24,6 +24,10 @@ export const userLoggedOut = () => {
   });
 };
 
+export const toastDismiss = () => {
+  toast.dismiss();
+};
+
 export const userEdited = () => {
   toast.success(`User's data is successfully edited`, { position: toast.POSITION.BOTTOM_CENTER });
 };

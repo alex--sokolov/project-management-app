@@ -12,7 +12,7 @@ export const PrivateRegisterRoutes = () => {
     <Outlet />
   ) : LocalStorageService.getToken() ? (
     authUser ? (
-      <Navigate to="/" />
+      <Navigate to="/boards" />
     ) : (
       <Spinner isLoading={isLoading} />
     )

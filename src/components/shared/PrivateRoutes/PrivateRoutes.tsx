@@ -13,6 +13,6 @@ export const PrivateRoutes = () => {
       <Spinner isLoading={isLoading} />
     )
   ) : (
-    <Navigate to="/auth/signin" />
+    <Navigate to="/" />
   );
 };

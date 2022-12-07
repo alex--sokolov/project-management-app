@@ -23,6 +23,7 @@ export const Layout = () => {
   }, [user]);
   return (
     <>
+      <ToastContainer />
       {LocalStorageService.getToken() ? (
         <Header userInfo={{ authUser, isLoading }} />
       ) : (

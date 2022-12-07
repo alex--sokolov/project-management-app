@@ -16,13 +16,19 @@ export const useBoardsList = (userId: string | undefined) => {
     },
     onSuccess: async () => {
       if (toastId.current) {
-        toast.dismiss(toastId.current);
+        toast.update(toastId.current, {
+          render: 'Boards are loaded',
+          autoClose: TIME_AUTO_CLOSE,
+          type: 'success',
+          isLoading: false,
+        });
+        // toast.dismiss(toastId.current);
       }
     },
     onError: () => {
       if (toastId.current) {
         toast.update(toastId.current, {
-          render: 'Somethig went wrong...',
+          render: 'Something went wrong...',
           autoClose: TIME_AUTO_CLOSE,
           type: 'error',
           isLoading: false,
