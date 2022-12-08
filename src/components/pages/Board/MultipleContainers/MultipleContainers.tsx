@@ -346,29 +346,47 @@ export const MultipleContainers = ({
   const [items, setItems] = useState<Items>(myItems);
 
   const [needToChangeOrder, setNeedToChangeOrder] = useState(false);
+  const [activeColumn, setActiveColumn] = useState<UniqueIdentifier | null>(null);
 
   useEffect(() => {
     if (myItems !== items && needToChangeOrder) {
+      console.log('here');
       const itemsSorted = Object.entries(items).filter((column) => {
         const columnBack = Object.entries(myItems).find((value) => {
           return column[0] === value[0];
         });
         return columnBack && column[1].length !== (columnBack[1] as string[])?.length;
       });
+      console.log('itemsSorted', itemsSorted);
+      console.log('activeContainer', activeColumn);
+      if (itemsSorted.length === 2) {
+        const tasksArrNewOrder = itemsSorted.map((column) => {
+          const columnId = column[0];
+          const tasks = (column[1] as string[]).map((taskId: string, taskIndex: number) => ({
+            _id: taskId,
+            order: taskIndex,
+            columnId,
+          }));
+          return [...tasks];
+        });
 
-      const tasksArrNewOrder = itemsSorted.map((column) => {
-        const columnId = column[0];
-        const tasks = (column[1] as string[]).map((taskId: string, taskIndex: number) => ({
+        tasksOrder.mutate(tasksArrNewOrder.flat(1));
+      }
+      if (itemsSorted.length === 0 && activeColumn) {
+        const itemsSorted = Object.entries(items).filter((column) => column[0] === activeColumn);
+        console.log('itemsSorted[1]', itemsSorted[0][1]);
+        const tasks = (itemsSorted[0][1] as string[]).map((taskId: string, taskIndex: number) => ({
           _id: taskId,
           order: taskIndex,
-          columnId,
+          columnId: activeColumn.toString(),
         }));
-        return [...tasks];
-      });
-
-      tasksOrder.mutate(tasksArrNewOrder.flat(1));
+        tasksOrder.mutate(tasks);
+        console.log('itemsSorted', itemsSorted);
+        // console.log('tasks', tasks);
+      }
     }
     setNeedToChangeOrder(false);
+    setActiveColumn(null);
   }, [items, needToChangeOrder]);
 
   const columnsOrder = useChangeColumnsOrder();
@@ -851,7 +869,10 @@ export const MultipleContainers = ({
         if (overContainer) {
           const activeIndex = items[activeContainer].indexOf(active.id);
           const overIndex = items[overContainer].indexOf(overId);
-          setNeedToChangeOrder(true);
+          if (overContainer === activeContainer) {
+            setNeedToChangeOrder(true);
+            setActiveColumn(activeContainer);
+          }
           if (activeIndex !== overIndex) {
             const sortItems = (items: Items) => ({
               ...items,
