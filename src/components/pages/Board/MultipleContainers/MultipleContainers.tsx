@@ -234,6 +234,7 @@ interface SortableItemProps {
   renderItem(): React.ReactElement;
 
   wrapperStyle({ index }: { index: number }): React.CSSProperties;
+
   boardId: string;
 }
 
@@ -301,6 +302,7 @@ function SortableItem({
       });
     }
   }
+
   const { t } = useTranslation();
   const { isModalOpen, close, open } = useModal();
   const modalType = `${t('modal.column-delete-confirm-question')}`;
@@ -436,6 +438,8 @@ export const MultipleContainers = ({
 
   const [containers, setContainers] = useState(Object.keys(items) as UniqueIdentifier[]);
 
+  const [wasChanged, setWasChanged] = useState(false);
+
   useEffect(() => {
     const checkOrderColumns = (arrNew: ColumnWithTasks[], columns: UniqueIdentifier[]) => {
       if (arrNew.length !== columns.length) {
@@ -470,21 +474,27 @@ export const MultipleContainers = ({
     // };
     //
     // const isItemsAmountChanged = checkChangingItemsAmount(items, myItems);
+    (async () => {
+      if (isOrderColumnsChanged && !wasChanged) {
+        if (columnsArr.length > 1) {
+          const columnsArrNewOrder = columnsArr.map((column: ColumnWithTasks, index: number) => ({
+            _id: column._id,
+            order: index,
+          }));
+          await columnsOrder.mutateAsync(columnsArrNewOrder);
+        }
+        if (myItems !== items) {
+          setItems(myItems);
+          setContainers(Object.keys(myItems) as UniqueIdentifier[]);
+          setWasChanged(true);
+        }
+      }
 
-    if (isOrderColumnsChanged) {
-      if (columnsArr.length > 0) {
-        const columnsArrNewOrder = columnsArr.map((column: ColumnWithTasks, index: number) => ({
-          _id: column._id,
-          order: index,
-        }));
-        columnsOrder.mutate(columnsArrNewOrder);
+      if (!isOrderColumnsChanged && wasChanged) {
+        setWasChanged(false);
       }
-      if (myItems !== items) {
-        setItems(myItems);
-        setContainers(Object.keys(myItems) as UniqueIdentifier[]);
-      }
-    }
-  }, [myItems, items]);
+    })();
+  }, [myItems, items, wasChanged]);
 
   useEffect(() => {
     const checkChangingItemsAmount = (itemsFront: Items, itemsBack: Items) => {
@@ -512,7 +522,9 @@ export const MultipleContainers = ({
           }));
           return [...tasks];
         });
-        tasksOrder.mutate(tasksArrNewOrder.flat(1));
+        if (tasksArrNewOrder.flat(1).length > 0) {
+          tasksOrder.mutate(tasksArrNewOrder.flat(1));
+        }
       }
       if (myItems !== items) {
         setItems(myItems);
