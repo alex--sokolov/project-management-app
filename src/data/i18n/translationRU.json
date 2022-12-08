@@ -1,12 +1,15 @@
 {
+  "language": {
+    "en": "Анг",
+    "ru": "Рус"
+  },
   "header": {
-    "boards-list": "список досок",
-    "create-new-board": "создать новую доску",
-    "edit-profile": "редактировать профиль",
-    "login-sign-up": "войти / регистрация",
-    "login": "войти",
-    "logout": "выйти",
-    "sign-up": "регистрация"
+    "welcome": "приветствие",
+    "main-page": "главная",
+    "profile": "профиль",
+    "sign-in": "войти",
+    "signup": "регистрация",
+    "sign-out": "выйти"
   },
   "welcome": {
     "title": "управление проектом",
@@ -18,9 +21,72 @@
     "team": ["александр", "алёна", "андрей"],
     "position": ["тимлид, разработчик", "разработчик", "разработчик"],
     "role": [
-      "Тимлид, настроил архитектуру приложения, роутинг. Разработал сервисы для работы с бэкендом и страницу Board.",
+      "Придумал архитектуру приложения, настроил роутинг. Разработал сервисы для работы с бэкендом и страницу Board.",
       "Разработала страницу Profile, Welcome page, локализацию, header/footer, модальные окна и тоасты",
       "Разработал страницу Boards. Реализовал регистрации и авторизацию."
     ]
+  },
+  "main": {
+    "boards-title": "Твои доски"
+  },
+  "board": {
+    "owner": "Владелец",
+    "column": "Колонка",
+    "add-task": "Добавить таску",
+    "add-column": "Добавить колонку"
+  },
+  "profile": {
+    "title": "Поменять информацию",
+    "user-name": "Имя",
+    "user-login": "Е-мейл",
+    "user-password": "Пароль",
+    "update-btn": "Обновить"
+  },
+  "toasts": {
+    "register-pending": "Пытаемся вас зарегистрироать...",
+    "register-success": "Регистрация прошла успешно!",
+    "register-error": "При регистрации возникла ошибка!",
+    "sign-in-pending": "Попытка войти в систему...",
+    "sign-in-success": "Вы успешно авторизованы!",
+    "sign-in-error": "Ошибка авторизации...",
+    "sign-out-success": "Вы успешно вышли из системы",
+    "user-delete-pending": "Удаление учетной записи...",
+    "user-delete-success": "Учетная запись удалена безвозвратно",
+    "user-delete-error": "Пользователь не был удален",
+    "user-update-pending": "Попытка мутации пользователя...",
+    "user-update-success": "Данные пользователя успешно обновлены",
+    "user-update-error": "При обновлении данных произошла ошибка!",
+    "board-fetch-pending": "Загрузка досок...",
+    "board-fetch-success": "Доски загружены",
+    "board-fetch-error": "Что-то пошло не так...",
+    "board-create-pending": "Создание доски...",
+    "board-create-success": "Доска успешно создана",
+    "board-create-error": "Ошибка при создании доски",
+    "board-delete-pending": "Удаление доски...",
+    "board-delete-success": "Доска успешно удалена",
+    "board-delete-error": "Ошибка при удалении доски",
+    "column-order-change-pending": "Меняем позиции колонок",
+    "column-order-change-success": "Позиции колонок успешно изменены",
+    "column-order-change-error": "Ошибка при изменении позиций колонок",
+    "column-create-pending": "Создание новой колонки...",
+    "column-create-success": "Колонка была успешно создана",
+    "column-create-error": "Колонка не была создана",
+    "column-delete-pending": "Удаление колонки...",
+    "column-delete-success": "Колонка успешно удалена",
+    "column-delete-error": "Ошибка при удалении колонки",
+    "task-create-pending": "Таска подготавливается...",
+    "task-create-success": "Таска успешно создана",
+    "task-create-error": "Task was not created",
+    "task-order-change-pending": "Изменение положения таски",
+    "task-order-change-success": "Положение таски обновлено",
+    "task-order-change-error": "Ошибка при обновлении положения таски",
+    "task-not-completed": "Таска не выполнена",
+    "board-not-found": "Доска не найдена!",
+    "promise-pending": "Ожидание выполнения",
+    "promise-resolved": "Выполнено успешно",
+    "promise-rejected": "Ошибка при выполнении"
+  },
+  "modal": {
+    "column-delete-confirm-question": "Ты серьезно хочешь удалить колонку?"
   }
 }

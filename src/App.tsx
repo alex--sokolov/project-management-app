@@ -8,7 +8,7 @@ import { Profile } from '@/components/pages/Profile/Profile';
 import { Boards } from '@/components/pages/Boards/Boards';
 import { BoardComponent } from '@/components/pages/Board/Board';
 import { NotFound } from '@/components/pages/NotFound/NotFound';
-import { PrivateRoutes } from '@/components/shared/PrivateRoutes';
+import { PrivateRoutes, PrivateRegisterRoutes } from '@/components/shared/PrivateRoutes';
 import { Authorization } from './components/pages/Authorization/Authorization';
 import { TestAuthProfile } from '@/components/pages/TestComponents/TestAuthProfile';
 import { TestModalToasts } from '@/components/pages/TestComponents/TestModalToasts';
@@ -17,6 +17,7 @@ import { TestColumns } from './components/pages/TestComponents/TestColumns';
 import { TestTasks } from '@/components/pages/TestComponents/TestTasks';
 import { TestPoints } from '@/components/pages/TestComponents/TestPoints';
 import { TestFiles } from '@/components/pages/TestComponents/TestFiles';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { Auth } from './types';
 
@@ -26,8 +27,8 @@ export const App: FC = () => {
       new QueryClient({
         defaultOptions: {
           queries: {
-            refetchOnWindowFocus: false,
-            staleTime: 1000 * 20,
+            refetchOnWindowFocus: true,
+            staleTime: 1000 * 200,
           },
         },
       })
@@ -47,9 +48,11 @@ export const App: FC = () => {
                 <Route path="/boards/:id" element={<BoardComponent />} />
               </Route>
             </Route>
-            <Route path="auth/signin" element={<Authorization formType={Auth.Login} />} />
-            <Route path="auth/signup" element={<Authorization formType={Auth.Register} />} />
-            <Route path="auth/signout" element={<Authorization formType={Auth.Logout} />} />
+            <Route element={<PrivateRegisterRoutes />}>
+              <Route path="/auth/signin" element={<Authorization formType={Auth.Login} />} />
+              <Route path="/auth/signup" element={<Authorization formType={Auth.Register} />} />
+              <Route path="/auth/signout" element={<Authorization formType={Auth.Logout} />} />
+            </Route>
             {/* Test components start */}
             <Route path="auth/test" element={<TestAuthProfile />} />
             <Route path="profile/test" element={<TestAuthProfile />} />
@@ -66,6 +69,7 @@ export const App: FC = () => {
           </Route>
         </Routes>
       </BrowserRouter>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 };

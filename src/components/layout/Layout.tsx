@@ -4,6 +4,7 @@ import { Header } from './Header/Header';
 import { useAuthUser } from '@/hooks';
 import { useEffect, useState } from 'react';
 import { LocalStorageService } from '@/services/localStorage';
+import { ToastContainer } from 'react-toastify';
 
 export const Layout = () => {
   const userData = useAuthUser();
@@ -13,13 +14,17 @@ export const Layout = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      setAuthUser(user);
+    if (user || user === '') {
+      if (user) {
+        setAuthUser(user);
+      }
       setIsLoading(false);
     }
   }, [user]);
+
   return (
     <>
+      <ToastContainer />
       {LocalStorageService.getToken() ? (
         <Header userInfo={{ authUser, isLoading }} />
       ) : (

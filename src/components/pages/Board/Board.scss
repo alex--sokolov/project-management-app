@@ -4,11 +4,12 @@
   height: calc(100vh - 210px);
   .board-header {
     background-color: #222;
-    padding: 10px 15px;
+    padding: 0px 15px;
     margin: 10px auto;
     box-shadow: 0 0 8px 2px #444;
     color: #f5f5f5;
-    width: 200%;
+    width: 80%;
+    transform: skew(-16deg, 0deg);
 
     .board-header__title {
       margin: 0;

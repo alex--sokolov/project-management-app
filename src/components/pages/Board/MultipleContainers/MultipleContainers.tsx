@@ -39,13 +39,15 @@ import { Item } from '../Components/Item';
 import { Container } from '../Components/Container';
 import type { ContainerProps } from '../Components/Container';
 
-import { ColumnWithTasks, MultipleProps } from '@/data/models';
+import { ColumnWithTasks, MultipleProps, Task } from '@/data/models';
 import { useRemoveColumnById } from '@/hooks/board/useRemoveColumnById';
 import { useChangeColumnsOrder } from '@/hooks/board/useChangeOrdersInColumns';
 import { ColumnForm } from '@/components/pages/Board/Components/Forms';
 import { useCreateColumn } from '@/hooks/board/useCreateColumn';
 import { TaskForm } from '../Components/Forms/TaskForm';
 import { useCreateTask } from '@/hooks/board/useCreateTask';
+import { useTranslation } from 'react-i18next';
+import { useChangeTasksOrder } from '@/hooks/board/useChangeOrdersInTasks';
 
 // const animateLayoutChanges: AnimateLayoutChanges = (args) =>
 //   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -319,34 +321,172 @@ export const MultipleContainers = ({
   vertical = false,
   scrollable,
 }: Props) => {
+  const { t } = useTranslation();
   // const queryClient = useQueryClient();
   const columnDelete = useRemoveColumnById();
   const columnCreate = useCreateColumn();
   const taskCreate = useCreateTask();
   const columnsData = data.columnsData;
+
+  // console.log('data', data);
+
   const columnsArr = columnsData.columns;
+  // console.log('columnsArr: ', columnsArr);
 
   const myItems = useMemo(
-    () => columnsArr.reduce((a, v) => ({ ...a, [v._id]: v.tasks.map((task) => task._id) }), {}),
+    () =>
+      columnsArr.reduce((acc, column) => {
+        const tasks = column.tasks;
+        tasks.sort((a, b) => a.order - b.order);
+        return { ...acc, [column._id]: tasks.map((task) => task._id) };
+      }, {}),
     [columnsArr]
   );
-
+  // console.log('myItems', myItems);
   const [items, setItems] = useState<Items>(myItems);
 
+  const [needToChangeOrder, setNeedToChangeOrder] = useState(false);
+
+  useEffect(() => {
+    if (myItems !== items && needToChangeOrder) {
+      const itemsSorted = Object.entries(items).filter((column) => {
+        const columnBack = Object.entries(myItems).find((value) => {
+          return column[0] === value[0];
+        });
+        return columnBack && column[1].length !== (columnBack[1] as string[])?.length;
+      });
+
+      const tasksArrNewOrder = itemsSorted.map((column) => {
+        const columnId = column[0];
+        const tasks = (column[1] as string[]).map((taskId: string, taskIndex: number) => ({
+          _id: taskId,
+          order: taskIndex,
+          columnId,
+        }));
+        return [...tasks];
+      });
+
+      tasksOrder.mutate(tasksArrNewOrder.flat(1));
+    }
+    setNeedToChangeOrder(false);
+  }, [items, needToChangeOrder]);
+
   const columnsOrder = useChangeColumnsOrder();
+  const tasksOrder = useChangeTasksOrder();
 
   const [containers, setContainers] = useState(Object.keys(items) as UniqueIdentifier[]);
 
   useEffect(() => {
-    columnsOrder.mutate(
-      columnsArr.map((column: ColumnWithTasks, index: number) => ({
-        _id: column._id,
-        order: index,
-      }))
-    );
-    setItems(myItems);
-    setContainers(Object.keys(myItems) as UniqueIdentifier[]);
-  }, [myItems]);
+    const checkOrderColumns = (arrNew: ColumnWithTasks[], columns: UniqueIdentifier[]) => {
+      if (arrNew.length !== columns.length) {
+        return true;
+      }
+      for (let i = 0; i < arrNew.length; i++) {
+        const columnByOrder = arrNew.find((order) => order.order === i);
+        if (!columnByOrder) {
+          return true;
+        }
+        if (columnByOrder._id !== columns[i]) {
+          return true;
+        }
+      }
+      return false;
+    };
+    const isOrderColumnsChanged = checkOrderColumns(columnsArr, containers);
+
+    // const checkChangingItemsAmount = (itemsFront: Items, itemsBack: Items) => {
+    //   const frontItemsAmount = Object.values(itemsFront).reduce((acc, cur) => {
+    //     console.log('acc', acc);
+    //     console.log('cur', cur);
+    //
+    //     return acc + cur.length;
+    //   }, 0);
+    //   // const backItemsAmount = itemsFront.reduce((acc, cur) => {
+    //   //   return acc + cur.length;
+    //   // }, 0);
+    //
+    //   console.log('frontItemsAmount', frontItemsAmount);
+    //   // console.log('backItemsAmount', backItemsAmount);
+    // };
+    //
+    // const isItemsAmountChanged = checkChangingItemsAmount(items, myItems);
+
+    if (isOrderColumnsChanged) {
+      if (columnsArr.length > 0) {
+        const columnsArrNewOrder = columnsArr.map((column: ColumnWithTasks, index: number) => ({
+          _id: column._id,
+          order: index,
+        }));
+        columnsOrder.mutate(columnsArrNewOrder);
+      }
+      if (myItems !== items) {
+        setItems(myItems);
+        setContainers(Object.keys(myItems) as UniqueIdentifier[]);
+      }
+    }
+  }, [myItems, items]);
+
+  useEffect(() => {
+    const checkChangingItemsAmount = (itemsFront: Items, itemsBack: Items) => {
+      const frontItemsAmount = Object.values(itemsFront).reduce((acc, cur) => {
+        return acc + cur.length;
+      }, 0);
+      const backItemsAmount = Object.values(itemsBack).reduce((acc, cur) => {
+        return acc + cur.length;
+      }, 0);
+      return frontItemsAmount !== backItemsAmount;
+    };
+
+    const isItemsAmountChanged = checkChangingItemsAmount(items, myItems);
+
+    if (isItemsAmountChanged) {
+      if (columnsArr.length > 0) {
+        const tasksArrNewOrder = columnsArr.map((column: ColumnWithTasks) => {
+          const tasksSorted = column.tasks;
+          tasksSorted.sort((a, b) => a.order - b.order);
+
+          const tasks = tasksSorted.map((task: Task, taskIndex: number) => ({
+            _id: task._id,
+            order: taskIndex,
+            columnId: task.columnId,
+          }));
+          return [...tasks];
+        });
+        tasksOrder.mutate(tasksArrNewOrder.flat(1));
+      }
+      if (myItems !== items) {
+        setItems(myItems);
+        setContainers(Object.keys(myItems) as UniqueIdentifier[]);
+      }
+    }
+
+    // else {
+    //   if (myItems !== items) {
+    //     const tasksArrNewOrder = Object.entries(items).map((column) => {
+    //       const columnId = column[0];
+    //       const tasks = (column[1] as string[]).map((taskId: string, taskIndex: number) => ({
+    //         _id: taskId,
+    //         order: taskIndex,
+    //         columnId,
+    //       }));
+    //       return [...tasks];
+    //     });
+    //     console.log('tasksArrNewOrder', tasksArrNewOrder.flat(1));
+    //     tasksOrder.mutate(tasksArrNewOrder.flat(1));
+    //   }
+    // }
+  }, [myItems, items]);
+
+  // useEffect(() => {
+  //   columnsOrder.mutate(
+  //     columnsArr.map((column: ColumnWithTasks, index: number) => ({
+  //       _id: column._id,
+  //       order: index,
+  //     }))
+  //   );
+  //   setItems(myItems);
+  //   setContainers(Object.keys(myItems) as UniqueIdentifier[]);
+  // }, [myItems]);
 
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   // const lastOverId = useRef<UniqueIdentifier | null>(null);
@@ -484,7 +624,7 @@ export const MultipleContainers = ({
     const containerTitle = getColumnTitle(columnsArr, containerId);
     return (
       <Container
-        label={`Column: ${containerTitle}`}
+        label={`${t('board.column')}: ${containerTitle}`}
         columns={columns}
         style={{
           height: '100%',
@@ -711,12 +851,14 @@ export const MultipleContainers = ({
         if (overContainer) {
           const activeIndex = items[activeContainer].indexOf(active.id);
           const overIndex = items[overContainer].indexOf(overId);
-
+          setNeedToChangeOrder(true);
           if (activeIndex !== overIndex) {
-            setItems((items) => ({
+            const sortItems = (items: Items) => ({
               ...items,
               [overContainer]: arrayMove(items[overContainer], activeIndex, overIndex),
-            }));
+            });
+            const itemsSorted = sortItems(items);
+            setItems(itemsSorted);
           }
         }
 
@@ -744,7 +886,7 @@ export const MultipleContainers = ({
               <DroppableContainer
                 key={containerId}
                 id={containerId}
-                label={minimal ? undefined : `Column: ${containerTitle}`}
+                label={minimal ? undefined : `${t('board.column')} ${containerTitle}`}
                 columns={columns}
                 items={items[containerId]}
                 scrollable={scrollable}

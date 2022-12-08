@@ -4,6 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { FC, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Button from '@mui/material/Button';
+import { useTranslation } from 'react-i18next';
 
 const defaultColumnFields = {
   title: '',
@@ -14,6 +15,8 @@ export const ColumnForm: FC<{
   createColumn: (newColumn: Omit<Column, '_id'>) => void;
   boardId: string | undefined;
 }> = ({ createColumn, boardId }) => {
+  const { t } = useTranslation();
+
   const {
     register,
     handleSubmit,
@@ -42,7 +45,7 @@ export const ColumnForm: FC<{
           <Fab color="secondary" aria-label="edit" onClick={onCreateBtnHandler}>
             <AddIcon />
           </Fab>{' '}
-          + Add column
+          + {t('board.add-column')}
         </>
       ) : (
         <>
@@ -78,14 +81,14 @@ export const ColumnForm: FC<{
                   valueAsNumber: true,
                   validate: (value) => value >= 0 || `Must be a positive number or 0`,
                 })}
-                placeholder="Description"
+                placeholder="Order"
               />
               <p className="error">
                 {errors.order && <span className="error__show">{errors.order.message}</span>}
               </p>
             </div>
             <Button type="submit" variant="contained">
-              Add column
+              {t('board.add-column')}
             </Button>
           </form>
         </>

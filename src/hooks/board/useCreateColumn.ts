@@ -6,8 +6,10 @@ import { ColumnsService } from '@/services/api/ColumnsService';
 import { TIME_AUTO_CLOSE } from '@/configs/toasts';
 import { sleep } from '@/utils/sleep';
 import { Column } from '@/data/models';
+import { useTranslation } from 'react-i18next';
 
 export const useCreateColumn = () => {
+  const { t } = useTranslation();
   const toastId = useRef<Id | undefined>(undefined);
   const queryClient = useQueryClient();
   const { data, mutate, mutateAsync } = useMutation({
@@ -18,13 +20,13 @@ export const useCreateColumn = () => {
       boardId: string;
       column: Omit<Column, '_id' | 'boardId'>;
     }) => {
-      toastId.current = toast.loading('Creating new column...');
+      toastId.current = toast.loading(`${t('toasts.column-create-pending')}`);
       return ColumnsService.createNewColumn(boardId, column);
     },
     onSuccess: async (newColumn) => {
       if (toastId.current) {
         await toast.update(toastId.current, {
-          render: 'Column was successfully created',
+          render: `${t('toasts.column-create-success')}`,
           autoClose: TIME_AUTO_CLOSE,
           type: 'success',
           isLoading: false,
@@ -39,7 +41,7 @@ export const useCreateColumn = () => {
     onError: async () => {
       if (toastId.current) {
         toast.update(toastId.current, {
-          render: 'Column was not created',
+          render: `${t('toasts.column-create-error')}`,
           autoClose: TIME_AUTO_CLOSE,
           type: 'error',
           isLoading: false,

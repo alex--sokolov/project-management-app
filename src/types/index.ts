@@ -6,6 +6,13 @@ export enum Auth {
   Register,
   Logout,
 }
+
+export interface PrivateContext {
+  authUser: User;
+  isLoading: boolean;
+  t: TFunction<'translation', undefined>;
+}
+
 export interface ResponseError {
   message: string;
   statusCode: number;

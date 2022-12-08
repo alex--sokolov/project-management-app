@@ -1,9 +1,7 @@
 import './Backdrop.scss';
 
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-
-import { stateLogger } from '@/services/logger';
 
 type Props = {
   onClick: () => void;
@@ -12,10 +10,10 @@ type Props = {
 
 export const Backdrop = ({ children, onClick }: Props) => {
   // Log state
-  useEffect(() => {
-    stateLogger('Backdrop', true);
-    return () => stateLogger('Backdrop', false);
-  }, []);
+  // useEffect(() => {
+  //   stateLogger('Backdrop', true);
+  //   return () => stateLogger('Backdrop', false);
+  // }, []);
 
   return (
     <motion.div

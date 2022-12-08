@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
 import { PropsType } from '@/types';
 import Avatar from '@mui/material/Avatar';
+import { useTranslation } from 'react-i18next';
 
 export const AuthorizedMenu = (props: PropsType) => {
+  const { t } = useTranslation();
+
   function stringToColor(string: string) {
     let hash = 0;
     let i;
@@ -33,17 +36,17 @@ export const AuthorizedMenu = (props: PropsType) => {
       <ul className={props.direction}>
         <li className="header__list-item">
           <Link to="/" className="header__link">
-            <button className="button">Welcome</button>
+            <button className="button">{t('header.welcome')}</button>
           </Link>
         </li>
         <li className="header__list-item">
           <Link to="/boards" className="header__link">
-            <button className="button">main page</button>
+            <button className="button">{t('header.main-page')}</button>
           </Link>
         </li>
         <li className="header__list-item">
           <Link to="/profile" className="header__link">
-            <button className="button">profile</button>
+            <button className="button">{t('header.profile')}</button>
           </Link>
         </li>
         <li className="header__list-item_name">
@@ -56,7 +59,7 @@ export const AuthorizedMenu = (props: PropsType) => {
         </li>
         <li className="header__list-item">
           <Link to="/auth/signout" className="header__link">
-            <button className="button">sign out</button>
+            <button className="button">{t('header.sign-out')}</button>
           </Link>
         </li>
       </ul>

@@ -1,6 +1,6 @@
 import './Header.scss';
 
-import { useEffect, useRef } from 'react';
+import { ChangeEvent, useEffect, useRef } from 'react';
 import { motion, useMotionTemplate, useMotionValue, useTransform, useScroll } from 'framer-motion';
 import FormGroup from '@mui/material/FormGroup';
 import Switch from '@mui/material/Switch';
@@ -10,14 +10,18 @@ import Typography from '@mui/material/Typography';
 import { AuthUserState } from '@/types';
 import { HeaderMenu, HeaderBurger } from '@/components/layout/Header';
 import { Link } from 'react-router-dom';
+import i18n, { lang } from '@/i18n';
+import { useTranslation } from 'react-i18next';
+import { LocalStorageService } from '@/services/localStorage';
 
 const scrollThreshold = [0, 50];
 
 const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
 export function Header(props: { userInfo: AuthUserState }) {
-  const { authUser, isLoading } = props.userInfo;
+  const { t } = useTranslation();
 
+  const { authUser, isLoading } = props.userInfo;
   const { scrollY } = useScroll();
   const scrollYOnDirectionChange = useRef(scrollY.get());
   const lastPixelsScrolled = useRef<number>(0);
@@ -26,6 +30,15 @@ export function Header(props: { userInfo: AuthUserState }) {
   const height = useTransform(pixelsScrolled, scrollThreshold, [130, 70]);
   const backgroundOpacity = useTransform(pixelsScrolled, scrollThreshold, [1, 0.4]);
   const backgroundColorTemplate = useMotionTemplate`rgba(116 109 117 / ${backgroundOpacity})`;
+
+  const changeLanguage = async (language: string) => {
+    await i18n.changeLanguage(language);
+    LocalStorageService.setLang(language);
+  };
+
+  const handleChangeLanguage = (e: ChangeEvent<HTMLInputElement>) => {
+    e.target.checked ? changeLanguage('en') : changeLanguage('ru');
+  };
 
   useEffect(() => {
     return scrollY.onChange((latest) => {
@@ -69,13 +82,13 @@ export function Header(props: { userInfo: AuthUserState }) {
       >
         <div className="header__wrapper">
           <Link to="/" className="header__logo-link">
-            <h1 className="header__logo">Project Management System</h1>
+            <h1 className="header__logo">{t('welcome.title')}</h1>
           </Link>
-          <FormGroup>
+          <FormGroup onChange={(e: ChangeEvent<HTMLInputElement>) => handleChangeLanguage(e)}>
             <Stack direction="row" alignItems="center">
-              <Typography>RU</Typography>
-              <Switch {...label} defaultChecked />
-              <Typography>EN</Typography>
+              <Typography>{t('language.ru')}</Typography>
+              <Switch {...label} defaultChecked={lang === 'en'} />
+              <Typography>{t('language.en')}</Typography>
             </Stack>
           </FormGroup>
           <HeaderMenu authUser={authUser} isLoading={isLoading} />
