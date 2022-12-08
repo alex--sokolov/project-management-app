@@ -377,7 +377,6 @@ export const MultipleContainers = ({
   const taskCreate = useCreateTask();
   const columnsData = data.columnsData;
   const boardId = data.boardData._id;
-  console.log('data', data);
 
   const columnsArr = columnsData.columns;
   // console.log('columnsArr: ', columnsArr);
