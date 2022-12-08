@@ -87,6 +87,7 @@
     "promise-rejected": "Ошибка при выполнении"
   },
   "modal": {
-    "column-delete-confirm-question": "Ты серьезно хочешь удалить колонку?"
+    "column-delete-confirm-question": "Ты серьезно хочешь удалить колонку?",
+    "task-delete-confirm-question": "Ты серьезно хочешь удалить таску?"
   }
 }

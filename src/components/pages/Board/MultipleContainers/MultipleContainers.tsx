@@ -48,6 +48,9 @@ import { TaskForm } from '../Components/Forms/TaskForm';
 import { useCreateTask } from '@/hooks/board/useCreateTask';
 import { useTranslation } from 'react-i18next';
 import { useChangeTasksOrder } from '@/hooks/board/useChangeOrdersInTasks';
+import { Modal } from '@/services/modals';
+import { useModal } from '@/hooks';
+import { useDeleteTask } from '@/hooks/board/useDeleteTask';
 
 // const animateLayoutChanges: AnimateLayoutChanges = (args) =>
 //   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -231,6 +234,7 @@ interface SortableItemProps {
   renderItem(): React.ReactElement;
 
   wrapperStyle({ index }: { index: number }): React.CSSProperties;
+  boardId: string;
 }
 
 function SortableItem({
@@ -243,6 +247,7 @@ function SortableItem({
   containerId,
   getIndex,
   wrapperStyle,
+  boardId,
 }: SortableItemProps) {
   const {
     setNodeRef,
@@ -272,32 +277,76 @@ function SortableItem({
 
   const mounted = useMountStatus();
   const mountedWhileDragging = isDragging && !mounted;
+  const taskDelete = useDeleteTask();
+
+  async function handleRemoveItem(value: string, taskId: UniqueIdentifier): Promise<void> {
+    if (value === 'yes') {
+      // let columnId = null;
+      // for (let i = 0; i < columns.length; i++) {
+      //   const task = columns[i].tasks.find((task) => task._id === taskId);
+      //   if (task) {
+      //     columnId = task.columnId;
+      //     break;
+      //   }
+      // }
+
+      // console.log('taskID', taskId);
+      // console.log('columnId: ', columnId);
+      // console.log('containerId.toString(): ', containerId.toString());
+      // console.log('boardId: ', boardId);
+      await taskDelete.mutateAsync({
+        boardId: boardId,
+        columnId: containerId.toString(),
+        taskId: taskId.toString(),
+      });
+    }
+  }
+  const { t } = useTranslation();
+  const { isModalOpen, close, open } = useModal();
+  const modalType = `${t('modal.column-delete-confirm-question')}`;
 
   return (
-    <Item
-      ref={disabled ? undefined : setNodeRef}
-      value={id}
-      dragging={isDragging}
-      sorting={isSorting}
-      handle={handle}
-      // handleProps={handle ? { ref: setActivatorNodeRef } : undefined}
-      index={index}
-      wrapperStyle={wrapperStyle({ index })}
-      style={style({
-        index,
-        value: id,
-        isDragging,
-        isSorting,
-        overIndex: over ? getIndex(over.id) : overIndex,
-        containerId,
-      })}
-      color={getColor(id)}
-      transition={transition}
-      transform={transform}
-      fadeIn={mountedWhileDragging}
-      listeners={listeners}
-      renderItem={renderItem}
-    />
+    <>
+      <Item
+        ref={disabled ? undefined : setNodeRef}
+        value={id}
+        dragging={isDragging}
+        sorting={isSorting}
+        handle={handle}
+        // handleProps={handle ? { ref: setActivatorNodeRef } : undefined}
+        index={index}
+        wrapperStyle={wrapperStyle({ index })}
+        style={style({
+          index,
+          value: id,
+          isDragging,
+          isSorting,
+          overIndex: over ? getIndex(over.id) : overIndex,
+          containerId,
+        })}
+        onRemove={open}
+        color={getColor(id)}
+        transition={transition}
+        transform={transform}
+        fadeIn={mountedWhileDragging}
+        listeners={listeners}
+        renderItem={renderItem}
+      />
+      <div>
+        {isModalOpen && (
+          <Modal
+            isModalOpen={isModalOpen}
+            text={modalType}
+            handleClick={(value) => {
+              close();
+              if (handleRemoveItem) {
+                handleRemoveItem(value, id).catch((error) => console.log(error));
+              }
+            }}
+          />
+        )}
+      </div>
+    </>
   );
 }
 
@@ -306,7 +355,7 @@ export const MultipleContainers = ({
   // itemCount = 2,
   // cancelDrop,
   columns,
-  handle = false,
+  handle = true,
   data,
   // items: initialItems,
   containerStyle,
@@ -322,13 +371,13 @@ export const MultipleContainers = ({
   scrollable,
 }: Props) => {
   const { t } = useTranslation();
-  // const queryClient = useQueryClient();
+
   const columnDelete = useRemoveColumnById();
   const columnCreate = useCreateColumn();
   const taskCreate = useCreateTask();
   const columnsData = data.columnsData;
-
-  // console.log('data', data);
+  const boardId = data.boardData._id;
+  console.log('data', data);
 
   const columnsArr = columnsData.columns;
   // console.log('columnsArr: ', columnsArr);
@@ -624,6 +673,9 @@ export const MultipleContainers = ({
           isDragging: true,
           isDragOverlay: true,
         })}
+        // onRemove={(value: string): Promise<void> =>
+        //   handleRemoveItem(value, findContainer(id) as UniqueIdentifier)
+        // }
         color={getColor(id)}
         wrapperStyle={wrapperStyle({ index: 0 })}
         renderItem={renderItem}
@@ -658,6 +710,7 @@ export const MultipleContainers = ({
               isSorting: false,
               isDragOverlay: false,
             })}
+            // onRemove={(value: string): Promise<void> => handleRemoveItem(value, containerId)}
             color={getColor(item)}
             wrapperStyle={wrapperStyle({ index })}
             renderItem={renderItem}
@@ -897,6 +950,7 @@ export const MultipleContainers = ({
         >
           {containers.map((containerId) => {
             const containerTitle = getColumnTitle(columnsArr, containerId);
+
             return (
               <DroppableContainer
                 key={containerId}
@@ -923,6 +977,7 @@ export const MultipleContainers = ({
                         renderItem={renderItem as unknown as () => React.ReactElement}
                         containerId={containerId}
                         getIndex={getIndex}
+                        boardId={boardId}
                       />
                     );
                   })}

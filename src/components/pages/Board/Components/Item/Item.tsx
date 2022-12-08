@@ -131,7 +131,7 @@ export const Item = React.memo(
           >
             {value}
             <span className={'Actions'}>
-              {onRemove ? <Remove className={'Remove'} onClick={onRemove} /> : null}
+              {onRemove ? <Remove onClick={onRemove} /> : null}
               {handle ? <Handle {...handleProps} {...listeners} /> : null}
             </span>
           </div>
