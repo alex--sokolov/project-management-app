@@ -23,7 +23,7 @@ import { Auth } from '@/types';
 import { LOGIN_MIN_LENGTH, NAME_MIN_LENGTH, PASSWORD_MIN_LENGTH } from '@/configs/forms';
 import { toastDismiss, userLoggedOut } from '@/services/toasts/toasts';
 import { sleep } from '@/utils/sleep';
-import { TIME_AUTO_CLOSE, TIME_LOGOUT_DELAY } from '@/configs/toasts';
+import { TIME_AUTO_CLOSE, TIME_TOAST_DELAY } from '@/configs/toasts';
 
 export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ export const Authorization: FC<{ formType: Auth }> = ({ formType }) => {
       LocalStorageService.logOutUser();
       queryClient.resetQueries(['authUser']).then(async () => {
         userLoggedOut();
-        await sleep(TIME_AUTO_CLOSE + TIME_LOGOUT_DELAY);
+        await sleep(TIME_AUTO_CLOSE + TIME_TOAST_DELAY);
         toastDismiss();
         navigate('/');
       });

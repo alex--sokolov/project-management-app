@@ -20,7 +20,6 @@ import { TestFiles } from '@/components/pages/TestComponents/TestFiles';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { Auth } from './types';
-import { ToastContainer } from 'react-toastify';
 
 export const App: FC = () => {
   const [queryClient] = useState(

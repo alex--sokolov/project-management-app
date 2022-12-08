@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-// Centralizes modal control
 export const useModal = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 

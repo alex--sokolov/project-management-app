@@ -6,8 +6,10 @@ import { TasksService } from '@/services/api/TasksService';
 import { TIME_AUTO_CLOSE } from '@/configs/toasts';
 import { sleep } from '@/utils/sleep';
 import { Task } from '@/data/models';
+import { useTranslation } from 'react-i18next';
 
 export const useCreateTask = () => {
+  const { t } = useTranslation();
   const toastId = useRef<Id | undefined>(undefined);
   const queryClient = useQueryClient();
   const { data, mutate, mutateAsync } = useMutation({
@@ -20,13 +22,13 @@ export const useCreateTask = () => {
       columnId: string;
       task: Omit<Task, '_id' | 'boardId' | 'columnId'>;
     }) => {
-      toastId.current = toast.loading('Creating new column...');
+      toastId.current = toast.loading(`${t('toasts.task-create-pending')}`);
       return TasksService.createNewTask(boardId, columnId, task);
     },
     onSuccess: async (newTask) => {
       if (toastId.current) {
         await toast.update(toastId.current, {
-          render: 'Task was successfully created',
+          render: `${t('toasts.task-create-success')}`,
           autoClose: TIME_AUTO_CLOSE,
           type: 'success',
           isLoading: false,
@@ -41,7 +43,7 @@ export const useCreateTask = () => {
     onError: async () => {
       if (toastId.current) {
         toast.update(toastId.current, {
-          render: 'Task was not created',
+          render: `${t('toasts.task-create-error')}`,
           autoClose: TIME_AUTO_CLOSE,
           type: 'error',
           isLoading: false,

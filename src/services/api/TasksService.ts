@@ -55,7 +55,7 @@ export const TasksService = {
     });
   },
 
-  async geTasksByListOfTasksIdsOrIdUserOrSearch(
+  async getTasksByListOfTasksIdsOrIdUserOrSearch(
     ids?: string[],
     userId?: string,
     search?: string
@@ -70,5 +70,11 @@ export const TasksService = {
 
   async getAllTasksByBoardId(boardId: string): Promise<Task[]> {
     return await request({ url: `/tasksSet/${boardId}` });
+  },
+
+  async changeTasksOrderInListOfTasks(
+    tasks: Pick<Task, '_id' | 'columnId' | 'order'>[]
+  ): Promise<Task[]> {
+    return await request({ url: '/tasksSet', method: 'patch', data: tasks });
   },
 };

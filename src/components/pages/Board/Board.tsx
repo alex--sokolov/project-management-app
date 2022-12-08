@@ -7,12 +7,14 @@ import { useBoardById } from '@/hooks/board/useBoardById';
 import { User, Board, Column, Task, MultipleProps } from '@/data/models';
 import { boardError } from '@/services/toasts/toasts';
 import { sleep } from '@/utils/sleep';
-import { TIME_AUTO_CLOSE, TIME_LOGOUT_DELAY } from '@/configs/toasts';
+import { TIME_AUTO_CLOSE, TIME_TOAST_DELAY } from '@/configs/toasts';
 import { MultipleContainers } from './MultipleContainers/MultipleContainers';
 import { useColumnsByBoardId } from '@/hooks/board/useColumnsByBoardId';
 import { useTasksByBoardId } from '@/hooks/board/useTasksByBoardId';
+import { useTranslation } from 'react-i18next';
 
 export const BoardComponent = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user: User = useOutletContext();
   const { pathname } = useLocation();
@@ -33,8 +35,8 @@ export const BoardComponent = () => {
         (!boardUsers || !boardUsers.includes(user._id)))
     ) {
       (async () => {
-        boardError(404, 'Board was not found');
-        await sleep(TIME_AUTO_CLOSE + TIME_LOGOUT_DELAY);
+        boardError(404, `${t('toasts.board-not-found')}`);
+        await sleep(TIME_AUTO_CLOSE + TIME_TOAST_DELAY);
         navigate('/boards');
       })();
     } else {
@@ -88,7 +90,8 @@ export const BoardComponent = () => {
             <h1 className="board-header__title">
               {board.title}
               <span className="board-header__owner">
-                ({` `}owner: {user.name}
+                ({` `}
+                {t('board.owner')}: {user.name}
                 {`< ${user.login}>`}
                 {` `})
               </span>

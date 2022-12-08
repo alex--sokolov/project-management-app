@@ -25,8 +25,11 @@ import { Modal } from '@/services/modals';
 import Button from '@mui/material/Button';
 import { TIME_AUTO_CLOSE } from '@/configs/toasts';
 import { sleep } from '@/utils/sleep';
+import { useTranslation } from 'react-i18next';
 
 export const Profile: FC = () => {
+  const { t } = useTranslation();
+
   const user = useOutletContext<User>();
   const [userName, setUserName] = useState(user.name);
   const [userLogin, setUserLogin] = useState(user.login);
@@ -77,11 +80,11 @@ export const Profile: FC = () => {
 
   return (
     <div className="profile">
-      <h4 style={{ textAlign: 'center', color: 'dodgerblue' }}>You can change your info</h4>
+      <h4 style={{ textAlign: 'center', color: 'dodgerblue' }}>{t('profile.title')}</h4>
       {user ? (
         <form onSubmit={handleSubmit(onUpdate)} className="profile__form">
           <div className="profile__element">
-            <label htmlFor="name">User name:</label>
+            <label htmlFor="name">{t('profile.user-name')}:</label>
             <Controller
               control={control}
               name={'name'}
@@ -104,7 +107,7 @@ export const Profile: FC = () => {
             </p>
           </div>
           <div className="profile__element">
-            <label htmlFor="login">User email:</label>
+            <label htmlFor="login">{t('profile.user-login')}:</label>
             <Controller
               control={control}
               name={'login'}
@@ -127,7 +130,7 @@ export const Profile: FC = () => {
             </p>
           </div>
           <div className="profile__element">
-            <label htmlFor="password">New password:</label>
+            <label htmlFor="password">{t('profile.user-password')}:</label>
             <Controller
               control={control}
               name={'password'}
@@ -158,7 +161,7 @@ export const Profile: FC = () => {
             type="submit"
             disabled={isSubmitting || !isValid}
           >
-            Update user
+            {t('profile.update-btn')}
           </Button>
         </form>
       ) : (

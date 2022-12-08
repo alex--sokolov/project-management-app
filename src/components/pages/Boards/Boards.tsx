@@ -6,8 +6,11 @@ import { useBoardDelete } from '@/hooks/useBoardDelete';
 import { Board, User } from '@/data/models';
 import { BoardForm } from './BoardForm/BoardForm';
 import { useOutletContext } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export const Boards = () => {
+  const { t } = useTranslation();
+
   const user = useOutletContext<User>();
 
   const boards = useBoardsList(user._id);
@@ -27,7 +30,7 @@ export const Boards = () => {
 
   return (
     <>
-      <h2>Your boards:</h2>
+      <h2 style={{ marginLeft: '15px' }}>{t('main.boards-title')}</h2>
       <div className="boards">
         {boards.data?.map((board: Board) => (
           <UserBoard key={board._id} boardData={board} deleteBoard={deleteBoard} />

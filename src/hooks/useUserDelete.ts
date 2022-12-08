@@ -6,20 +6,22 @@ import { UsersService } from '@/services/api/UsersService';
 import { LocalStorageService } from '@/services/localStorage';
 import { TIME_AUTO_CLOSE } from '@/configs/toasts';
 import { sleep } from '@/utils/sleep';
+import { useTranslation } from 'react-i18next';
 
 export const useUserDelete = () => {
   const toastId = useRef<Id | undefined>(undefined);
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { data, mutate, mutateAsync } = useMutation({
     mutationFn: (userId: string) => {
-      toastId.current = toast.loading('Deleting the user...');
+      toastId.current = toast.loading(`${t('toasts.user-delete-pending')}`);
       return UsersService.deleteUserById(userId);
     },
     onSuccess: async () => {
       LocalStorageService.logOutUser();
       if (toastId.current) {
         await toast.update(toastId.current, {
-          render: 'User deleted successfully',
+          render: `${t('toasts.user-delete-success')}`,
           autoClose: TIME_AUTO_CLOSE,
           type: 'success',
           isLoading: false,
@@ -32,9 +34,9 @@ export const useUserDelete = () => {
       LocalStorageService.logOutUser();
       if (toastId.current) {
         await toast.update(toastId.current, {
-          render: 'User deleted successfully',
+          render: `${t('toasts.user-delete-error')}`,
           autoClose: TIME_AUTO_CLOSE,
-          type: 'success',
+          type: 'error',
           isLoading: false,
         });
       }

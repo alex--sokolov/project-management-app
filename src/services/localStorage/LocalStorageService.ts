@@ -1,4 +1,4 @@
-import { LS_TOKEN_KEY } from '@/configs/localStorage';
+import { LS_LANG, LS_TOKEN_KEY } from '@/configs/localStorage';
 
 export const LocalStorageService = {
   saveToken(token: string) {
@@ -11,5 +11,13 @@ export const LocalStorageService = {
 
   logOutUser() {
     localStorage.removeItem(LS_TOKEN_KEY);
+  },
+
+  getLang() {
+    return localStorage.getItem(LS_LANG);
+  },
+
+  setLang(lang: string) {
+    localStorage.setItem(LS_LANG, lang);
   },
 };

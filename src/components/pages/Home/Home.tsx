@@ -1,32 +1,14 @@
 import './Home.scss';
 import { useTranslation } from 'react-i18next';
-import { FormGroup, Stack, Typography } from '@mui/material';
-import Switch from '@mui/material/Switch';
-import { ChangeEvent } from 'react';
-
-enum LangEnum {
-  en = 'EN',
-  ru = 'RU',
-}
 
 export const Home = () => {
   const className = 'welcome__team-card-image_';
-  const { t, i18n } = useTranslation();
-
-  const changeLanguage = (language: string) => {
-    i18n.changeLanguage(language);
-  };
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    e.target.checked ? changeLanguage('en') : changeLanguage('ru');
-  };
+  const { t } = useTranslation();
 
   const team: string[] = t('welcome.team', { returnObjects: true });
   const features: string[] = t('welcome.features', { returnObjects: true });
   const position: string[] = t('welcome.position', { returnObjects: true });
   const role: string[] = t('welcome.role', { returnObjects: true });
-
-  const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
   return (
     <>
@@ -35,13 +17,6 @@ export const Home = () => {
           <h2 className="welcome__title">{t('welcome.title')}</h2>
           <p className="welcome__title-desc">{t('welcome.desc')}</p>
         </div>
-        <FormGroup onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}>
-          <Stack direction="row" alignItems="center">
-            <Typography>{LangEnum.ru}</Typography>
-            <Switch {...label} defaultChecked />
-            <Typography>{LangEnum.en}</Typography>
-          </Stack>
-        </FormGroup>
         <div className="welcome__features-container">
           <span className="welcome__features-desc">{t('welcome.features-desc')}</span>
           <ul className="welcome__features">

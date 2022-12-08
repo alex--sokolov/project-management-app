@@ -7,6 +7,7 @@ import { Remove } from '../Remove';
 import './Container.scss';
 import { Modal } from '@/services/modals';
 import { useModal } from '@/hooks';
+import { useTranslation } from 'react-i18next';
 
 export interface Props {
   children: React.ReactNode;
@@ -44,9 +45,10 @@ export const Container = forwardRef<HTMLDivElement, Props>(
     }: Props,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
+    const { t } = useTranslation();
     const Component = onClick ? 'button' : 'div';
     const { isModalOpen, close, open } = useModal();
-    const modalType = 'Do you want to delete the column?';
+    const modalType = `${t('modal.column-delete-confirm-question')}`;
     return (
       <Component
         {...props}

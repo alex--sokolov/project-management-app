@@ -59,7 +59,7 @@ export const TestTasks = () => {
     // const ids = [taskId1, taskId];
     // const search = undefined;
     const search = 'New';
-    const getByList = await TasksService.geTasksByListOfTasksIdsOrIdUserOrSearch(
+    const getByList = await TasksService.getTasksByListOfTasksIdsOrIdUserOrSearch(
       ids,
       userId,
       search

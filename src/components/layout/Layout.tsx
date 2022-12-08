@@ -21,6 +21,7 @@ export const Layout = () => {
       setIsLoading(false);
     }
   }, [user]);
+
   return (
     <>
       <ToastContainer />

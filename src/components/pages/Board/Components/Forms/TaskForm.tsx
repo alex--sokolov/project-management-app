@@ -6,6 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { FC, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Button from '@mui/material/Button';
+import { useTranslation } from 'react-i18next';
 
 const defaultColumnFields = {
   title: '',
@@ -33,6 +34,7 @@ export const TaskForm: FC<{
     defaultValues: defaultColumnFields,
   });
   const [isFormOpened, setIsFormOpened] = useState(false);
+  const { t } = useTranslation();
   const onCreateBtnHandler = () => {
     setIsFormOpened(true);
   };
@@ -52,7 +54,7 @@ export const TaskForm: FC<{
           <Fab color="secondary" aria-label="edit" onClick={onCreateBtnHandler}>
             <AddIcon />
           </Fab>{' '}
-          + Add Task
+          + {t('board.add-task')}
         </>
       ) : (
         <>
@@ -117,7 +119,7 @@ export const TaskForm: FC<{
               </p>
             </div>
             <Button type="submit" variant="contained">
-              Add task
+              {t('board.add-task')}
             </Button>
           </form>
         </>
