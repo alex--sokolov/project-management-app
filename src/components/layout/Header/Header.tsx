@@ -13,10 +13,26 @@ import { Link } from 'react-router-dom';
 import i18n, { lang } from '@/i18n';
 import { useTranslation } from 'react-i18next';
 import { LocalStorageService } from '@/services/localStorage';
+import { alpha, styled } from '@mui/material/styles';
 
 const scrollThreshold = [0, 50];
 
 const label = { inputProps: { 'aria-label': 'Switch demo' } };
+
+const GreenSwitch = styled(Switch)(({ theme }) => {
+  const color = '#0ed1d1';
+  return {
+    '& .MuiSwitch-switchBase.Mui-checked': {
+      color: color,
+      '&:hover': {
+        backgroundColor: alpha(color, theme.palette.action.hoverOpacity),
+      },
+    },
+    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+      backgroundColor: color,
+    },
+  };
+});
 
 export function Header(props: { userInfo: AuthUserState }) {
   const { t } = useTranslation();
@@ -28,8 +44,10 @@ export function Header(props: { userInfo: AuthUserState }) {
   const lastScrollDirection = useRef<string>();
   const pixelsScrolled = useMotionValue(0);
   const height = useTransform(pixelsScrolled, scrollThreshold, [130, 70]);
-  const backgroundOpacity = useTransform(pixelsScrolled, scrollThreshold, [1, 0.4]);
-  const backgroundColorTemplate = useMotionTemplate`rgba(116 109 117 / ${backgroundOpacity})`;
+  const backgroundOpacity = useTransform(pixelsScrolled, scrollThreshold, [1, 0.9]);
+  const scale = useTransform(pixelsScrolled, scrollThreshold, [1, 0.7]);
+  const backgroundColorTemplate = useMotionTemplate`rgba(24 87 94 / ${backgroundOpacity})`;
+  const logoScale = useMotionTemplate`scale(${scale})`;
 
   const changeLanguage = async (language: string) => {
     await i18n.changeLanguage(language);
@@ -82,12 +100,19 @@ export function Header(props: { userInfo: AuthUserState }) {
       >
         <div className="header__wrapper">
           <Link to="/" className="header__logo-link">
-            <h1 className="header__logo">{t('welcome.title')}</h1>
+            <motion.h1
+              className="header__logo"
+              style={{
+                transform: logoScale,
+              }}
+            >
+              {t('welcome.title')}
+            </motion.h1>
           </Link>
           <FormGroup onChange={(e: ChangeEvent<HTMLInputElement>) => handleChangeLanguage(e)}>
             <Stack direction="row" alignItems="center">
               <Typography>{t('language.ru')}</Typography>
-              <Switch {...label} defaultChecked={lang === 'en'} />
+              <GreenSwitch {...label} defaultChecked={lang === 'en'} />
               <Typography>{t('language.en')}</Typography>
             </Stack>
           </FormGroup>

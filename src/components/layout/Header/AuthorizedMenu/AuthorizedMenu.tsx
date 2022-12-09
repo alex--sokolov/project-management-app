@@ -2,35 +2,12 @@ import { Link } from 'react-router-dom';
 import { PropsType } from '@/types';
 import Avatar from '@mui/material/Avatar';
 import { useTranslation } from 'react-i18next';
+import { stringAvatar } from '@/utils/avatar';
 
 export const AuthorizedMenu = (props: PropsType) => {
   const { t } = useTranslation();
+  const name = props.name as string;
 
-  function stringToColor(string: string) {
-    let hash = 0;
-    let i;
-
-    for (i = 0; i < string.length; i += 1) {
-      hash = string.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    let color = '#';
-
-    for (i = 0; i < 3; i += 1) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += `00${value.toString(16)}`.slice(-2);
-    }
-
-    return color;
-  }
-  function stringAvatar(name: string) {
-    return {
-      sx: {
-        bgcolor: stringToColor(name),
-      },
-      children: `${name[0]}${name[1]}`.toUpperCase(),
-    };
-  }
   return (
     <nav className="header__nav">
       <ul className={props.direction}>
@@ -51,10 +28,9 @@ export const AuthorizedMenu = (props: PropsType) => {
         </li>
         <li className="header__list-item_name">
           <div>
-            <Avatar {...stringAvatar('potter')} />
-            {/* Hello
-            <br />
-            {props.name}! */}
+            <Avatar
+              {...stringAvatar(name, { width: '40px', height: '40px', fontSize: '1.25rem' })}
+            />
           </div>
         </li>
         <li className="header__list-item">

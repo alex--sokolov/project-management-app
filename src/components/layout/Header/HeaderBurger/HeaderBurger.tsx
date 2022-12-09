@@ -36,7 +36,7 @@ export function HeaderBurger({
   };
 
   return (
-    <Box sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}>
+    <Box sx={{ display: { xs: 'block', sm: 'block', lg: 'none' } }}>
       <ThemeProvider theme={theme}>
         <IconButton
           size="large"
@@ -55,9 +55,11 @@ export function HeaderBurger({
       </ThemeProvider>
       <Menu
         id="fade-menu"
+        sx={{ display: { xs: 'block', sm: 'block', lg: 'none' } }}
         MenuListProps={{
           'aria-labelledby': 'fade-button',
         }}
+        disableScrollLock={true}
         anchorEl={anchorEl}
         open={openIt}
         onClose={handleClose}
@@ -68,7 +70,7 @@ export function HeaderBurger({
             <Spinner isLoading={true} />
           </div>
         ) : !!authUser ? (
-          <AuthorizedMenu direction={EMenu.row} name={authUser?.name} />
+          <AuthorizedMenu direction={EMenu.column} name={authUser?.name} />
         ) : (
           <UnAuthorizedMenu />
         )}

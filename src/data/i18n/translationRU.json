@@ -40,6 +40,8 @@
     "user-name": "Имя",
     "user-login": "Е-мейл",
     "user-password": "Пароль",
+    "edit": "Изменить инфо",
+    "delete": "Удалить",
     "update-btn": "Обновить"
   },
   "toasts": {

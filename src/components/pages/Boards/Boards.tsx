@@ -30,7 +30,7 @@ export const Boards = () => {
 
   return (
     <>
-      <h2 style={{ marginLeft: '15px' }}>{t('main.boards-title')}</h2>
+      <h2 className="page-name">{t('main.boards-title')}</h2>
       <div className="boards">
         {boards.data?.map((board: Board) => (
           <UserBoard key={board._id} boardData={board} deleteBoard={deleteBoard} />

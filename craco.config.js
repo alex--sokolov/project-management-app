@@ -12,11 +12,7 @@ module.exports = {
     {
       plugin: sassResourcesLoader,
       options: {
-        resources: [
-          './src/assets/styles/globals.scss',
-          './src/assets/styles/colors.scss',
-          './src/assets/styles/mixins.scss',
-        ],
+        resources: ['./src/assets/styles/main.scss'],
       },
     },
   ],
