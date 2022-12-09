@@ -282,19 +282,6 @@ function SortableItem({
 
   async function handleRemoveItem(value: string, taskId: UniqueIdentifier): Promise<void> {
     if (value === 'yes') {
-      // let columnId = null;
-      // for (let i = 0; i < columns.length; i++) {
-      //   const task = columns[i].tasks.find((task) => task._id === taskId);
-      //   if (task) {
-      //     columnId = task.columnId;
-      //     break;
-      //   }
-      // }
-
-      // console.log('taskID', taskId);
-      // console.log('columnId: ', columnId);
-      // console.log('containerId.toString(): ', containerId.toString());
-      // console.log('boardId: ', boardId);
       await taskDelete.mutateAsync({
         boardId: boardId,
         columnId: containerId.toString(),
@@ -476,7 +463,7 @@ export const MultipleContainers = ({
     // const isItemsAmountChanged = checkChangingItemsAmount(items, myItems);
     (async () => {
       if (isOrderColumnsChanged && !wasChanged) {
-        if (columnsArr.length > 1) {
+        if (columnsArr.length >= 1) {
           const columnsArrNewOrder = columnsArr.map((column: ColumnWithTasks, index: number) => ({
             _id: column._id,
             order: index,

@@ -53,6 +53,8 @@
     "user-name": "User-name",
     "user-login": "User email",
     "user-password": "New password",
+    "edit": "Edit info",
+    "delete": "Delete user",
     "update-btn": "update"
   },
   "toasts": {

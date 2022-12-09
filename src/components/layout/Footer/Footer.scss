@@ -71,8 +71,11 @@
     &-img {
       height: 30px;
       width: 30px;
-      background: url('../../../../public/github.svg') no-repeat;
-      background-size: contain;
+      mask: url('../../../../public/github.svg') no-repeat;
+      -webkit-mask: url('../../../../public/github.svg') no-repeat;
+      mask-size: contain;
+      -webkit-mask-size: contain;
+      background: $white-color;
 
       @include small-tablet {
         height: 25px;

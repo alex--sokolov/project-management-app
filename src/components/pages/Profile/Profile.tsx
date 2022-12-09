@@ -2,8 +2,9 @@ import './Profile.scss';
 
 import { FC, useRef, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-
 import { SubmitHandler, useForm, Controller } from 'react-hook-form';
+
+import EditIcon from '@mui/icons-material/Edit';
 
 import { useModal, useUserDelete, useUserUpdate } from '@/hooks';
 
@@ -19,13 +20,14 @@ import {
 
 import { LOGIN_MIN_LENGTH, NAME_MIN_LENGTH, PASSWORD_MIN_LENGTH } from '@/configs/forms';
 
-import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Modal } from '@/services/modals';
 import Button from '@mui/material/Button';
 import { TIME_AUTO_CLOSE } from '@/configs/toasts';
 import { sleep } from '@/utils/sleep';
 import { useTranslation } from 'react-i18next';
+import Avatar from '@mui/material/Avatar';
+import { stringAvatar } from '@/utils/avatar';
 
 export const Profile: FC = () => {
   const { t } = useTranslation();
@@ -55,15 +57,19 @@ export const Profile: FC = () => {
     data._id = user._id;
     await editUser(data);
     await sleep(TIME_AUTO_CLOSE);
+    setIsEditMode(false);
   };
 
   const onDelete = (value: string) => {
     if (value === 'yes') {
       deleteUser();
+      setIsEditMode(false);
     }
     close();
     return value;
   };
+
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const {
     handleSubmit,
@@ -79,91 +85,131 @@ export const Profile: FC = () => {
   });
 
   return (
-    <div className="profile">
-      <h4 style={{ textAlign: 'center', color: 'dodgerblue' }}>{t('profile.title')}</h4>
+    <>
+      <h2 className="page-name">{t('profile.title')}</h2>
       {user ? (
-        <form onSubmit={handleSubmit(onUpdate)} className="profile__form">
-          <div className="profile__element">
-            <label htmlFor="name">{t('profile.user-name')}:</label>
-            <Controller
-              control={control}
-              name={'name'}
-              rules={makeValidationObj(NAME_MIN_LENGTH, onlyWordsPattern, onlyWordsErrMsg)}
-              render={({ field: { onChange, name } }) => (
-                <input
-                  type="text"
-                  className="profile__input"
-                  value={userName}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    onChange({ target: { name, value: value } });
-                    setUserName(value);
+        <div className="profile">
+          <div className="profile-authUser">
+            <div className="profile-authUser__avatar">
+              <Avatar
+                {...stringAvatar(user.name, { width: '240px', height: '240px', fontSize: '4rem' })}
+              />
+            </div>
+            <div className="profile-name">
+              <div className="profile-name__title">Name:</div>
+              <div className="profile-name__value">{user.name}</div>
+            </div>
+            <div className="profile-login">
+              <div className="profile-login__title">Login:</div>
+              <div className="profile-login__value">{user.login}</div>
+            </div>
+
+            <div className="profile-actions">
+              {isEditMode ? (
+                <></>
+              ) : (
+                <div
+                  className="profile-actions__edit"
+                  onClick={() => {
+                    setIsEditMode(true);
                   }}
-                />
+                >
+                  {t('profile.edit')}
+                  <EditIcon aria-label="edit info" style={{ fontSize: '2rem' }} />
+                </div>
               )}
-            />
-            <p className="error">
-              {errors.name && <span className="error__show">{errors.name.message}</span>}
-            </p>
+              <div className="profile-actions__delete" onClick={open}>
+                {t('profile.delete')}
+                <DeleteIcon aria-label="delete" style={{ fontSize: '2rem' }} />
+              </div>
+            </div>
           </div>
-          <div className="profile__element">
-            <label htmlFor="login">{t('profile.user-login')}:</label>
-            <Controller
-              control={control}
-              name={'login'}
-              rules={makeValidationObj(LOGIN_MIN_LENGTH, emailPattern, emailErrMsg)}
-              render={({ field: { onChange, name } }) => (
-                <input
-                  type="text"
-                  className="profile__input"
-                  value={userLogin}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    onChange({ target: { name, value: value } });
-                    setUserLogin(value);
-                  }}
+          {isEditMode ? (
+            <form onSubmit={handleSubmit(onUpdate)} className="profile__form">
+              <div className="profile__element">
+                <label htmlFor="name">{t('profile.user-name')}:</label>
+                <Controller
+                  control={control}
+                  name={'name'}
+                  rules={makeValidationObj(NAME_MIN_LENGTH, onlyWordsPattern, onlyWordsErrMsg)}
+                  render={({ field: { onChange, name } }) => (
+                    <input
+                      type="text"
+                      className="profile__input"
+                      value={userName}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        onChange({ target: { name, value: value } });
+                        setUserName(value);
+                      }}
+                    />
+                  )}
                 />
-              )}
-            />
-            <p className="error">
-              {errors.login && <span className="error__show">{errors.login.message}</span>}
-            </p>
-          </div>
-          <div className="profile__element">
-            <label htmlFor="password">{t('profile.user-password')}:</label>
-            <Controller
-              control={control}
-              name={'password'}
-              rules={makeValidationObj(PASSWORD_MIN_LENGTH)}
-              render={({ field: { onChange, name } }) => (
-                <input
-                  type="password"
-                  className="profile__input"
-                  value={userPassword}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    onChange({ target: { name, value: value } });
-                    setUserPassword(value);
-                  }}
+                <p className="error">
+                  {errors.name && <span className="error__show">{errors.name.message}</span>}
+                </p>
+              </div>
+              <div className="profile__element">
+                <label htmlFor="login">{t('profile.user-login')}:</label>
+                <Controller
+                  control={control}
+                  name={'login'}
+                  rules={makeValidationObj(LOGIN_MIN_LENGTH, emailPattern, emailErrMsg)}
+                  render={({ field: { onChange, name } }) => (
+                    <input
+                      type="text"
+                      className="profile__input"
+                      value={userLogin}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        onChange({ target: { name, value: value } });
+                        setUserLogin(value);
+                      }}
+                    />
+                  )}
                 />
-              )}
-            />
-            <p className="error">
-              {errors.password && <span className="error__show">{errors.password.message}</span>}
-            </p>
-          </div>
-          <IconButton aria-label="delete" onClick={open}>
-            <DeleteIcon />
-          </IconButton>
-          <Button
-            ref={submitBtn}
-            variant="contained"
-            type="submit"
-            disabled={isSubmitting || !isValid}
-          >
-            {t('profile.update-btn')}
-          </Button>
-        </form>
+                <p className="error">
+                  {errors.login && <span className="error__show">{errors.login.message}</span>}
+                </p>
+              </div>
+              <div className="profile__element">
+                <label htmlFor="password">{t('profile.user-password')}:</label>
+                <Controller
+                  control={control}
+                  name={'password'}
+                  rules={makeValidationObj(PASSWORD_MIN_LENGTH)}
+                  render={({ field: { onChange, name } }) => (
+                    <input
+                      type="password"
+                      className="profile__input"
+                      value={userPassword}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        onChange({ target: { name, value: value } });
+                        setUserPassword(value);
+                      }}
+                    />
+                  )}
+                />
+                <p className="error">
+                  {errors.password && (
+                    <span className="error__show">{errors.password.message}</span>
+                  )}
+                </p>
+              </div>
+              <Button
+                ref={submitBtn}
+                variant="contained"
+                type="submit"
+                disabled={isSubmitting || !isValid}
+              >
+                {t('profile.update-btn')}
+              </Button>
+            </form>
+          ) : (
+            <></>
+          )}
+        </div>
       ) : (
         <></>
       )}
@@ -176,6 +222,6 @@ export const Profile: FC = () => {
           />
         )}
       </div>
-    </div>
+    </>
   );
 };

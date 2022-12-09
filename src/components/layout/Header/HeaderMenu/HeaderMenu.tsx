@@ -14,7 +14,7 @@ export const HeaderMenu = ({
   isLoading: boolean;
 }) => {
   return (
-    <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
+    <Box sx={{ display: { xs: 'none', sm: 'none', lg: 'block' } }}>
       {isLoading ? (
         <Spinner isLoading={isLoading} />
       ) : !!authUser ? (
