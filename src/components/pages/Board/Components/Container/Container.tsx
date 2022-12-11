@@ -74,7 +74,7 @@ export const Container = forwardRef<HTMLDivElement, Props>(
       >
         {label ? (
           <div className={'Header'}>
-            {label}
+            {t('board.column')} <span className="column-title"> {label} </span>
             <div className={'Actions'}>
               <Remove onClick={open} />
               <Handle {...handleProps} />

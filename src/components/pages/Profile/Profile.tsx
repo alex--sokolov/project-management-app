@@ -2,20 +2,20 @@ import './Profile.scss';
 
 import { FC, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
+import { Box, Modal } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+
+import { stringAvatar } from '@/utils/avatar';
+import { ModalConfirm } from '@/components/shared/ModalConfirm';
+import { ProfileEditForm } from '@/components/pages/Profile/ProfileEditForm';
 
 import { useModal, useUserDelete } from '@/hooks';
 
 import { User } from '@/data/models';
-
-import DeleteIcon from '@mui/icons-material/Delete';
-import { useTranslation } from 'react-i18next';
-import Avatar from '@mui/material/Avatar';
-import { stringAvatar } from '@/utils/avatar';
-import { ModalConfirm } from '@/components/shared/ModalConfirm';
-import { ProfileEditForm } from '@/components/pages/Profile/ProfileEditForm';
-import { Box, Modal } from '@mui/material';
 
 const style = {
   position: 'absolute',

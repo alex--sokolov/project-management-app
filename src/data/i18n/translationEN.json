@@ -45,12 +45,16 @@
   "board": {
     "owner": "Owner",
     "column": "Column",
+    "task-title": "Task title",
+    "task-description": "Task description",
+    "column-title": "Column title",
+    "column-order": "Column order",
     "add-task": "Add task",
     "add-column": "Add column"
   },
   "profile": {
-    "title": "You can change your info",
-    "user-name": "User-name",
+    "title": "User profile",
+    "user-name": "User name",
     "user-login": "User email",
     "user-password": "New password",
     "edit": "Edit info",
@@ -107,5 +111,13 @@
   "modal": {
     "column-delete-confirm-question": "Do you want to delete the column?",
     "task-delete-confirm-question": "Do you want to delete the task?"
+  },
+  "forms-errors": {
+    "required": "this field is required",
+    "add-column-title": {
+      "min-length": "you must enter at least 4 letters",
+      "max-length": "you must enter less, than 25 letters"
+    },
+    "add-column-order": "Must be a positive number in range "
   }
 }
