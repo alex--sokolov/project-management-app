@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { Backdrop } from '@/services/modals';
-import './Modal.scss';
+import { Backdrop } from './index';
+import './ModalConfirm.scss';
 import { EModal } from '@/types';
 
 const dropIn = {
@@ -30,7 +30,7 @@ type Props = {
   text: string;
 };
 
-export const Modal = ({ handleClick, text }: Props) => {
+export const ModalConfirm = ({ handleClick, text }: Props) => {
   return (
     <Backdrop onClick={() => handleClick}>
       <motion.div

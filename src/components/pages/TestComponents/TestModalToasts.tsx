@@ -4,7 +4,7 @@ import { ToastContainer } from 'react-toastify';
 
 import { useModal } from '@/hooks';
 import { dataFetching, taskNotCompleted, taskSucceed } from '@/services/toasts';
-import { Modal } from '@/services/modals';
+import { ModalConfirm } from '@/components/shared/ModalConfirm';
 
 export const TestModalToasts = () => {
   const { isModalOpen, close, open } = useModal();
@@ -37,7 +37,7 @@ export const TestModalToasts = () => {
       <ToastContainer />
       <div>
         {isModalOpen && (
-          <Modal
+          <ModalConfirm
             isModalOpen={isModalOpen}
             text={modalType}
             handleClick={(modalType) => handleClick(modalType)}

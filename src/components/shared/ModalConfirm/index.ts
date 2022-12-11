@@ -1,2 +1,2 @@
-export { Modal } from './Modal/Modal';
+export { ModalConfirm } from './ModalConfirm';
 export { Backdrop } from './Backdrop/Backdrop';

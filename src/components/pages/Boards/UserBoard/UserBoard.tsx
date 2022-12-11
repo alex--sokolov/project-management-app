@@ -8,7 +8,7 @@ import Fab from '@mui/material/Fab';
 
 import { useModal } from '@/hooks';
 import { Board } from '@/data/models';
-import { Modal } from '@/services/modals';
+import { ModalConfirm } from '@/components/shared/ModalConfirm';
 
 export const UserBoard: FC<{ boardData: Board; deleteBoard: (boardId: string) => void }> = ({
   boardData,
@@ -49,7 +49,7 @@ export const UserBoard: FC<{ boardData: Board; deleteBoard: (boardId: string) =>
       </div>
 
       {isModalOpen && (
-        <Modal
+        <ModalConfirm
           isModalOpen={isModalOpen}
           text={modalType}
           handleClick={(modalType) => handleClick(modalType)}
