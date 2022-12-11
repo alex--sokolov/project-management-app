@@ -5,9 +5,9 @@ import { Handle } from '../Handle';
 import { Remove } from '../Remove';
 
 import './Container.scss';
-import { Modal } from '@/services/modals';
 import { useModal } from '@/hooks';
 import { useTranslation } from 'react-i18next';
+import { ModalConfirm } from '@/components/shared/ModalConfirm';
 
 export interface Props {
   children: React.ReactNode;
@@ -84,7 +84,7 @@ export const Container = forwardRef<HTMLDivElement, Props>(
         {placeholder ? children : <ul>{children}</ul>}
         <div>
           {isModalOpen && (
-            <Modal
+            <ModalConfirm
               isModalOpen={isModalOpen}
               text={modalType}
               handleClick={(value) => {

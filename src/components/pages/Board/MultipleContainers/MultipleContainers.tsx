@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import {
   CancelDrop,
   // closestCenter,
@@ -33,12 +34,12 @@ import {
   horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { coordinateGetter as multipleContainersCoordinateGetter } from './multipleContainersKeyboardCoordinates';
 
+import { coordinateGetter as multipleContainersCoordinateGetter } from './multipleContainersKeyboardCoordinates';
 import { Item } from '../Components/Item';
 import { Container } from '../Components/Container';
-import type { ContainerProps } from '../Components/Container';
 
+import type { ContainerProps } from '../Components/Container';
 import { ColumnWithTasks, MultipleProps, Task } from '@/data/models';
 import { useRemoveColumnById } from '@/hooks/board/useRemoveColumnById';
 import { useChangeColumnsOrder } from '@/hooks/board/useChangeOrdersInColumns';
@@ -46,11 +47,10 @@ import { ColumnForm } from '@/components/pages/Board/Components/Forms';
 import { useCreateColumn } from '@/hooks/board/useCreateColumn';
 import { TaskForm } from '../Components/Forms/TaskForm';
 import { useCreateTask } from '@/hooks/board/useCreateTask';
-import { useTranslation } from 'react-i18next';
 import { useChangeTasksOrder } from '@/hooks/board/useChangeOrdersInTasks';
-import { Modal } from '@/services/modals';
 import { useModal } from '@/hooks';
 import { useDeleteTask } from '@/hooks/board/useDeleteTask';
+import { ModalConfirm } from '@/components/shared/ModalConfirm';
 
 // const animateLayoutChanges: AnimateLayoutChanges = (args) =>
 //   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -323,7 +323,7 @@ function SortableItem({
       />
       <div>
         {isModalOpen && (
-          <Modal
+          <ModalConfirm
             isModalOpen={isModalOpen}
             text={modalType}
             handleClick={(value) => {

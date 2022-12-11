@@ -1,6 +1,6 @@
 .profile {
   margin: 15px;
-  @include flexRow(flex-start, flex-start);
+  @include flexRow(center, flex-start);
 
   .profile-authUser {
     display: block;
