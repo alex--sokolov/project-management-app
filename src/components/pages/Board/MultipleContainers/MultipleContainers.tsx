@@ -43,7 +43,6 @@ import type { ContainerProps } from '../Components/Container';
 import { ColumnWithTasks, MultipleProps, Task } from '@/data/models';
 import { useRemoveColumnById } from '@/hooks/board/useRemoveColumnById';
 import { useChangeColumnsOrder } from '@/hooks/board/useChangeOrdersInColumns';
-import { ColumnForm } from '@/components/pages/Board/Components/Forms';
 import { useCreateColumn } from '@/hooks/board/useCreateColumn';
 import { TaskForm } from '../Components/Forms/TaskForm';
 import { useCreateTask } from '@/hooks/board/useCreateTask';
@@ -51,6 +50,7 @@ import { useChangeTasksOrder } from '@/hooks/board/useChangeOrdersInTasks';
 import { useModal } from '@/hooks';
 import { useDeleteTask } from '@/hooks/board/useDeleteTask';
 import { ModalConfirm } from '@/components/shared/ModalConfirm';
+import { ColumnFormCreate } from '@/components/pages/Board/Components/Forms';
 
 // const animateLayoutChanges: AnimateLayoutChanges = (args) =>
 //   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -364,12 +364,11 @@ export const MultipleContainers = ({
   const columnDelete = useRemoveColumnById();
   const columnCreate = useCreateColumn();
   const taskCreate = useCreateTask();
+  const columnsOrder = useChangeColumnsOrder();
+  const tasksOrder = useChangeTasksOrder();
   const columnsData = data.columnsData;
   const boardId = data.boardData._id;
-
   const columnsArr = columnsData.columns;
-  // console.log('columnsArr: ', columnsArr);
-
   const myItems = useMemo(
     () =>
       columnsArr.reduce((acc, column) => {
@@ -379,20 +378,23 @@ export const MultipleContainers = ({
       }, {}),
     [columnsArr]
   );
-  // console.log('myItems', myItems);
   const [items, setItems] = useState<Items>(myItems);
-
+  const [containers, setContainers] = useState(Object.keys(items) as UniqueIdentifier[]);
   const [needToChangeOrder, setNeedToChangeOrder] = useState(false);
   const [activeColumn, setActiveColumn] = useState<UniqueIdentifier | null>(null);
 
+  const [wasChanged, setWasChanged] = useState(false);
+  const [isColumnDeleted, setIsColumnDeleted] = useState(false);
+
   useEffect(() => {
-    if (myItems !== items && needToChangeOrder) {
+    if (JSON.stringify(myItems) !== JSON.stringify(items) && needToChangeOrder) {
       const itemsSorted = Object.entries(items).filter((column) => {
         const columnBack = Object.entries(myItems).find((value) => {
           return column[0] === value[0];
         });
         return columnBack && column[1].length !== (columnBack[1] as string[])?.length;
       });
+
       if (itemsSorted.length === 2) {
         const tasksArrNewOrder = itemsSorted.map((column) => {
           const columnId = column[0];
@@ -403,7 +405,6 @@ export const MultipleContainers = ({
           }));
           return [...tasks];
         });
-
         tasksOrder.mutate(tasksArrNewOrder.flat(1));
       }
       if (itemsSorted.length === 0 && activeColumn) {
@@ -419,13 +420,6 @@ export const MultipleContainers = ({
     setNeedToChangeOrder(false);
     setActiveColumn(null);
   }, [items, needToChangeOrder]);
-
-  const columnsOrder = useChangeColumnsOrder();
-  const tasksOrder = useChangeTasksOrder();
-
-  const [containers, setContainers] = useState(Object.keys(items) as UniqueIdentifier[]);
-
-  const [wasChanged, setWasChanged] = useState(false);
 
   useEffect(() => {
     const checkOrderColumns = (arrNew: ColumnWithTasks[], columns: UniqueIdentifier[]) => {
@@ -445,22 +439,6 @@ export const MultipleContainers = ({
     };
     const isOrderColumnsChanged = checkOrderColumns(columnsArr, containers);
 
-    // const checkChangingItemsAmount = (itemsFront: Items, itemsBack: Items) => {
-    //   const frontItemsAmount = Object.values(itemsFront).reduce((acc, cur) => {
-    //     console.log('acc', acc);
-    //     console.log('cur', cur);
-    //
-    //     return acc + cur.length;
-    //   }, 0);
-    //   // const backItemsAmount = itemsFront.reduce((acc, cur) => {
-    //   //   return acc + cur.length;
-    //   // }, 0);
-    //
-    //   console.log('frontItemsAmount', frontItemsAmount);
-    //   // console.log('backItemsAmount', backItemsAmount);
-    // };
-    //
-    // const isItemsAmountChanged = checkChangingItemsAmount(items, myItems);
     (async () => {
       if (isOrderColumnsChanged && !wasChanged) {
         if (columnsArr.length >= 1) {
@@ -470,8 +448,9 @@ export const MultipleContainers = ({
           }));
           await columnsOrder.mutateAsync(columnsArrNewOrder);
         }
-        if (myItems !== items) {
+        if (JSON.stringify(myItems) !== JSON.stringify(items)) {
           setItems(myItems);
+          console.log('1');
           setContainers(Object.keys(myItems) as UniqueIdentifier[]);
           setWasChanged(true);
         }
@@ -510,42 +489,23 @@ export const MultipleContainers = ({
           return [...tasks];
         });
         if (tasksArrNewOrder.flat(1).length > 0) {
+          console.log('here');
           tasksOrder.mutate(tasksArrNewOrder.flat(1));
         }
       }
-      if (myItems !== items) {
+      if (JSON.stringify(myItems) !== JSON.stringify(items)) {
         setItems(myItems);
+        console.log('2');
         setContainers(Object.keys(myItems) as UniqueIdentifier[]);
       }
+    } else {
+      if (JSON.stringify(myItems) !== JSON.stringify(items) && isColumnDeleted) {
+        setItems(myItems);
+        setContainers(Object.keys(myItems) as UniqueIdentifier[]);
+        setIsColumnDeleted(false);
+      }
     }
-
-    // else {
-    //   if (myItems !== items) {
-    //     const tasksArrNewOrder = Object.entries(items).map((column) => {
-    //       const columnId = column[0];
-    //       const tasks = (column[1] as string[]).map((taskId: string, taskIndex: number) => ({
-    //         _id: taskId,
-    //         order: taskIndex,
-    //         columnId,
-    //       }));
-    //       return [...tasks];
-    //     });
-    //     console.log('tasksArrNewOrder', tasksArrNewOrder.flat(1));
-    //     tasksOrder.mutate(tasksArrNewOrder.flat(1));
-    //   }
-    // }
   }, [myItems, items]);
-
-  // useEffect(() => {
-  //   columnsOrder.mutate(
-  //     columnsArr.map((column: ColumnWithTasks, index: number) => ({
-  //       _id: column._id,
-  //       order: index,
-  //     }))
-  //   );
-  //   setItems(myItems);
-  //   setContainers(Object.keys(myItems) as UniqueIdentifier[]);
-  // }, [myItems]);
 
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   // const lastOverId = useRef<UniqueIdentifier | null>(null);
@@ -686,7 +646,7 @@ export const MultipleContainers = ({
     const containerTitle = getColumnTitle(columnsArr, containerId);
     return (
       <Container
-        label={`${t('board.column')}: ${containerTitle}`}
+        label={containerTitle}
         columns={columns}
         style={{
           height: '100%',
@@ -724,6 +684,7 @@ export const MultipleContainers = ({
         boardId: data.boardData._id,
         columnId: containerID.toString(),
       });
+      setIsColumnDeleted(true);
     }
   }
 
@@ -743,11 +704,17 @@ export const MultipleContainers = ({
     order: number;
     boardId: string;
   }): Promise<void> => {
+    console.log('add column');
+    setNeedToChangeOrder(false);
+    setActiveColumn(null);
+
+    const orderResult = order - 2 >= 0 ? order - 2 : -1;
+
     await columnCreate.mutateAsync({
       boardId,
       column: {
         title: title,
-        order: order - 1,
+        order: orderResult,
       },
     });
   };
@@ -863,7 +830,7 @@ export const MultipleContainers = ({
               order: index,
             }))
           );
-
+          console.log('3');
           setContainers((containers) => {
             const activeIndex = containers.indexOf(active.id);
             const overIndex = containers.indexOf(over.id);
@@ -898,6 +865,7 @@ export const MultipleContainers = ({
           const newContainerId = getNextContainerId();
 
           unstable_batchedUpdates(() => {
+            console.log('4');
             setContainers((containers) => [...containers, newContainerId]);
             setItems((items) => ({
               ...items,
@@ -953,7 +921,7 @@ export const MultipleContainers = ({
               <DroppableContainer
                 key={containerId}
                 id={containerId}
-                label={minimal ? undefined : `${t('board.column')} ${containerTitle}`}
+                label={minimal ? undefined : containerTitle}
                 columns={columns}
                 items={items[containerId]}
                 scrollable={scrollable}
@@ -996,7 +964,11 @@ export const MultipleContainers = ({
               items={empty}
               placeholder
             >
-              <ColumnForm createColumn={handleAddColumn} boardId={data.boardData._id} />
+              <ColumnFormCreate
+                createColumn={handleAddColumn}
+                boardId={data.boardData._id}
+                totalColumns={Object.keys(items).length}
+              />
             </DroppableContainer>
           )}
         </SortableContext>

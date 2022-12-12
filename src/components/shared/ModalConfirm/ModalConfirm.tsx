@@ -41,11 +41,17 @@ export const ModalConfirm = ({ handleClick, text }: Props) => {
         animate="visible"
         exit="exit"
       >
-        <p>{text}</p>
-        <button className="button modal__button" onClick={() => handleClick('yes')}>
+        <p style={{ margin: '50px' }}>{text}</p>
+        <button
+          className={`button modal__button button-${EModal.yes}`}
+          onClick={() => handleClick('yes')}
+        >
           {EModal.yes}
         </button>
-        <button className="button modal__button" onClick={() => handleClick('no')}>
+        <button
+          className={`button modal__button button-${EModal.no}`}
+          onClick={() => handleClick('no')}
+        >
           {EModal.no}
         </button>
       </motion.div>
