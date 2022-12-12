@@ -18,11 +18,6 @@ import { sleep } from '@/utils/sleep';
 import { TIME_AUTO_CLOSE } from '@/configs/toasts';
 import { TextField } from '@mui/material';
 
-const defaultColumnFields = {
-  title: '',
-  order: 0,
-};
-
 export const ProfileEditForm = ({ user, handleClose }: { user: User; handleClose: () => void }) => {
   const { t } = useTranslation();
   const [userName, setUserName] = useState(user.name);

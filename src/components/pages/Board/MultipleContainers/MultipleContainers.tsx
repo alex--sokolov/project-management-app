@@ -359,8 +359,6 @@ export const MultipleContainers = ({
   vertical = false,
   scrollable,
 }: Props) => {
-  const { t } = useTranslation();
-
   const columnDelete = useRemoveColumnById();
   const columnCreate = useCreateColumn();
   const taskCreate = useCreateTask();
