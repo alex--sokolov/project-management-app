@@ -14,6 +14,7 @@ export const ColumnForm: FC<{
   const { t } = useTranslation();
 
   const maxOrder = totalColumns + 1;
+  const orderRange = `[1 - ${maxOrder}]`;
 
   const {
     register,
@@ -36,13 +37,6 @@ export const ColumnForm: FC<{
     }
   };
 
-  const orderRange = `[1 - ${maxOrder}]`;
-
-  // console.log('errors', errors);
-  // console.log('!!Object.keys(errors).length', !!Object.keys(errors).length);
-  // console.log('isDirty', isDirty);
-  // console.log('isSubmitting', isSubmitting);
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="auth__form">
       <div className="auth__element">
@@ -53,11 +47,11 @@ export const ColumnForm: FC<{
             required: t('forms-errors.required') || 'required',
             minLength: {
               value: 4,
-              message: t('forms-errors.add-column-title.min-length'),
+              message: t('forms-errors.add-title.min-length'),
             },
             maxLength: {
               value: 25,
-              message: t('forms-errors.add-column-title.max-length'),
+              message: t('forms-errors.add-title.max-length'),
             },
           })}
         />
@@ -71,11 +65,11 @@ export const ColumnForm: FC<{
           error={!!errors.order}
           label={t('board.column-order')}
           {...register('order', {
-            required: 'this field is required',
+            required: t('forms-errors.required') || 'required',
             valueAsNumber: true,
             validate: (value) =>
               (Number.isInteger(value) && value > 0 && value <= maxOrder) ||
-              t('forms-errors.add-column-order') + orderRange,
+              t('forms-errors.add-order') + orderRange,
           })}
         />
         <p className="error">

@@ -1,13 +1,17 @@
+import './Item.scss';
+
 import React, { useEffect } from 'react';
 import classNames from 'classnames';
 import type { DraggableSyntheticListeners } from '@dnd-kit/core';
 import type { Transform } from '@dnd-kit/utilities';
 import { Handle } from '../Handle';
-import { Remove } from '../Remove';
 
-import './Item.scss';
+import { Remove } from '../Remove';
+import { useQueryClient } from '@tanstack/react-query';
+import { Task } from '@/data/models';
 
 export interface Props {
+  boardId: string;
   dragOverlay?: boolean;
   color?: string;
   disabled?: boolean;
@@ -24,7 +28,9 @@ export interface Props {
   transition?: string | null;
   wrapperStyle?: React.CSSProperties;
   value: React.ReactNode;
+
   onRemove?(): void;
+
   renderItem?(args: {
     dragOverlay: boolean;
     dragging: boolean;
@@ -44,6 +50,7 @@ export const Item = React.memo(
   React.forwardRef<HTMLLIElement, Props>(
     (
       {
+        boardId,
         color,
         dragOverlay,
         dragging,
@@ -66,6 +73,11 @@ export const Item = React.memo(
       },
       ref
     ) => {
+      const queryClient = useQueryClient();
+      const item = (queryClient.getQueriesData(['boards', boardId, 'tasks'])[0][1] as Task[]).find(
+        (task: Task) => task._id === value
+      );
+
       useEffect(() => {
         if (!dragOverlay) {
           return;
@@ -129,7 +141,11 @@ export const Item = React.memo(
             {...props}
             tabIndex={!handle ? 0 : undefined}
           >
-            {value}
+            <div className="task-info">
+              <div className="task-info__title">{item?.title || value}</div>
+              <div className="task-info__description">{item?.description}</div>
+            </div>
+
             <span className={'Actions'}>
               {onRemove ? <Remove onClick={onRemove} /> : null}
               {handle ? <Handle {...handleProps} {...listeners} /> : null}

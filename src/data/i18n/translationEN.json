@@ -47,6 +47,7 @@
     "column": "Column",
     "task-title": "Task title",
     "task-description": "Task description",
+    "task-order": "Task order",
     "column-title": "Column title",
     "column-order": "Column order",
     "add-task": "Add task",
@@ -117,6 +118,10 @@
     "add-column-title": {
       "min-length": "you must enter at least 4 letters",
       "max-length": "you must enter less, than 25 letters"
+    },
+    "add-description": {
+      "min-length": "you must enter at least 10 letters",
+      "max-length": "you must enter less, than 50 letters"
     },
     "add-column-order": "Must be a positive number in range "
   }
