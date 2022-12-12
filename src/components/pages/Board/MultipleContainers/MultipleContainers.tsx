@@ -44,13 +44,13 @@ import { ColumnWithTasks, MultipleProps, Task } from '@/data/models';
 import { useRemoveColumnById } from '@/hooks/board/useRemoveColumnById';
 import { useChangeColumnsOrder } from '@/hooks/board/useChangeOrdersInColumns';
 import { useCreateColumn } from '@/hooks/board/useCreateColumn';
-import { TaskForm } from '../Components/Forms/TaskForm';
 import { useCreateTask } from '@/hooks/board/useCreateTask';
 import { useChangeTasksOrder } from '@/hooks/board/useChangeOrdersInTasks';
 import { useModal } from '@/hooks';
 import { useDeleteTask } from '@/hooks/board/useDeleteTask';
 import { ModalConfirm } from '@/components/shared/ModalConfirm';
 import { ColumnFormCreate } from '@/components/pages/Board/Components/Forms';
+import { TaskFormCreate } from '@/components/pages/Board/Components/Forms/TaskFormCreate';
 
 // const animateLayoutChanges: AnimateLayoutChanges = (args) =>
 //   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -297,6 +297,7 @@ function SortableItem({
   return (
     <>
       <Item
+        boardId={boardId}
         ref={disabled ? undefined : setNodeRef}
         value={id}
         dragging={isDragging}
@@ -448,7 +449,6 @@ export const MultipleContainers = ({
         }
         if (JSON.stringify(myItems) !== JSON.stringify(items)) {
           setItems(myItems);
-          console.log('1');
           setContainers(Object.keys(myItems) as UniqueIdentifier[]);
           setWasChanged(true);
         }
@@ -487,13 +487,11 @@ export const MultipleContainers = ({
           return [...tasks];
         });
         if (tasksArrNewOrder.flat(1).length > 0) {
-          console.log('here');
           tasksOrder.mutate(tasksArrNewOrder.flat(1));
         }
       }
       if (JSON.stringify(myItems) !== JSON.stringify(items)) {
         setItems(myItems);
-        console.log('2');
         setContainers(Object.keys(myItems) as UniqueIdentifier[]);
       }
     } else {
@@ -618,6 +616,7 @@ export const MultipleContainers = ({
   function renderSortableItemDragOverlay(id: UniqueIdentifier) {
     return (
       <Item
+        boardId={boardId}
         value={id}
         handle={handle}
         style={getItemStyles({
@@ -654,6 +653,7 @@ export const MultipleContainers = ({
       >
         {items[containerId].map((item, index) => (
           <Item
+            boardId={boardId}
             key={item}
             value={item}
             handle={handle}
@@ -679,7 +679,7 @@ export const MultipleContainers = ({
   async function handleRemove(value: string, containerID: UniqueIdentifier): Promise<void> {
     if (value === 'yes') {
       await columnDelete.mutateAsync({
-        boardId: data.boardData._id,
+        boardId: boardId,
         columnId: containerID.toString(),
       });
       setIsColumnDeleted(true);
@@ -702,7 +702,6 @@ export const MultipleContainers = ({
     order: number;
     boardId: string;
   }): Promise<void> => {
-    console.log('add column');
     setNeedToChangeOrder(false);
     setActiveColumn(null);
 
@@ -828,7 +827,6 @@ export const MultipleContainers = ({
               order: index,
             }))
           );
-          console.log('3');
           setContainers((containers) => {
             const activeIndex = containers.indexOf(active.id);
             const overIndex = containers.indexOf(over.id);
@@ -863,7 +861,6 @@ export const MultipleContainers = ({
           const newContainerId = getNextContainerId();
 
           unstable_batchedUpdates(() => {
-            console.log('4');
             setContainers((containers) => [...containers, newContainerId]);
             setItems((items) => ({
               ...items,
@@ -946,11 +943,12 @@ export const MultipleContainers = ({
                     );
                   })}
                 </SortableContext>
-                <TaskForm
+                <TaskFormCreate
                   createTask={handleAddTask}
-                  boardId={data.boardData._id}
+                  boardId={boardId}
                   columnId={containerId.toString()}
                   userId={data.userData._id}
+                  totalTasksInColumn={items[containerId].length}
                 />
               </DroppableContainer>
             );
@@ -964,7 +962,7 @@ export const MultipleContainers = ({
             >
               <ColumnFormCreate
                 createColumn={handleAddColumn}
-                boardId={data.boardData._id}
+                boardId={boardId}
                 totalColumns={Object.keys(items).length}
               />
             </DroppableContainer>

@@ -16,21 +16,7 @@ import { ProfileEditForm } from '@/components/pages/Profile/ProfileEditForm';
 import { useModal, useUserDelete } from '@/hooks';
 
 import { User } from '@/data/models';
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid dodgerblue',
-  borderRadius: '10px',
-  boxShadow: 24,
-  pt: 2,
-  px: 4,
-  pb: 3,
-};
+import { modalFormsStyle } from '@/components/shared/Modal';
 
 export const Profile: FC = () => {
   const { t } = useTranslation();
@@ -91,7 +77,7 @@ export const Profile: FC = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <Box sx={{ ...style, width: '320px' }}>
+            <Box sx={{ ...modalFormsStyle }}>
               <ProfileEditForm user={user} handleClose={handleClose} />
             </Box>
           </Modal>

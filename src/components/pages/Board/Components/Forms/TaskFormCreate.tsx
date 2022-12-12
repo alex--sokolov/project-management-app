@@ -4,28 +4,34 @@ import { useTranslation } from 'react-i18next';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import { Box, Modal } from '@mui/material';
-import { ColumnForm } from '@/components/pages/Board/Components/Forms/ColumnForm';
 
-import { Column } from '@/data/models';
-import { modalFormsStyle } from '@/components/shared/Modal';
+import { Task } from '@/data/models';
+import { TaskForm } from '@/components/pages/Board/Components/Forms/TaskForm';
+import { modalFormsStyle } from '@/components/shared/Modal/modalFormsStyle';
 
-export const ColumnFormCreate: FC<{
-  createColumn: (newColumn: Omit<Column, '_id'>) => void;
+export const TaskFormCreate: FC<{
+  createTask: (
+    boardId: string,
+    columnId: string,
+    userId: string,
+    newTask: Pick<Task, 'title' | 'description' | 'order'>
+  ) => void;
   boardId: string | undefined;
-  totalColumns: number;
-}> = ({ createColumn, boardId, totalColumns }) => {
+  columnId: string | undefined;
+  userId: string | undefined;
+  totalTasksInColumn: number;
+}> = ({ createTask, boardId, columnId, userId, totalTasksInColumn }) => {
   const { t } = useTranslation();
-
   const [isFormOpened, setIsFormOpened] = useState(false);
   const handleOpen = () => setIsFormOpened(true);
   const handleClose = () => setIsFormOpened(false);
 
   return (
-    <div className="user-board user-board_add-btn">
+    <div className="add-task add-task-btn">
       <Fab color="secondary" aria-label="edit" onClick={handleOpen}>
         <AddIcon />
       </Fab>{' '}
-      + {t('board.add-column')}
+      + {t('board.add-task')}
       <Modal
         open={isFormOpened}
         onClose={handleClose}
@@ -33,11 +39,13 @@ export const ColumnFormCreate: FC<{
         aria-describedby="modal-modal-description"
       >
         <Box sx={{ ...modalFormsStyle }}>
-          <ColumnForm
+          <TaskForm
             boardId={boardId}
-            createColumn={createColumn}
+            columnId={columnId}
+            userId={userId}
+            createTask={createTask}
             handleClose={handleClose}
-            totalColumns={totalColumns}
+            totalTasksInColumn={totalTasksInColumn}
           />
         </Box>
       </Modal>
