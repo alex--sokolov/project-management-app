@@ -142,7 +142,7 @@ export const Item = React.memo(
             tabIndex={!handle ? 0 : undefined}
           >
             <div className="task-info">
-              <div className="task-info__title">{item?.title || value}</div>
+              <div className="task-info__title">{item?.title}</div>
               <div className="task-info__description">{item?.description}</div>
             </div>
 

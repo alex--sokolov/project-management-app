@@ -85,6 +85,9 @@
     "board-delete-pending": "Deleting board...",
     "board-delete-success": "Board was deleted successfully",
     "board-delete-error": "Board was not deleted",
+    "column-update-pending": "Updating column",
+    "column-update-success": "Column was updated successfully",
+    "column-update-error": "Column was not updated",
     "column-order-change-pending": "Column order is changing",
     "column-order-change-success": "Column order change successfully",
     "column-order-change-error": "Column order change failed",
@@ -123,6 +126,6 @@
       "min-length": "you must enter at least 10 letters",
       "max-length": "you must enter less, than 50 letters"
     },
-    "add-column-order": "Must be a positive number in range "
+    "add-order": "Must be a positive number in range "
   }
 }
