@@ -38,6 +38,7 @@
     "column-title": "Название колонки",
     "column-order": "Позиция колонки",
     "add-task": "Добавить таску",
+    "update-task": "Обновить таску",
     "add-column": "Добавить колонку"
   },
   "profile": {
@@ -84,6 +85,9 @@
     "column-delete-pending": "Удаление колонки...",
     "column-delete-success": "Колонка успешно удалена",
     "column-delete-error": "Ошибка при удалении колонки",
+    "task-update-pending": "Таска обновляется...",
+    "task-update-success": "Таска успешно обновлена",
+    "task-update-error": "Ошибка при обновлении таски",
     "task-create-pending": "Таска подготавливается...",
     "task-create-success": "Таска успешно создана",
     "task-create-error": "Ошибка при создании таски",

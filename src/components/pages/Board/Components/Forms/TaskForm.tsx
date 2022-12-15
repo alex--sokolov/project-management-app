@@ -10,21 +10,41 @@ import { TextField } from '@mui/material';
 import { Task } from '@/data/models';
 
 export const TaskForm: FC<{
-  createTask: (
+  updateTask?: (
+    taskId: string,
     boardId: string,
     columnId: string,
     userId: string,
     newTask: Pick<Task, 'title' | 'description' | 'order'>
-  ) => void;
+  ) => void | Promise<void>;
+  createTask?: (
+    boardId: string,
+    columnId: string,
+    userId: string,
+    newTask: Pick<Task, 'title' | 'description' | 'order'>
+  ) => void | Promise<void>;
+  taskId?: string;
   boardId: string | undefined;
   columnId: string | undefined;
   userId: string | undefined;
-  totalTasksInColumn: number;
   handleClose: () => void;
-}> = ({ createTask, boardId, columnId, userId, totalTasksInColumn, handleClose }) => {
+  defaultValues: {
+    title: string;
+    description: string;
+    order: number;
+  };
+}> = ({
+  updateTask,
+  createTask,
+  taskId,
+  boardId,
+  columnId,
+  userId,
+  handleClose,
+  defaultValues,
+}) => {
   const { t } = useTranslation();
-
-  const maxOrder = totalTasksInColumn + 1;
+  const maxOrder = defaultValues.order;
   const orderRange = `[1 - ${maxOrder}]`;
 
   const {
@@ -33,17 +53,22 @@ export const TaskForm: FC<{
     reset,
     formState: { errors, isDirty, isSubmitting },
   } = useForm<Pick<Task, 'title' | 'description' | 'order'>>({
-    defaultValues: {
-      title: '',
-      description: '',
-      order: maxOrder,
-    },
+    defaultValues: defaultValues,
   });
 
   const onSubmit: SubmitHandler<Pick<Task, 'title' | 'description' | 'order'>> = (data) => {
     if (boardId && columnId && userId) {
-      const newTaskData: Pick<Task, 'title' | 'description' | 'order'> = { ...data };
-      createTask(boardId, columnId, userId, newTaskData);
+      if (createTask) {
+        const newTaskData: Pick<Task, 'title' | 'description' | 'order'> = { ...data };
+        createTask(boardId, columnId, userId, newTaskData);
+      }
+      if (updateTask && taskId) {
+        const newTaskData: Pick<Task, 'title' | 'description' | 'order'> = {
+          ...data,
+          order: defaultValues.order,
+        };
+        updateTask(taskId, boardId, columnId, userId, newTaskData);
+      }
       handleClose();
       reset();
     }
@@ -91,28 +116,33 @@ export const TaskForm: FC<{
           {errors.description && <span className="error__show">{errors.description.message}</span>}
         </p>
       </div>
-      <div className="auth__element">
-        <TextField
-          error={!!errors.order}
-          label={t('board.task-order')}
-          {...register('order', {
-            required: t('forms-errors.required') || 'required',
-            valueAsNumber: true,
-            validate: (value) =>
-              (Number.isInteger(value) && value > 0 && value <= maxOrder) ||
-              t('forms-errors.add-order') + orderRange,
-          })}
-        />
-        <p className="error">
-          {errors.order && <span className="error__show">{errors.order.message}</span>}
-        </p>
-      </div>
+      {taskId ? (
+        <></>
+      ) : (
+        <div className="auth__element">
+          <TextField
+            error={!!errors.order}
+            label={t('board.task-order')}
+            {...register('order', {
+              required: t('forms-errors.required') || 'required',
+              valueAsNumber: true,
+              validate: (value) =>
+                (Number.isInteger(value) && value > 0 && value <= maxOrder) ||
+                t('forms-errors.add-order') + orderRange,
+            })}
+          />
+
+          <p className="error">
+            {errors.order && <span className="error__show">{errors.order.message}</span>}
+          </p>
+        </div>
+      )}
       <Button
         type="submit"
         variant="contained"
         disabled={!!Object.keys(errors).length || !isDirty || isSubmitting}
       >
-        {t('board.add-task')}
+        {taskId ? t('board.update-task') : t('board.add-task')}
       </Button>
     </form>
   );

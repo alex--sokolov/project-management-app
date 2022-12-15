@@ -51,6 +51,7 @@
     "column-title": "Column title",
     "column-order": "Column order",
     "add-task": "Add task",
+    "update-task": "Update task",
     "add-column": "Add column"
   },
   "profile": {
@@ -97,6 +98,9 @@
     "column-delete-pending": "Deleting column...",
     "column-delete-success": "Column was deleted successfully",
     "column-delete-error": "Column was not deleted",
+    "task-update-pending": "Task is updating...",
+    "task-update-success": "Task was updated successfully",
+    "task-update-error": "Problem while updating task",
     "task-create-pending": "Creating new task...",
     "task-create-success": "Task was successfully created",
     "task-create-error": "Task was not created",

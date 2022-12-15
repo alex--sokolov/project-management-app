@@ -3,59 +3,51 @@ import { createPortal, unstable_batchedUpdates } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import {
   CancelDrop,
-  // closestCenter,
-  // pointerWithin,
-  // rectIntersection,
-  // CollisionDetection,
   DndContext,
   DragOverlay,
-  // DropAnimation,
-  // getFirstCollision,
+  KeyboardCoordinateGetter,
   KeyboardSensor,
+  MeasuringStrategy,
+  Modifiers,
   MouseSensor,
   TouchSensor,
-  Modifiers,
-  // useDroppable,
   UniqueIdentifier,
-  useSensors,
   useSensor,
-  MeasuringStrategy,
-  KeyboardCoordinateGetter,
-  // defaultDropAnimationSideEffects,
+  useSensors,
 } from '@dnd-kit/core';
 import {
-  // AnimateLayoutChanges,
-  SortableContext,
-  useSortable,
   arrayMove,
-  // defaultAnimateLayoutChanges,
-  verticalListSortingStrategy,
-  SortingStrategy,
   horizontalListSortingStrategy,
+  SortableContext,
+  SortingStrategy,
+  useSortable,
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 import { coordinateGetter as multipleContainersCoordinateGetter } from './multipleContainersKeyboardCoordinates';
 import { Item } from '../Components/Item';
-import { Container } from '../Components/Container';
-
 import type { ContainerProps } from '../Components/Container';
-import { Column, ColumnWithTasks, MultipleProps, Task } from '@/data/models';
-import { useRemoveColumnById } from '@/hooks/board/useRemoveColumnById';
-import { useChangeColumnsOrder } from '@/hooks/board/useChangeOrdersInColumns';
-import { useCreateColumn } from '@/hooks/board/useCreateColumn';
-import { useCreateTask } from '@/hooks/board/useCreateTask';
-import { useChangeTasksOrder } from '@/hooks/board/useChangeOrdersInTasks';
-import { useModal } from '@/hooks';
-import { useDeleteTask } from '@/hooks/board/useDeleteTask';
+import { Container } from '../Components/Container';
+import {
+  useChangeColumnsOrder,
+  useChangeTasksOrder,
+  useCreateColumn,
+  useCreateTask,
+  useDeleteTask,
+  useModal,
+  useRemoveColumnById,
+  useUpdateColumn,
+  useUpdateTaskById,
+} from '@/hooks';
+
 import { ModalConfirm } from '@/components/shared/ModalConfirm';
 import { ColumnFormCreate } from '@/components/pages/Board/Components/Forms';
 import { TaskFormCreate } from '@/components/pages/Board/Components/Forms/TaskFormCreate';
-import { useUpdateColumn } from '@/hooks/board/useUpdateColumn';
 import { Spinner } from '@/components/shared/Spinner';
-
 // const animateLayoutChanges: AnimateLayoutChanges = (args) =>
 //   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
+import { Column, ColumnWithTasks, MultipleProps, Task } from '@/data/models';
 
 const getColumnInfo = (columns: ColumnWithTasks[], id: string | number) => {
   return columns.find((column: ColumnWithTasks) => column._id === id);
@@ -238,6 +230,13 @@ interface SortableItemProps {
     taskId: UniqueIdentifier,
     columnId: UniqueIdentifier
   ) => Promise<void>;
+  handleUpdateTask?: (
+    taskId: string,
+    boardId: string,
+    columnId: string,
+    userId: string,
+    newTask: Pick<Task, 'title' | 'description' | 'order'>
+  ) => Promise<void>;
 
   style(args: unknown): React.CSSProperties;
 
@@ -262,6 +261,7 @@ function SortableItem({
   wrapperStyle,
   boardId,
   handleRemoveItem,
+  handleUpdateTask,
 }: SortableItemProps) {
   const {
     setNodeRef,
@@ -299,6 +299,7 @@ function SortableItem({
   return (
     <>
       <Item
+        handleUpdateTask={handleUpdateTask}
         boardId={boardId}
         ref={disabled ? undefined : setNodeRef}
         value={id}
@@ -366,6 +367,7 @@ export const MultipleContainers = ({
   const columnCreate = useCreateColumn();
   const taskCreate = useCreateTask();
   const taskDelete = useDeleteTask();
+  const taskUpdate = useUpdateTaskById();
   const columnsOrder = useChangeColumnsOrder();
   const tasksOrder = useChangeTasksOrder();
   const updateColumn = useUpdateColumn();
@@ -395,7 +397,6 @@ export const MultipleContainers = ({
         _id: column._id,
         order: index,
       }));
-      console.log('CHANGING COLUMNS ORDER');
       await columnsOrder.mutateAsync(columnsNewOrder);
     }
     if (JSON.stringify(myItems) !== JSON.stringify(items)) {
@@ -413,7 +414,6 @@ export const MultipleContainers = ({
         order: index,
         columnId,
       }));
-      console.log('CHANGING TASKS ORDER');
       await tasksOrder.mutateAsync(tasksNewOrder);
     }
     if (JSON.stringify(myItems) !== JSON.stringify(items)) {
@@ -481,18 +481,8 @@ export const MultipleContainers = ({
   //   return tasksNewOrder.flat(1);
   // };
 
-  console.log('data', data);
-
   useEffect(() => {
-    console.log('useEffect 1');
-    console.log('isTaskOrderChanged', isTaskOrderChanged);
     if (isTaskOrderChanged) {
-      console.log('ZZZZZZZZitems: ', items);
-      console.log('ZZZZZZZZmyItems: ', myItems);
-      console.log(
-        'JSON.stringify(myItems) !== JSON.stringify(items): ',
-        JSON.stringify(myItems) !== JSON.stringify(items)
-      );
       if (JSON.stringify(myItems) !== JSON.stringify(items)) {
         const isItemsAmountChanged = checkChangingItemsAmount(items, myItems);
         if (isItemsAmountChanged) {
@@ -504,22 +494,16 @@ export const MultipleContainers = ({
           });
         } else {
           // task was moved
-          console.log('task was moved');
-          console.log('items: ', items);
-          console.log('myItems: ', myItems);
           const itemsSorted = Object.entries(items).filter((column) => {
             const columnBack = Object.entries(myItems).find((value) => {
               return column[0] === value[0];
             });
             return columnBack && column[1].length !== (columnBack[1] as string[])?.length;
           });
-          console.log('itemsSorted: ', itemsSorted);
-          console.log('activeColumn: ', activeColumn);
 
           if (itemsSorted.length === 2) {
             // task was moved from one column to another
             const tasksNewOrder = getTasksNewOrder(itemsSorted);
-            console.log('tasksNewOrder', tasksNewOrder);
             changeTasksOrderByNewOrder(tasksNewOrder).then(() => {
               setIsTaskOrderChanged(false);
               setActiveColumn(null);
@@ -545,32 +529,13 @@ export const MultipleContainers = ({
               setActiveColumn(null);
             });
           }
-
-          //
-          // console.log('tasksArrNewOrder', tasksArrNewOrder);
-
-          //   if (tasksArrNewOrder.flat(1).length > 0) {
-          //     tasksOrder.mutate(tasksArrNewOrder.flat(1));
-          //   }
-          //   // }
         }
-
-        // console.log('items', items);
-        // console.log('set Items', myItems);
-        // setItems(myItems);
-        // setContainers(Object.keys(myItems) as UniqueIdentifier[]);
       }
     }
   }, [isTaskOrderChanged, myItems]);
 
   useEffect(() => {
-    console.log('useEffect 2');
-    console.log('isTaskOrderChanged', isTaskOrderChanged);
-    console.log('isColumnOrderChanged', isColumnOrderChanged);
-    console.log('useEffect 2 continue');
-
     if (isColumnOrderChanged) {
-      console.log('useEffect 2 - changing column order');
       // Flag is on, the column was deleted or created, but we're still waiting for changes applied on server
       // And as soon as it 'll be applied we can change order of columns
       const checkOrderColumns = (arrNew: ColumnWithTasks[], columns: UniqueIdentifier[]) => {
@@ -584,49 +549,6 @@ export const MultipleContainers = ({
       }
     }
   }, [isColumnOrderChanged, columnsArr]);
-
-  // useEffect(() => {
-  //   if (isTaskOrderChanged) {
-
-  //
-
-  //
-  //     if (isItemsAmountChanged) {
-  //       // items amount was changed
-  //       // means, that task was added or deleted
-  //
-  //       console.log('columnsArr', columnsArr);
-  //       // Do we really need to check columnsArr ?
-  //       // if (columnsArr.length > 0) {
-  //       const tasksArrNewOrder = columnsArr.map((column: ColumnWithTasks) => {
-  //         const tasksSorted = column.tasks;
-  //         tasksSorted.sort((a, b) => a.order - b.order);
-  //
-  //         const tasks = tasksSorted.map((task: Task, taskIndex: number) => ({
-  //           _id: task._id,
-  //           order: taskIndex,
-  //           columnId: task.columnId,
-  //         }));
-  //         return [...tasks];
-  //       });
-  //       if (tasksArrNewOrder.flat(1).length > 0) {
-  //         tasksOrder.mutate(tasksArrNewOrder.flat(1));
-  //       }
-  //       // }
-  //       if (JSON.stringify(myItems) !== JSON.stringify(items)) {
-  //         setItems(myItems);
-  //         setContainers(Object.keys(myItems) as UniqueIdentifier[]);
-  //       }
-  //     } else {
-  //       // items amount was not changed
-  //       // if (JSON.stringify(myItems) !== JSON.stringify(items) && isColumnDeleted) {
-  //       //   setItems(myItems);
-  //       //   setContainers(Object.keys(myItems) as UniqueIdentifier[]);
-  //       //   setIsColumnDeleted(false);
-  //       // }
-  //     }
-  //   }
-  // }, [isTaskOrderChanged, myItems]);
 
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   // const lastOverId = useRef<UniqueIdentifier | null>(null);
@@ -716,9 +638,7 @@ export const MultipleContainers = ({
       return -1;
     }
 
-    const index = items[container].indexOf(id);
-
-    return index;
+    return items[container].indexOf(id);
   };
 
   const onDragCancel = () => {
@@ -816,6 +736,36 @@ export const MultipleContainers = ({
     });
   };
 
+  const handleUpdateTask = async (
+    taskId: string,
+    boardId: string,
+    columnId: string,
+    userId: string,
+    newTask: Pick<Task, 'title' | 'description' | 'order'>
+  ): Promise<void> => {
+    const task = {
+      _id: taskId,
+      title: newTask.title,
+      description: newTask.description,
+      columnId: columnId,
+      userId: userId,
+      users: [],
+      order: newTask.order,
+    };
+    setIsLoading(true);
+    await taskUpdate
+      .mutateAsync({
+        boardId: boardId,
+        columnId: columnId,
+        task: task,
+      })
+      .then(() => {
+        setItems(myItems);
+        setContainers(Object.keys(myItems) as UniqueIdentifier[]);
+        setIsLoading(false);
+      });
+  };
+
   const handleRemoveTask = async (
     value: string,
     taskId: UniqueIdentifier,
@@ -859,8 +809,6 @@ export const MultipleContainers = ({
 
   function renderContainerDragOverlay(containerId: UniqueIdentifier) {
     const columnInfo = getColumnInfo(columnsArr, containerId);
-    console.log('here2');
-    console.log('handleUpdateColumn', handleUpdateColumn);
     return (
       <Container
         label={columnInfo?.title}
@@ -967,7 +915,6 @@ export const MultipleContainers = ({
           }
         }}
         onDragEnd={({ active, over }) => {
-          console.log('onDragEnd');
           if (active.id in items && over?.id) {
             let activeIndex = 0;
             let overIndex = 0;
@@ -982,7 +929,6 @@ export const MultipleContainers = ({
               }
             }
             const movedColumns = arrayMove(columnsArr, activeIndex, overIndex);
-            console.log('column order from onDragEnd');
             setContainers((containers) => {
               const activeIndex = containers.indexOf(active.id);
               const overIndex = containers.indexOf(over.id);
@@ -1047,19 +993,11 @@ export const MultipleContainers = ({
             const activeIndex = items[activeContainer].indexOf(active.id);
             const overIndex = items[overContainer].indexOf(overId);
 
-            console.log('myItems', myItems);
-
             const entry = Object.entries(myItems).find(
               (entry: [string, unknown]) =>
                 !!(entry[1] as string[]).find((taskId: string) => taskId === active.id.toString())
             );
-            console.log('entry', entry);
             const columnId = entry && entry?.length > 0 && entry[0];
-            console.log('columnId', columnId);
-            console.log('overContainer', overContainer);
-            console.log('activeContainer', activeContainer);
-            console.log('active.id', active.id);
-            console.log('overId', overId);
             if (columnId && (overContainer !== columnId || activeIndex !== overIndex)) {
               setIsTaskOrderChanged(true);
               setActiveColumn(activeContainer);
@@ -1113,6 +1051,7 @@ export const MultipleContainers = ({
                     {items[containerId].map((value, index) => {
                       return (
                         <SortableItem
+                          handleUpdateTask={handleUpdateTask}
                           handleRemoveItem={handleRemoveTask}
                           disabled={isSortingContainer}
                           key={value}

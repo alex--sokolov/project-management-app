@@ -13,13 +13,13 @@
 
     .board-header__title {
       margin: 0;
-      color: #faf;
+      color: $title-color;
       font-size: 2rem;
       text-transform: capitalize;
 
       .board-header__owner {
         align-items: center;
-        color: #aaa;
+        color: $white-color;
         margin-left: 15px;
         font-size: 1rem;
         font-style: italic;
@@ -28,7 +28,7 @@
 
     .board-header__description {
       margin: 5px auto;
-      color: #8a8;
+      color: $dark-font-color;
     }
   }
 }
