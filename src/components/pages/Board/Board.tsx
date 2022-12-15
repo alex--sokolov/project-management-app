@@ -2,16 +2,15 @@ import './Board.scss';
 
 import { useEffect, useState } from 'react';
 import { useOutletContext, useLocation, useNavigate } from 'react-router-dom';
-
-import { useBoardById } from '@/hooks/board/useBoardById';
-import { User, Board, Column, Task, MultipleProps } from '@/data/models';
-import { boardError } from '@/services/toasts/toasts';
-import { sleep } from '@/utils/sleep';
-import { TIME_AUTO_CLOSE, TIME_TOAST_DELAY } from '@/configs/toasts';
-import { MultipleContainers } from './MultipleContainers/MultipleContainers';
-import { useColumnsByBoardId } from '@/hooks/board/useColumnsByBoardId';
-import { useTasksByBoardId } from '@/hooks/board/useTasksByBoardId';
 import { useTranslation } from 'react-i18next';
+
+import { useBoardById, useColumnsByBoardId, useTasksByBoardId } from '@/hooks';
+import { MultipleContainers } from './MultipleContainers/MultipleContainers';
+import { sleep } from '@/utils/sleep';
+import { boardError } from '@/services/toasts/toasts';
+import { TIME_AUTO_CLOSE, TIME_TOAST_DELAY } from '@/configs/toasts';
+
+import { User, Board, Column, Task, MultipleProps } from '@/data/models';
 
 export const BoardComponent = () => {
   const { t } = useTranslation();

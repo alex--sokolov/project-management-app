@@ -9,8 +9,16 @@ import { Handle } from '../Handle';
 import { Remove } from '../Remove';
 import { useQueryClient } from '@tanstack/react-query';
 import { Task } from '@/data/models';
+import { TaskFormUpdate } from '@/components/pages/Board/Components/Forms/TaskFormUpdate';
 
 export interface Props {
+  handleUpdateTask?: (
+    taskId: string,
+    boardId: string,
+    columnId: string,
+    userId: string,
+    newTask: Pick<Task, 'title' | 'description' | 'order'>
+  ) => Promise<void>;
   boardId: string;
   dragOverlay?: boolean;
   color?: string;
@@ -50,6 +58,7 @@ export const Item = React.memo(
   React.forwardRef<HTMLLIElement, Props>(
     (
       {
+        handleUpdateTask,
         boardId,
         color,
         dragOverlay,
@@ -104,7 +113,7 @@ export const Item = React.memo(
           transition,
           value,
         })
-      ) : (
+      ) : item ? (
         <li
           className={classNames(
             'Wrapper',
@@ -142,16 +151,28 @@ export const Item = React.memo(
             tabIndex={!handle ? 0 : undefined}
           >
             <div className="task-info">
-              <div className="task-info__title">{item?.title || value}</div>
-              <div className="task-info__description">{item?.description}</div>
+              <div className="task-info__title">{item.title}</div>
+              <div className="task-info__description">{item.description}</div>
             </div>
 
             <span className={'Actions'}>
+              <TaskFormUpdate
+                title={item.title}
+                description={item.description}
+                order={item.order}
+                updateTask={handleUpdateTask}
+                taskId={item._id}
+                boardId={boardId}
+                columnId={item.columnId}
+                userId={item.userId}
+              />
               {onRemove ? <Remove onClick={onRemove} /> : null}
               {handle ? <Handle {...handleProps} {...listeners} /> : null}
             </span>
           </div>
         </li>
+      ) : (
+        <></>
       );
     }
   )

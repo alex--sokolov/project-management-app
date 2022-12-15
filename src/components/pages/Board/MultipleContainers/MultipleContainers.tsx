@@ -3,63 +3,59 @@ import { createPortal, unstable_batchedUpdates } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import {
   CancelDrop,
-  // closestCenter,
-  // pointerWithin,
-  // rectIntersection,
-  // CollisionDetection,
   DndContext,
   DragOverlay,
-  // DropAnimation,
-  // getFirstCollision,
+  KeyboardCoordinateGetter,
   KeyboardSensor,
+  MeasuringStrategy,
+  Modifiers,
   MouseSensor,
   TouchSensor,
-  Modifiers,
-  // useDroppable,
   UniqueIdentifier,
-  useSensors,
   useSensor,
-  MeasuringStrategy,
-  KeyboardCoordinateGetter,
-  // defaultDropAnimationSideEffects,
+  useSensors,
 } from '@dnd-kit/core';
 import {
-  // AnimateLayoutChanges,
-  SortableContext,
-  useSortable,
   arrayMove,
-  // defaultAnimateLayoutChanges,
-  verticalListSortingStrategy,
-  SortingStrategy,
   horizontalListSortingStrategy,
+  SortableContext,
+  SortingStrategy,
+  useSortable,
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 import { coordinateGetter as multipleContainersCoordinateGetter } from './multipleContainersKeyboardCoordinates';
 import { Item } from '../Components/Item';
-import { Container } from '../Components/Container';
-
 import type { ContainerProps } from '../Components/Container';
-import { ColumnWithTasks, MultipleProps, Task } from '@/data/models';
-import { useRemoveColumnById } from '@/hooks/board/useRemoveColumnById';
-import { useChangeColumnsOrder } from '@/hooks/board/useChangeOrdersInColumns';
-import { useCreateColumn } from '@/hooks/board/useCreateColumn';
-import { useCreateTask } from '@/hooks/board/useCreateTask';
-import { useChangeTasksOrder } from '@/hooks/board/useChangeOrdersInTasks';
-import { useModal } from '@/hooks';
-import { useDeleteTask } from '@/hooks/board/useDeleteTask';
+import { Container } from '../Components/Container';
+import {
+  useChangeColumnsOrder,
+  useChangeTasksOrder,
+  useCreateColumn,
+  useCreateTask,
+  useDeleteTask,
+  useModal,
+  useRemoveColumnById,
+  useUpdateColumn,
+  useUpdateTaskById,
+} from '@/hooks';
+
 import { ModalConfirm } from '@/components/shared/ModalConfirm';
 import { ColumnFormCreate } from '@/components/pages/Board/Components/Forms';
 import { TaskFormCreate } from '@/components/pages/Board/Components/Forms/TaskFormCreate';
-
+import { Spinner } from '@/components/shared/Spinner';
 // const animateLayoutChanges: AnimateLayoutChanges = (args) =>
 //   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
+import { Column, ColumnWithTasks, MultipleProps, Task } from '@/data/models';
 
-const getColumnTitle = (columns: ColumnWithTasks[], id: string | number) => {
-  return columns.find((column: ColumnWithTasks) => column._id === id)?.title || '';
+const getColumnInfo = (columns: ColumnWithTasks[], id: string | number) => {
+  return columns.find((column: ColumnWithTasks) => column._id === id);
 };
 
 function DroppableContainer({
+  handleUpdateColumn,
+  columnInfo,
   children,
   columns = 1,
   disabled,
@@ -68,6 +64,8 @@ function DroppableContainer({
   style,
   ...props
 }: ContainerProps & {
+  handleUpdateColumn?: (boardId: string, column: Omit<Column, 'boardId'>) => Promise<void>;
+  columnInfo?: ColumnWithTasks | undefined;
   disabled?: boolean;
   id: UniqueIdentifier;
   items: UniqueIdentifier[];
@@ -94,10 +92,10 @@ function DroppableContainer({
   //   ? (id === over.id && active?.data.current?.type !== "container") ||
   //     items.includes(over.id)
   //   : false;
-
   return (
     <Container
       ref={disabled ? undefined : setNodeRef}
+      handleUpdateColumn={handleUpdateColumn}
       style={{
         ...style,
         transition,
@@ -109,6 +107,7 @@ function DroppableContainer({
         ...attributes,
         ...listeners,
       }}
+      columnInfo={columnInfo}
       columns={columns}
       {...props}
     >
@@ -226,6 +225,18 @@ interface SortableItemProps {
   index: number;
   handle: boolean;
   disabled?: boolean;
+  handleRemoveItem: (
+    value: string,
+    taskId: UniqueIdentifier,
+    columnId: UniqueIdentifier
+  ) => Promise<void>;
+  handleUpdateTask?: (
+    taskId: string,
+    boardId: string,
+    columnId: string,
+    userId: string,
+    newTask: Pick<Task, 'title' | 'description' | 'order'>
+  ) => Promise<void>;
 
   style(args: unknown): React.CSSProperties;
 
@@ -249,6 +260,8 @@ function SortableItem({
   getIndex,
   wrapperStyle,
   boardId,
+  handleRemoveItem,
+  handleUpdateTask,
 }: SortableItemProps) {
   const {
     setNodeRef,
@@ -278,17 +291,6 @@ function SortableItem({
 
   const mounted = useMountStatus();
   const mountedWhileDragging = isDragging && !mounted;
-  const taskDelete = useDeleteTask();
-
-  async function handleRemoveItem(value: string, taskId: UniqueIdentifier): Promise<void> {
-    if (value === 'yes') {
-      await taskDelete.mutateAsync({
-        boardId: boardId,
-        columnId: containerId.toString(),
-        taskId: taskId.toString(),
-      });
-    }
-  }
 
   const { t } = useTranslation();
   const { isModalOpen, close, open } = useModal();
@@ -297,6 +299,7 @@ function SortableItem({
   return (
     <>
       <Item
+        handleUpdateTask={handleUpdateTask}
         boardId={boardId}
         ref={disabled ? undefined : setNodeRef}
         value={id}
@@ -330,7 +333,7 @@ function SortableItem({
             handleClick={(value) => {
               close();
               if (handleRemoveItem) {
-                handleRemoveItem(value, id).catch((error) => console.log(error));
+                handleRemoveItem(value, id, containerId).catch((error) => console.log(error));
               }
             }}
           />
@@ -363,8 +366,11 @@ export const MultipleContainers = ({
   const columnDelete = useRemoveColumnById();
   const columnCreate = useCreateColumn();
   const taskCreate = useCreateTask();
+  const taskDelete = useDeleteTask();
+  const taskUpdate = useUpdateTaskById();
   const columnsOrder = useChangeColumnsOrder();
   const tasksOrder = useChangeTasksOrder();
+  const updateColumn = useUpdateColumn();
   const columnsData = data.columnsData;
   const boardId = data.boardData._id;
   const columnsArr = columnsData.columns;
@@ -379,129 +385,170 @@ export const MultipleContainers = ({
   );
   const [items, setItems] = useState<Items>(myItems);
   const [containers, setContainers] = useState(Object.keys(items) as UniqueIdentifier[]);
-  const [needToChangeOrder, setNeedToChangeOrder] = useState(false);
   const [activeColumn, setActiveColumn] = useState<UniqueIdentifier | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTaskOrderChanged, setIsTaskOrderChanged] = useState(false);
+  const [isColumnOrderChanged, setIsColumnOrderChanged] = useState(false);
 
-  const [wasChanged, setWasChanged] = useState(false);
-  const [isColumnDeleted, setIsColumnDeleted] = useState(false);
-
-  useEffect(() => {
-    if (JSON.stringify(myItems) !== JSON.stringify(items) && needToChangeOrder) {
-      const itemsSorted = Object.entries(items).filter((column) => {
-        const columnBack = Object.entries(myItems).find((value) => {
-          return column[0] === value[0];
-        });
-        return columnBack && column[1].length !== (columnBack[1] as string[])?.length;
-      });
-
-      if (itemsSorted.length === 2) {
-        const tasksArrNewOrder = itemsSorted.map((column) => {
-          const columnId = column[0];
-          const tasks = (column[1] as string[]).map((taskId: string, taskIndex: number) => ({
-            _id: taskId,
-            order: taskIndex,
-            columnId,
-          }));
-          return [...tasks];
-        });
-        tasksOrder.mutate(tasksArrNewOrder.flat(1));
-      }
-      if (itemsSorted.length === 0 && activeColumn) {
-        const itemsSorted = Object.entries(items).filter((column) => column[0] === activeColumn);
-        const tasks = (itemsSorted[0][1] as string[]).map((taskId: string, taskIndex: number) => ({
-          _id: taskId,
-          order: taskIndex,
-          columnId: activeColumn.toString(),
-        }));
-        tasksOrder.mutate(tasks);
-      }
+  /* This function changes columns order */
+  const changeColumnsOrder = async (columns: ColumnWithTasks[]) => {
+    if (columns.length >= 1) {
+      const columnsNewOrder = columns.map((column: ColumnWithTasks, index: number) => ({
+        _id: column._id,
+        order: index,
+      }));
+      await columnsOrder.mutateAsync(columnsNewOrder);
     }
-    setNeedToChangeOrder(false);
-    setActiveColumn(null);
-  }, [items, needToChangeOrder]);
+    if (JSON.stringify(myItems) !== JSON.stringify(items)) {
+      setItems(myItems);
+      setContainers(Object.keys(myItems) as UniqueIdentifier[]);
+    }
+  };
+
+  /* This function changes tasks order inside specified column */
+  const changeTasksOrder = async (columnId: string) => {
+    const tasks = columnsArr.find((column) => column._id === columnId)?.tasks;
+    if (tasks && tasks.length >= 1) {
+      const tasksNewOrder = tasks.map((task: Task, index: number) => ({
+        _id: task._id,
+        order: index,
+        columnId,
+      }));
+      await tasksOrder.mutateAsync(tasksNewOrder);
+    }
+    if (JSON.stringify(myItems) !== JSON.stringify(items)) {
+      setItems(myItems);
+      setContainers(Object.keys(myItems) as UniqueIdentifier[]);
+    }
+  };
+
+  /* This function changes tasks order inside specified column */
+  const changeTasksOrderByNewOrder = async (tasks: Pick<Task, '_id' | 'order' | 'columnId'>[]) => {
+    if (tasks && tasks.length >= 1) {
+      await tasksOrder.mutateAsync(tasks);
+    }
+  };
+
+  /* This function checks changing task amount */
+  const checkChangingItemsAmount = (itemsFront: Items, itemsBack: Items) => {
+    const frontItemsAmount = Object.values(itemsFront).reduce((acc, cur) => {
+      return acc + cur.length;
+    }, 0);
+    const backItemsAmount = Object.values(itemsBack).reduce((acc, cur) => {
+      return acc + cur.length;
+    }, 0);
+    return frontItemsAmount !== backItemsAmount;
+  };
+
+  /* This function returns columnId, where tasks amount was changed */
+  const getChangedColumnId = (newItems: Items, oldItems: Items): string => {
+    const item = Object.entries(newItems).filter((entry) => {
+      return entry[1].length !== oldItems[entry[0]].length;
+    });
+    return item[0][0];
+  };
+
+  /* This function returns payload for changing tasks orders */
+  const getTasksNewOrder = (
+    columns: [string, UniqueIdentifier[]][]
+  ): Pick<Task, '_id' | 'order' | 'columnId'>[] => {
+    const tasksNewOrder = Object.values(columns).map((column) => {
+      const columnId = column[0];
+      const tasks = (column[1] as string[]).map((taskId: string, taskIndex: number) => ({
+        _id: taskId,
+        order: taskIndex,
+        columnId,
+      }));
+      return [...tasks];
+    });
+    return tasksNewOrder.flat(1);
+  };
+  // const getTasksNewOrder = (
+  //   columns: ColumnWithTasks[]
+  // ): Pick<Task, '_id' | 'order' | 'columnId'>[] => {
+  //   const tasksNewOrder = columns.map((column: ColumnWithTasks) => {
+  //     const tasksSorted = column.tasks;
+  //     tasksSorted.sort((a, b) => a.order - b.order);
+  //
+  //     const tasks = tasksSorted.map((task: Task, taskIndex: number) => ({
+  //       _id: task._id,
+  //       order: taskIndex,
+  //       columnId: task.columnId,
+  //     }));
+  //     return [...tasks];
+  //   });
+  //
+  //   return tasksNewOrder.flat(1);
+  // };
 
   useEffect(() => {
-    const checkOrderColumns = (arrNew: ColumnWithTasks[], columns: UniqueIdentifier[]) => {
-      if (arrNew.length !== columns.length) {
-        return true;
-      }
-      for (let i = 0; i < arrNew.length; i++) {
-        const columnByOrder = arrNew.find((order) => order.order === i);
-        if (!columnByOrder) {
-          return true;
-        }
-        if (columnByOrder._id !== columns[i]) {
-          return true;
-        }
-      }
-      return false;
-    };
-    const isOrderColumnsChanged = checkOrderColumns(columnsArr, containers);
-
-    (async () => {
-      if (isOrderColumnsChanged && !wasChanged) {
-        if (columnsArr.length >= 1) {
-          const columnsArrNewOrder = columnsArr.map((column: ColumnWithTasks, index: number) => ({
-            _id: column._id,
-            order: index,
-          }));
-          await columnsOrder.mutateAsync(columnsArrNewOrder);
-        }
-        if (JSON.stringify(myItems) !== JSON.stringify(items)) {
-          setItems(myItems);
-          setContainers(Object.keys(myItems) as UniqueIdentifier[]);
-          setWasChanged(true);
-        }
-      }
-
-      if (!isOrderColumnsChanged && wasChanged) {
-        setWasChanged(false);
-      }
-    })();
-  }, [myItems, items, wasChanged]);
-
-  useEffect(() => {
-    const checkChangingItemsAmount = (itemsFront: Items, itemsBack: Items) => {
-      const frontItemsAmount = Object.values(itemsFront).reduce((acc, cur) => {
-        return acc + cur.length;
-      }, 0);
-      const backItemsAmount = Object.values(itemsBack).reduce((acc, cur) => {
-        return acc + cur.length;
-      }, 0);
-      return frontItemsAmount !== backItemsAmount;
-    };
-
-    const isItemsAmountChanged = checkChangingItemsAmount(items, myItems);
-
-    if (isItemsAmountChanged) {
-      if (columnsArr.length > 0) {
-        const tasksArrNewOrder = columnsArr.map((column: ColumnWithTasks) => {
-          const tasksSorted = column.tasks;
-          tasksSorted.sort((a, b) => a.order - b.order);
-
-          const tasks = tasksSorted.map((task: Task, taskIndex: number) => ({
-            _id: task._id,
-            order: taskIndex,
-            columnId: task.columnId,
-          }));
-          return [...tasks];
-        });
-        if (tasksArrNewOrder.flat(1).length > 0) {
-          tasksOrder.mutate(tasksArrNewOrder.flat(1));
-        }
-      }
+    if (isTaskOrderChanged) {
       if (JSON.stringify(myItems) !== JSON.stringify(items)) {
-        setItems(myItems);
-        setContainers(Object.keys(myItems) as UniqueIdentifier[]);
-      }
-    } else {
-      if (JSON.stringify(myItems) !== JSON.stringify(items) && isColumnDeleted) {
-        setItems(myItems);
-        setContainers(Object.keys(myItems) as UniqueIdentifier[]);
-        setIsColumnDeleted(false);
+        const isItemsAmountChanged = checkChangingItemsAmount(items, myItems);
+        if (isItemsAmountChanged) {
+          // items amount was changed
+          // means, that task was added or deleted
+          const columnId = getChangedColumnId(myItems, items);
+          changeTasksOrder(columnId).then(() => {
+            setIsTaskOrderChanged(false);
+          });
+        } else {
+          // task was moved
+          const itemsSorted = Object.entries(items).filter((column) => {
+            const columnBack = Object.entries(myItems).find((value) => {
+              return column[0] === value[0];
+            });
+            return columnBack && column[1].length !== (columnBack[1] as string[])?.length;
+          });
+
+          if (itemsSorted.length === 2) {
+            // task was moved from one column to another
+            const tasksNewOrder = getTasksNewOrder(itemsSorted);
+            changeTasksOrderByNewOrder(tasksNewOrder).then(() => {
+              setIsTaskOrderChanged(false);
+              setActiveColumn(null);
+            });
+          }
+
+          if (itemsSorted.length === 0 && activeColumn) {
+            // task was moved inside column
+
+            const itemsSorted = Object.entries(items).filter(
+              (column) => column[0] === activeColumn
+            );
+            const tasks = (itemsSorted[0][1] as string[]).map(
+              (taskId: string, taskIndex: number) => ({
+                _id: taskId,
+                order: taskIndex,
+                columnId: activeColumn.toString(),
+              })
+            );
+
+            changeTasksOrderByNewOrder(tasks).then(() => {
+              setIsTaskOrderChanged(false);
+              setActiveColumn(null);
+            });
+          }
+        }
       }
     }
-  }, [myItems, items]);
+  }, [isTaskOrderChanged, myItems]);
+
+  useEffect(() => {
+    if (isColumnOrderChanged) {
+      // Flag is on, the column was deleted or created, but we're still waiting for changes applied on server
+      // And as soon as it 'll be applied we can change order of columns
+      const checkOrderColumns = (arrNew: ColumnWithTasks[], columns: UniqueIdentifier[]) => {
+        return arrNew.length !== columns.length;
+      };
+      const isOrderColumnsChanged = checkOrderColumns(columnsArr, containers);
+      if (isOrderColumnsChanged) {
+        changeColumnsOrder(columnsArr).then(() => {
+          setIsColumnOrderChanged(false);
+        });
+      }
+    }
+  }, [isColumnOrderChanged, columnsArr]);
 
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   // const lastOverId = useRef<UniqueIdentifier | null>(null);
@@ -591,9 +638,7 @@ export const MultipleContainers = ({
       return -1;
     }
 
-    const index = items[container].indexOf(id);
-
-    return index;
+    return items[container].indexOf(id);
   };
 
   const onDragCancel = () => {
@@ -612,6 +657,129 @@ export const MultipleContainers = ({
       recentlyMovedToNewContainer.current = false;
     });
   }, [items]);
+
+  function getNextContainerId() {
+    const containerIds = Object.keys(items);
+    const lastContainerId = containerIds[containerIds.length - 1];
+
+    return String.fromCharCode(lastContainerId.charCodeAt(0) + 1);
+  }
+
+  const handleRemove = async (value: string, containerID: UniqueIdentifier): Promise<void> => {
+    if (value === 'yes') {
+      setIsColumnOrderChanged(true);
+      await columnDelete.mutateAsync({
+        boardId: boardId,
+        columnId: containerID.toString(),
+      });
+    }
+  };
+
+  const handleAddColumn = async ({
+    title,
+    order,
+    boardId,
+  }: {
+    title: string;
+    order: number;
+    boardId: string;
+  }): Promise<void> => {
+    const orderResult = order - 2 >= 0 ? order - 2 : -1;
+    setIsColumnOrderChanged(true);
+    setActiveColumn(null);
+    await columnCreate.mutateAsync({
+      boardId,
+      column: {
+        title: title,
+        order: orderResult,
+      },
+    });
+  };
+
+  const handleUpdateColumn = async (
+    boardId: string,
+    column: Omit<Column, 'boardId'>
+  ): Promise<void> => {
+    setIsLoading(true);
+    await updateColumn.mutateAsync({ boardId: boardId, column: column }).then(() => {
+      setItems(myItems);
+      setContainers(Object.keys(myItems) as UniqueIdentifier[]);
+      setIsLoading(false);
+    });
+  };
+
+  const handleAddTask = async (
+    boardId: string,
+    columnId: string,
+    userId: string,
+    {
+      title,
+      description,
+      order,
+    }: {
+      title: string;
+      description: string;
+      order: number;
+    }
+  ): Promise<void> => {
+    setIsTaskOrderChanged(true);
+    taskCreate.mutate({
+      boardId,
+      columnId,
+      task: {
+        title: title,
+        description: description,
+        userId: userId,
+        order: order - 2,
+        users: [],
+      },
+    });
+  };
+
+  const handleUpdateTask = async (
+    taskId: string,
+    boardId: string,
+    columnId: string,
+    userId: string,
+    newTask: Pick<Task, 'title' | 'description' | 'order'>
+  ): Promise<void> => {
+    const task = {
+      _id: taskId,
+      title: newTask.title,
+      description: newTask.description,
+      columnId: columnId,
+      userId: userId,
+      users: [],
+      order: newTask.order,
+    };
+    setIsLoading(true);
+    await taskUpdate
+      .mutateAsync({
+        boardId: boardId,
+        columnId: columnId,
+        task: task,
+      })
+      .then(() => {
+        setItems(myItems);
+        setContainers(Object.keys(myItems) as UniqueIdentifier[]);
+        setIsLoading(false);
+      });
+  };
+
+  const handleRemoveTask = async (
+    value: string,
+    taskId: UniqueIdentifier,
+    columnId: UniqueIdentifier
+  ): Promise<void> => {
+    if (value === 'yes') {
+      setIsTaskOrderChanged(true);
+      await taskDelete.mutateAsync({
+        boardId: boardId,
+        columnId: columnId.toString(),
+        taskId: taskId.toString(),
+      });
+    }
+  };
 
   function renderSortableItemDragOverlay(id: UniqueIdentifier) {
     return (
@@ -640,10 +808,12 @@ export const MultipleContainers = ({
   }
 
   function renderContainerDragOverlay(containerId: UniqueIdentifier) {
-    const containerTitle = getColumnTitle(columnsArr, containerId);
+    const columnInfo = getColumnInfo(columnsArr, containerId);
     return (
       <Container
-        label={containerTitle}
+        label={columnInfo?.title}
+        columnInfo={columnInfo}
+        handleUpdateColumn={handleUpdateColumn}
         columns={columns}
         style={{
           height: '100%',
@@ -676,312 +846,268 @@ export const MultipleContainers = ({
     );
   }
 
-  async function handleRemove(value: string, containerID: UniqueIdentifier): Promise<void> {
-    if (value === 'yes') {
-      await columnDelete.mutateAsync({
-        boardId: boardId,
-        columnId: containerID.toString(),
-      });
-      setIsColumnDeleted(true);
-    }
-  }
-
-  function getNextContainerId() {
-    const containerIds = Object.keys(items);
-    const lastContainerId = containerIds[containerIds.length - 1];
-
-    return String.fromCharCode(lastContainerId.charCodeAt(0) + 1);
-  }
-
-  const handleAddColumn = async ({
-    title,
-    order,
-    boardId,
-  }: {
-    title: string;
-    order: number;
-    boardId: string;
-  }): Promise<void> => {
-    setNeedToChangeOrder(false);
-    setActiveColumn(null);
-
-    const orderResult = order - 2 >= 0 ? order - 2 : -1;
-
-    await columnCreate.mutateAsync({
-      boardId,
-      column: {
-        title: title,
-        order: orderResult,
-      },
-    });
-  };
-
-  const handleAddTask = async (
-    boardId: string,
-    columnId: string,
-    userId: string,
-    {
-      title,
-      description,
-      order,
-    }: {
-      title: string;
-      description: string;
-      order: number;
-    }
-  ): Promise<void> => {
-    await taskCreate.mutateAsync({
-      boardId,
-      columnId,
-      task: {
-        title: title,
-        description: description,
-        userId: userId,
-        order: order - 1,
-        users: [],
-      },
-    });
-  };
-
   return (
-    <DndContext
-      sensors={sensors}
-      // collisionDetection={collisionDetectionStrategy}
-      measuring={{
-        droppable: {
-          strategy: MeasuringStrategy.Always,
-        },
-      }}
-      onDragStart={({ active }) => {
-        setActiveId(active.id);
-        setClonedItems(items);
-      }}
-      onDragOver={({ active, over }) => {
-        const overId = over?.id;
+    <>
+      <Spinner
+        isLoading={isLoading || isColumnOrderChanged || isTaskOrderChanged}
+        isBlurBackground={isLoading || isColumnOrderChanged || isTaskOrderChanged}
+      />
+      <DndContext
+        sensors={sensors}
+        // collisionDetection={collisionDetectionStrategy}
+        measuring={{
+          droppable: {
+            strategy: MeasuringStrategy.Always,
+          },
+        }}
+        onDragStart={({ active }) => {
+          setActiveId(active.id);
+          setClonedItems(items);
+        }}
+        onDragOver={({ active, over }) => {
+          const overId = over?.id;
 
-        if (overId == null || overId === TRASH_ID || active.id in items) {
-          return;
-        }
+          if (overId == null || overId === TRASH_ID || active.id in items) {
+            return;
+          }
 
-        const overContainer = findContainer(overId);
-        const activeContainer = findContainer(active.id);
+          const overContainer = findContainer(overId);
+          const activeContainer = findContainer(active.id);
 
-        if (!overContainer || !activeContainer) {
-          return;
-        }
+          if (!overContainer || !activeContainer) {
+            return;
+          }
 
-        if (activeContainer !== overContainer) {
-          setItems((items) => {
-            const activeItems = items[activeContainer];
-            const overItems = items[overContainer];
-            const overIndex = overItems.indexOf(overId);
-            const activeIndex = activeItems.indexOf(active.id);
+          if (activeContainer !== overContainer) {
+            setItems((items) => {
+              const activeItems = items[activeContainer];
+              const overItems = items[overContainer];
+              const overIndex = overItems.indexOf(overId);
+              const activeIndex = activeItems.indexOf(active.id);
 
-            let newIndex: number;
+              let newIndex: number;
 
-            if (overId in items) {
-              newIndex = overItems.length + 1;
-            } else {
-              const isBelowOverItem =
-                over &&
-                active.rect.current.translated &&
-                active.rect.current.translated.top > over.rect.top + over.rect.height;
+              if (overId in items) {
+                newIndex = overItems.length + 1;
+              } else {
+                const isBelowOverItem =
+                  over &&
+                  active.rect.current.translated &&
+                  active.rect.current.translated.top > over.rect.top + over.rect.height;
 
-              const modifier = isBelowOverItem ? 1 : 0;
+                const modifier = isBelowOverItem ? 1 : 0;
 
-              newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+                newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+              }
+
+              recentlyMovedToNewContainer.current = true;
+
+              return {
+                ...items,
+                [activeContainer]: items[activeContainer].filter((item) => item !== active.id),
+                [overContainer]: [
+                  ...items[overContainer].slice(0, newIndex),
+                  items[activeContainer][activeIndex],
+                  ...items[overContainer].slice(newIndex, items[overContainer].length),
+                ],
+              };
+            });
+          }
+        }}
+        onDragEnd={({ active, over }) => {
+          if (active.id in items && over?.id) {
+            let activeIndex = 0;
+            let overIndex = 0;
+            for (let i = 0; i < columnsArr.length; i++) {
+              if (columnsArr[i]._id === active.id) {
+                activeIndex = i;
+              }
             }
-
-            recentlyMovedToNewContainer.current = true;
-
-            return {
-              ...items,
-              [activeContainer]: items[activeContainer].filter((item) => item !== active.id),
-              [overContainer]: [
-                ...items[overContainer].slice(0, newIndex),
-                items[activeContainer][activeIndex],
-                ...items[overContainer].slice(newIndex, items[overContainer].length),
-              ],
-            };
-          });
-        }
-      }}
-      onDragEnd={({ active, over }) => {
-        if (active.id in items && over?.id) {
-          let activeIndex = 0;
-          let overIndex = 0;
-          for (let i = 0; i < columnsArr.length; i++) {
-            if (columnsArr[i]._id === active.id) {
-              activeIndex = i;
+            for (let i = 0; i < columnsArr.length; i++) {
+              if (columnsArr[i]._id === over.id) {
+                overIndex = i;
+              }
+            }
+            const movedColumns = arrayMove(columnsArr, activeIndex, overIndex);
+            setContainers((containers) => {
+              const activeIndex = containers.indexOf(active.id);
+              const overIndex = containers.indexOf(over.id);
+              return arrayMove(containers, activeIndex, overIndex);
+            });
+            if (activeIndex !== overIndex) {
+              setIsLoading(true);
+              columnsOrder
+                .mutateAsync(
+                  movedColumns.map((column: ColumnWithTasks, index: number) => ({
+                    _id: column._id,
+                    order: index,
+                  }))
+                )
+                .then(() => {
+                  setIsLoading(false);
+                });
             }
           }
-          for (let i = 0; i < columnsArr.length; i++) {
-            if (columnsArr[i]._id === over.id) {
-              overIndex = i;
-            }
+
+          const activeContainer = findContainer(active.id);
+
+          if (!activeContainer) {
+            setActiveId(null);
+            return;
           }
-          const movedColumns = arrayMove(columnsArr, activeIndex, overIndex);
-          columnsOrder.mutate(
-            movedColumns.map((column: ColumnWithTasks, index: number) => ({
-              _id: column._id,
-              order: index,
-            }))
-          );
-          setContainers((containers) => {
-            const activeIndex = containers.indexOf(active.id);
-            const overIndex = containers.indexOf(over.id);
-            return arrayMove(containers, activeIndex, overIndex);
-          });
-        }
 
-        const activeContainer = findContainer(active.id);
+          const overId = over?.id;
 
-        if (!activeContainer) {
-          setActiveId(null);
-          return;
-        }
+          if (overId == null) {
+            setActiveId(null);
+            return;
+          }
 
-        const overId = over?.id;
-
-        if (overId == null) {
-          setActiveId(null);
-          return;
-        }
-
-        if (overId === TRASH_ID) {
-          setItems((items) => ({
-            ...items,
-            [activeContainer]: items[activeContainer].filter((id) => id !== activeId),
-          }));
-          setActiveId(null);
-          return;
-        }
-
-        if (overId === PLACEHOLDER_ID) {
-          const newContainerId = getNextContainerId();
-
-          unstable_batchedUpdates(() => {
-            setContainers((containers) => [...containers, newContainerId]);
+          if (overId === TRASH_ID) {
             setItems((items) => ({
               ...items,
               [activeContainer]: items[activeContainer].filter((id) => id !== activeId),
-              [newContainerId]: [active.id],
             }));
             setActiveId(null);
-          });
-          return;
-        }
-
-        const overContainer = findContainer(overId);
-
-        if (overContainer) {
-          const activeIndex = items[activeContainer].indexOf(active.id);
-          const overIndex = items[overContainer].indexOf(overId);
-          if (overContainer === activeContainer) {
-            setNeedToChangeOrder(true);
-            setActiveColumn(activeContainer);
+            return;
           }
-          if (activeIndex !== overIndex) {
-            const sortItems = (items: Items) => ({
-              ...items,
-              [overContainer]: arrayMove(items[overContainer], activeIndex, overIndex),
+
+          if (overId === PLACEHOLDER_ID) {
+            const newContainerId = getNextContainerId();
+
+            unstable_batchedUpdates(() => {
+              setContainers((containers) => [...containers, newContainerId]);
+              setItems((items) => ({
+                ...items,
+                [activeContainer]: items[activeContainer].filter((id) => id !== activeId),
+                [newContainerId]: [active.id],
+              }));
+              setActiveId(null);
             });
-            const itemsSorted = sortItems(items);
-            setItems(itemsSorted);
+            return;
           }
-        }
 
-        setActiveId(null);
-      }}
-      // cancelDrop={cancelDrop}
-      onDragCancel={onDragCancel}
-      // modifiers={modifiers}
-    >
-      <div
-        style={{
-          display: 'inline-grid',
-          boxSizing: 'border-box',
-          padding: 20,
-          gridAutoFlow: vertical ? 'row' : 'column',
+          const overContainer = findContainer(overId);
+
+          if (overContainer) {
+            const activeIndex = items[activeContainer].indexOf(active.id);
+            const overIndex = items[overContainer].indexOf(overId);
+
+            const entry = Object.entries(myItems).find(
+              (entry: [string, unknown]) =>
+                !!(entry[1] as string[]).find((taskId: string) => taskId === active.id.toString())
+            );
+            const columnId = entry && entry?.length > 0 && entry[0];
+            if (columnId && (overContainer !== columnId || activeIndex !== overIndex)) {
+              setIsTaskOrderChanged(true);
+              setActiveColumn(activeContainer);
+            }
+            if (activeIndex !== overIndex) {
+              const sortItems = (items: Items) => ({
+                ...items,
+                [overContainer]: arrayMove(items[overContainer], activeIndex, overIndex),
+              });
+              const itemsSorted = sortItems(items);
+              setItems(itemsSorted);
+            }
+          }
+
+          setActiveId(null);
         }}
+        // cancelDrop={cancelDrop}
+        onDragCancel={onDragCancel}
+        // modifiers={modifiers}
       >
-        <SortableContext
-          items={[...containers, PLACEHOLDER_ID]}
-          strategy={vertical ? verticalListSortingStrategy : horizontalListSortingStrategy}
+        <div
+          style={{
+            display: 'inline-grid',
+            boxSizing: 'border-box',
+            padding: 20,
+            gridAutoFlow: vertical ? 'row' : 'column',
+          }}
         >
-          {containers.map((containerId) => {
-            const containerTitle = getColumnTitle(columnsArr, containerId);
+          <SortableContext
+            items={[...containers, PLACEHOLDER_ID]}
+            strategy={vertical ? verticalListSortingStrategy : horizontalListSortingStrategy}
+          >
+            {containers.map((containerId) => {
+              const columnInfo = getColumnInfo(columnsArr, containerId);
 
-            return (
+              return (
+                <DroppableContainer
+                  key={containerId}
+                  id={containerId}
+                  columnInfo={columnInfo}
+                  handleUpdateColumn={handleUpdateColumn}
+                  label={minimal ? undefined : columnInfo?.title}
+                  columns={columns}
+                  items={items[containerId]}
+                  scrollable={scrollable}
+                  style={containerStyle}
+                  unstyled={minimal}
+                  onRemove={(value: string) => handleRemove(value, containerId)}
+                >
+                  <SortableContext items={items[containerId]} strategy={strategy}>
+                    {items[containerId].map((value, index) => {
+                      return (
+                        <SortableItem
+                          handleUpdateTask={handleUpdateTask}
+                          handleRemoveItem={handleRemoveTask}
+                          disabled={isSortingContainer}
+                          key={value}
+                          id={value}
+                          index={index}
+                          handle={handle}
+                          style={getItemStyles}
+                          wrapperStyle={wrapperStyle}
+                          renderItem={renderItem as unknown as () => React.ReactElement}
+                          containerId={containerId}
+                          getIndex={getIndex}
+                          boardId={boardId}
+                        />
+                      );
+                    })}
+                  </SortableContext>
+                  <TaskFormCreate
+                    createTask={handleAddTask}
+                    boardId={boardId}
+                    columnId={containerId.toString()}
+                    userId={data.userData._id}
+                    totalTasksInColumn={items[containerId].length}
+                  />
+                </DroppableContainer>
+              );
+            })}
+            {minimal ? undefined : (
               <DroppableContainer
-                key={containerId}
-                id={containerId}
-                label={minimal ? undefined : containerTitle}
-                columns={columns}
-                items={items[containerId]}
-                scrollable={scrollable}
-                style={containerStyle}
-                unstyled={minimal}
-                onRemove={(value: string) => handleRemove(value, containerId)}
+                id={PLACEHOLDER_ID}
+                disabled={isSortingContainer}
+                items={empty}
+                placeholder
               >
-                <SortableContext items={items[containerId]} strategy={strategy}>
-                  {items[containerId].map((value, index) => {
-                    return (
-                      <SortableItem
-                        disabled={isSortingContainer}
-                        key={value}
-                        id={value}
-                        index={index}
-                        handle={handle}
-                        style={getItemStyles}
-                        wrapperStyle={wrapperStyle}
-                        renderItem={renderItem as unknown as () => React.ReactElement}
-                        containerId={containerId}
-                        getIndex={getIndex}
-                        boardId={boardId}
-                      />
-                    );
-                  })}
-                </SortableContext>
-                <TaskFormCreate
-                  createTask={handleAddTask}
+                <ColumnFormCreate
+                  createColumn={handleAddColumn}
                   boardId={boardId}
-                  columnId={containerId.toString()}
-                  userId={data.userData._id}
-                  totalTasksInColumn={items[containerId].length}
+                  totalColumns={Object.keys(items).length}
                 />
               </DroppableContainer>
-            );
-          })}
-          {minimal ? undefined : (
-            <DroppableContainer
-              id={PLACEHOLDER_ID}
-              disabled={isSortingContainer}
-              items={empty}
-              placeholder
-            >
-              <ColumnFormCreate
-                createColumn={handleAddColumn}
-                boardId={boardId}
-                totalColumns={Object.keys(items).length}
-              />
-            </DroppableContainer>
-          )}
-        </SortableContext>
-      </div>
-      {createPortal(
-        <DragOverlay>
-          {activeId
-            ? containers.includes(activeId)
-              ? renderContainerDragOverlay(activeId)
-              : renderSortableItemDragOverlay(activeId)
-            : null}
-        </DragOverlay>,
-        document.body
-      )}
-      {/* {trashable && activeId && !containers.includes(activeId) ? (
+            )}
+          </SortableContext>
+        </div>
+        {createPortal(
+          <DragOverlay>
+            {activeId
+              ? containers.includes(activeId)
+                ? renderContainerDragOverlay(activeId)
+                : renderSortableItemDragOverlay(activeId)
+              : null}
+          </DragOverlay>,
+          document.body
+        )}
+        {/* {trashable && activeId && !containers.includes(activeId) ? (
         <Trash id={TRASH_ID} />
       ) : null} */}
-    </DndContext>
+      </DndContext>
+    </>
   );
 };

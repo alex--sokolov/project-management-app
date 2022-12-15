@@ -74,8 +74,7 @@
 
 .Header {
   display: flex;
-  padding: 5px 20px;
-  padding-right: 8px;
+  padding: 5px 8px 5px 20px;
   align-items: center;
   justify-content: space-between;
   background-color: #fff;
@@ -83,12 +82,45 @@
   border-top-right-radius: 5px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 
+  .column-word {
+    font-size: 14px;
+    color: #999;
+  }
+
+  .column-title__element {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .change-column-title {
+    display: flex;
+    height: 18px;
+    input {
+      padding: 0 14px;
+      height: 20px;
+    }
+  }
+
   .column-title {
     font-weight: 700;
     color: darkorchid;
     text-transform: capitalize;
     margin-left: 10px;
+    max-width: 180px;
+    overflow-x: hidden;
   }
+  .column-edit {
+    display: flex;
+    align-items: center;
+    font-size: 10px;
+    transition: .2s;
+    &:hover {
+      cursor: pointer;
+      color: goldenrod;
+      transition: .2s;
+    }
+  }
+
 
   /* &:hover {
     .Actions > * {
@@ -99,6 +131,8 @@
 
 .Actions {
   display: flex;
+
+
 
   /* > *:first-child:not(:last-child) {
     opacity: 0;

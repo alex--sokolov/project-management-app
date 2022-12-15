@@ -1,37 +1,34 @@
-import { FC, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import Fab from '@mui/material/Fab';
-import AddIcon from '@mui/icons-material/Add';
+import React, { FC, useState } from 'react';
 import { Box, Modal } from '@mui/material';
 
 import { Task } from '@/data/models';
 import { TaskForm } from '@/components/pages/Board/Components/Forms/TaskForm';
 import { modalFormsStyle } from '@/components/shared/Modal/modalFormsStyle';
+import Button from '@mui/material/Button';
+import EditIcon from '@mui/icons-material/Edit';
 
-export const TaskFormCreate: FC<{
-  createTask: (
+export const TaskFormUpdate: FC<{
+  updateTask?: (
+    taskId: string,
     boardId: string,
     columnId: string,
     userId: string,
     newTask: Pick<Task, 'title' | 'description' | 'order'>
-  ) => void;
+  ) => Promise<void>;
+  taskId: string;
   boardId: string | undefined;
   columnId: string | undefined;
   userId: string | undefined;
-  totalTasksInColumn: number;
-}> = ({ createTask, boardId, columnId, userId, totalTasksInColumn }) => {
-  const { t } = useTranslation();
+  order: number;
+  title: string;
+  description: string;
+}> = ({ updateTask, taskId, boardId, columnId, userId, order, title, description }) => {
   const [isFormOpened, setIsFormOpened] = useState(false);
   const handleOpen = () => setIsFormOpened(true);
   const handleClose = () => setIsFormOpened(false);
 
   return (
-    <div className="add-task add-task-btn">
-      <Fab color="secondary" aria-label="edit" onClick={handleOpen}>
-        <AddIcon />
-      </Fab>{' '}
-      + {t('board.add-task')}
+    <>
       <Modal
         open={isFormOpened}
         onClose={handleClose}
@@ -40,19 +37,32 @@ export const TaskFormCreate: FC<{
       >
         <Box sx={{ ...modalFormsStyle }}>
           <TaskForm
+            defaultValues={{
+              title: title,
+              description: description,
+              order: order,
+            }}
+            taskId={taskId}
             boardId={boardId}
             columnId={columnId}
             userId={userId}
-            createTask={createTask}
+            updateTask={updateTask}
             handleClose={handleClose}
-            defaultValues={{
-              title: '',
-              description: '',
-              order: totalTasksInColumn + 1,
-            }}
           />
         </Box>
       </Modal>
-    </div>
+      <Button
+        variant="contained"
+        onClick={handleOpen}
+        style={{
+          minWidth: '22px',
+          padding: '0',
+          height: '22px',
+          margin: '10px 0 0 5px',
+        }}
+      >
+        <EditIcon aria-label="edit column title" style={{ fontSize: '14px' }} />
+      </Button>
+    </>
   );
 };

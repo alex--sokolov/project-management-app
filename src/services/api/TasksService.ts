@@ -21,7 +21,7 @@ export const TasksService = {
       method: 'post',
       data: {
         title: task.title,
-        description: task.title,
+        description: task.description,
         order: task.order,
         userId: task.userId,
         users: task.users,
