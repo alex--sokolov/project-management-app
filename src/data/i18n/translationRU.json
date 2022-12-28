@@ -1,0 +1,122 @@
+{
+  "language": {
+    "en": "Анг",
+    "ru": "Рус"
+  },
+  "header": {
+    "welcome": "приветствие",
+    "main-page": "главная",
+    "profile": "профиль",
+    "sign-in": "войти",
+    "signup": "регистрация",
+    "sign-out": "выйти"
+  },
+  "welcome": {
+    "title": "управление проектом",
+    "desc": "организуй свое время правильно",
+    "features-desc": "с нашим приложением у тебя будет больше времени для",
+    "features": ["отдыха", "любимого сериальчика", "семьи", "просто поесть мороженки"],
+    "info": "Данное приложение является финальным проектом, созданным в рамках курса 'Разработка на React' RS School. 'Управление проектами' - очередной вариант реализации программы, помогающей управлять проектами на базе канбан-метода.",
+    "team-title": "наша команда",
+    "team": ["александр", "алёна", "андрей"],
+    "position": ["тимлид, разработчик", "разработчик", "разработчик"],
+    "role": [
+      "Придумал архитектуру приложения, настроил роутинг. Разработал сервисы для работы с бэкендом и страницу Board.",
+      "Разработала страницу Profile, Welcome page, локализацию, header/footer, модальные окна и тоасты",
+      "Разработал страницу Boards. Реализовал регистрации и авторизацию."
+    ]
+  },
+  "main": {
+    "boards-title": "Твои доски"
+  },
+  "board": {
+    "owner": "Владелец",
+    "column": "Колонка",
+    "task-title": "Название задания",
+    "task-description": "Описание задания",
+    "task-order": "Позиция задания",
+    "column-title": "Название колонки",
+    "column-order": "Позиция колонки",
+    "add-task": "Добавить таску",
+    "update-task": "Обновить таску",
+    "add-column": "Добавить колонку"
+  },
+  "profile": {
+    "title": "Профиль пользователя",
+    "user-name": "Имя",
+    "user-login": "Е-мейл",
+    "user-password": "Пароль",
+    "edit": "Изменить инфо",
+    "delete": "Удалить",
+    "update-btn": "Обновить"
+  },
+  "toasts": {
+    "register-pending": "Пытаемся вас зарегистрироать...",
+    "register-success": "Регистрация прошла успешно!",
+    "register-error": "При регистрации возникла ошибка!",
+    "sign-in-pending": "Попытка войти в систему...",
+    "sign-in-success": "Вы успешно авторизованы!",
+    "sign-in-error": "Ошибка авторизации...",
+    "sign-out-success": "Вы успешно вышли из системы",
+    "user-delete-pending": "Удаление учетной записи...",
+    "user-delete-success": "Учетная запись удалена безвозвратно",
+    "user-delete-error": "Пользователь не был удален",
+    "user-update-pending": "Попытка мутации пользователя...",
+    "user-update-success": "Данные пользователя успешно обновлены",
+    "user-update-error": "При обновлении данных произошла ошибка!",
+    "board-fetch-pending": "Загрузка досок...",
+    "board-fetch-success": "Доски загружены",
+    "board-fetch-error": "Что-то пошло не так...",
+    "board-create-pending": "Создание доски...",
+    "board-create-success": "Доска успешно создана",
+    "board-create-error": "Ошибка при создании доски",
+    "board-delete-pending": "Удаление доски...",
+    "board-delete-success": "Доска успешно удалена",
+    "board-delete-error": "Ошибка при удалении доски",
+    "column-update-pending": "Обновление названия колонки",
+    "column-update-success": "Название колонки изменено",
+    "column-update-error": "Ошибка при обновлении колонки",
+    "column-order-change-pending": "Меняем позиции колонок",
+    "column-order-change-success": "Позиции колонок успешно изменены",
+    "column-order-change-error": "Ошибка при изменении позиций колонок",
+    "column-create-pending": "Создание новой колонки...",
+    "column-create-success": "Колонка была успешно создана",
+    "column-create-error": "Колонка не была создана",
+    "column-delete-pending": "Удаление колонки...",
+    "column-delete-success": "Колонка успешно удалена",
+    "column-delete-error": "Ошибка при удалении колонки",
+    "task-update-pending": "Таска обновляется...",
+    "task-update-success": "Таска успешно обновлена",
+    "task-update-error": "Ошибка при обновлении таски",
+    "task-create-pending": "Таска подготавливается...",
+    "task-create-success": "Таска успешно создана",
+    "task-create-error": "Ошибка при создании таски",
+    "task-delete-pending": "Таска удаляется...",
+    "task-delete-success": "Таска успешно удалена",
+    "task-delete-error": "Ошибка при удалении таски",
+    "task-order-change-pending": "Изменение положения таски",
+    "task-order-change-success": "Положение таски обновлено",
+    "task-order-change-error": "Ошибка при обновлении положения таски",
+    "task-not-completed": "Таска не выполнена",
+    "board-not-found": "Доска не найдена!",
+    "promise-pending": "Ожидание выполнения",
+    "promise-resolved": "Выполнено успешно",
+    "promise-rejected": "Ошибка при выполнении"
+  },
+  "modal": {
+    "column-delete-confirm-question": "Ты серьезно хочешь удалить колонку?",
+    "task-delete-confirm-question": "Ты серьезно хочешь удалить таску?"
+  },
+  "forms-errors": {
+    "required": "это поле обязательно к заполнению",
+    "add-title": {
+      "min-length": "должно быть более 4 символов",
+      "max-length": "должно быть менее 25 симовлов"
+    },
+    "add-description": {
+      "min-length": "должно быть более 10 символов",
+      "max-length": "должно быть менее 50 симовлов"
+    },
+    "add-order": "должно быть целое число в диапозоне "
+  }
+}

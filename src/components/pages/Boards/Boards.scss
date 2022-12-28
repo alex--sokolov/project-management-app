@@ -1,0 +1,7 @@
+.boards {
+    max-width: 800px;
+    margin: 30px auto;
+    @include flexRow;
+    gap: 10px;
+    flex-wrap: wrap;
+}

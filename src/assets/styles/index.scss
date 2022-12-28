@@ -1,0 +1,48 @@
+@import './normalize.scss';
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  font-family: $font1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  monospace;
+}
+
+.button {
+  font-family: $font2;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, rgba(17,151,169,1) 0%, rgba(23,54,66,1) 100%);
+  color: $white-color;
+  font-size: 14px;
+  outline: none;
+  border: 1px solid $white-color;
+  border-radius: 8px;
+  font-weight: 700;
+  padding: 10px 10px;
+  letter-spacing: initial;
+  text-decoration: inherit;
+  transition: all .2s linear;
+
+  &:hover {
+    background: linear-gradient(270deg, rgba(17,151,169,1) 0%, rgba(23,54,66,1) 100%);
+    box-shadow: 5px 5px 15px 0 rgba(123, 128, 158,0.5);
+    cursor: pointer;
+  }
+}
+
+.main {
+  padding-top: 130px;
+  min-height: calc(100vh - (130px + 80px));
+}
+
+.page-name {
+  margin: 15px;
+  color: $header-color;
+}

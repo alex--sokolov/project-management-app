@@ -1,0 +1,52 @@
+@mixin flexColumn($justify: null, $align: null) {
+    display: flex;
+    flex-direction: column;
+    @if $justify {
+        justify-content: $justify;
+    }
+    @if $align {
+        align-items: $align;
+    }
+}
+@mixin flexRow($justify: null, $align: null) {
+    display: flex;
+    flex-direction: row;
+    @if $justify {
+        justify-content: $justify;
+    }
+    @if $align {
+        align-items: $align;
+    }
+}
+@mixin font($size: null, $color: null, $weight: null, $height: null) {
+    @if $size {
+        font-size: $size;
+    }
+    @if $weight {
+        font-weight: $weight;
+    }
+    @if $height {
+        line-height: $height;
+    }
+    @if $color {
+        color: $color;
+    }
+}
+
+@mixin tablet {
+  @media (max-width: 1100px) {
+    @content
+  }
+}
+
+@mixin small-tablet {
+  @media (max-width: 900px) {
+    @content
+  }
+}
+
+@mixin smart {
+  @media (max-width: 700px) {
+    @content
+  }
+}

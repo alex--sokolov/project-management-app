@@ -1,0 +1,135 @@
+{
+  "language": {
+    "en": "EN",
+    "ru": "RU"
+  },
+  "header": {
+    "welcome": "welcome",
+    "main-page": "main page",
+    "profile": "profile",
+    "sign-in": "sign in",
+    "signup": "sign up",
+    "sign-out": "sign out"
+  },
+  "welcome": {
+    "title": "project management",
+    "desc": "organize your time properly",
+    "features-desc": "with our application you will have more time for",
+    "features": [
+      "rest",
+      "favorite serial",
+      "family",
+      "just eat ice cream"
+    ],
+    "info": "This application is the final project created as part of the RS School 'Developing with Angular' course. 'Project Management' is another version of the implementation of programs that help manage projects based on the kanban method.",
+    "team-title": "our team",
+    "team": [
+      "alexander",
+      "aliona",
+      "andrei"
+    ],
+    "position": [
+      "team leader, developer",
+      "developer",
+      "developer"
+    ],
+    "role": [
+      "Developed application architecture, routing, Board page. Created backend services and deployed the app.",
+      "Developed Profile page, welcome page, localization, header/footer components, toasts and modal windows",
+      "Developed Boards page, implemented registration and authorization."
+    ]
+  },
+  "main": {
+    "boards-title": "Your boards"
+  },
+  "board": {
+    "owner": "Owner",
+    "column": "Column",
+    "task-title": "Task title",
+    "task-description": "Task description",
+    "task-order": "Task order",
+    "column-title": "Column title",
+    "column-order": "Column order",
+    "add-task": "Add task",
+    "update-task": "Update task",
+    "add-column": "Add column"
+  },
+  "profile": {
+    "title": "User profile",
+    "user-name": "User name",
+    "user-login": "User email",
+    "user-password": "New password",
+    "edit": "Edit info",
+    "delete": "Delete user",
+    "update-btn": "update"
+  },
+  "toasts": {
+    "register-pending": "Trying to register...",
+    "register-success": "Registration success!",
+    "register-error": "Registration error!",
+    "sign-in-pending": "Trying to login...",
+    "sign-in-success": "Login successfully",
+    "sign-in-error": "Authorization error...",
+    "sign-out-success": "You have logged out successfully",
+    "user-delete-pending": "Deleting user...",
+    "user-delete-success": "User deleted successfully",
+    "user-delete-error": "User was not deleted",
+    "user-update-pending": "Mutating user info...",
+    "user-update-success": "User was updated successfully",
+    "user-update-error": "User was not updated",
+    "board-fetch-pending": "Loading boards...",
+    "board-fetch-success": "Boards are loaded successfully",
+    "board-fetch-error": "Something went wrong...",
+    "board-create-pending": "Creating new board...",
+    "board-create-success": "Board was created successfully",
+    "board-create-error": "Board was not created",
+    "board-delete-pending": "Deleting board...",
+    "board-delete-success": "Board was deleted successfully",
+    "board-delete-error": "Board was not deleted",
+    "column-update-pending": "Updating column",
+    "column-update-success": "Column was updated successfully",
+    "column-update-error": "Column was not updated",
+    "column-order-change-pending": "Column order is changing",
+    "column-order-change-success": "Column order change successfully",
+    "column-order-change-error": "Column order change failed",
+    "column-create-pending": "Creating new column...",
+    "column-create-success": "Column was created successfully",
+    "column-create-error": "Column was not created",
+    "column-delete-pending": "Deleting column...",
+    "column-delete-success": "Column was deleted successfully",
+    "column-delete-error": "Column was not deleted",
+    "task-update-pending": "Task is updating...",
+    "task-update-success": "Task was updated successfully",
+    "task-update-error": "Problem while updating task",
+    "task-create-pending": "Creating new task...",
+    "task-create-success": "Task was successfully created",
+    "task-create-error": "Task was not created",
+    "task-delete-pending": "Deleting the task...",
+    "task-delete-success": "Task was successfully deleted",
+    "task-delete-error": "Task was not deleted",
+    "task-order-change-pending": "Task order is changing",
+    "task-order-change-success": "Task order change successfully",
+    "task-order-change-error": "Task order change failed",
+    "task-not-completed": "Task is not completed",
+    "board-not-found": "Board was not found",
+    "promise-pending": "Promise is pending",
+    "promise-resolved": "Promise resolved",
+    "promise-rejected": "Promise rejected"
+  },
+  "modal": {
+    "column-delete-confirm-question": "Do you want to delete the column?",
+    "task-delete-confirm-question": "Do you want to delete the task?"
+  },
+  "forms-errors": {
+    "required": "this field is required",
+    "add-title": {
+      "min-length": "you must enter at least 4 letters",
+      "max-length": "you must enter less, than 25 letters"
+    },
+    "add-description": {
+      "min-length": "you must enter at least 10 letters",
+      "max-length": "you must enter less, than 50 letters"
+    },
+    "add-order": "Must be a positive number in range "
+  }
+}

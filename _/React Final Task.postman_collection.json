@@ -1,0 +1,1313 @@
+{
+	"info": {
+		"_postman_id": "3f368b89-5859-4f36-93e2-3b6db3636ac0",
+		"name": "React Final Task",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19145425"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Signup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"should receive user id\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._id).to.not.empty;\r",
+									"\r",
+									"    pm.globals.set(\"user_id\", jsonData._id);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{user3_name}}\",\r\n  \"login\": \"{{user3_login}}\",\r\n  \"password\": \"{{user3_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/signup",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SignIn",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should have JWT token\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.not.empty;\r",
+									"\r",
+									"\r",
+									"    pm.globals.set(\"jwt_token\", jsonData.token);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"login\": \"{{user1_login}}\",\r\n  \"password\": \"{{user1_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/signin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get all users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user by id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{user1_name}}\",\r\n  \"login\": \"{{user1_login}}_Idaho\",\r\n  \"password\": \"{{user1_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{jwt_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Boards",
+			"item": [
+				{
+					"name": "Get all boards",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/boards",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get board by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/boards/{{board_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards",
+								"{{board_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new board",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"should receive board id\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._id).to.not.empty;\r",
+									"\r",
+									"    pm.globals.set(\"board_id\", jsonData._id);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"board number 5\",\r\n  \"owner\": \"{{user_id}}\",\r\n  \"users\": [\r\n    \"636ddb91fdb989b4908dc2a1\"\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/boards",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update board by id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"board number 2\",\r\n  \"owner\": \"636dd99dfdb989b4908dc298\",\r\n  \"users\": [\r\n    \"636ddb91fdb989b4908dc2a1\"\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/boards/{{board_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards",
+								"{{board_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete board",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/boards/{{board_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards",
+								"{{board_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get boards by list of board ids",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/boardsSet?ids=[{{board_id}}, \"636ddf67fdb989b4908dc2d2\"]",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boardsSet"
+							],
+							"query": [
+								{
+									"key": "ids",
+									"value": "[{{board_id}}, \"636ddf67fdb989b4908dc2d2\"]"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get boards by userId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/boardsSet/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boardsSet",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{jwt_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Columns",
+			"item": [
+				{
+					"name": "Get columns",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/boards/{{board_id}}/columns",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards",
+								"{{board_id}}",
+								"columns"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get column by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/boards/{{board_id}}/columns/{{column_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards",
+								"{{board_id}}",
+								"columns",
+								"{{column_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create column",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"should receive column id\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._id).to.not.empty;\r",
+									"\r",
+									"    pm.globals.set(\"column_id\", jsonData._id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Third column\",\r\n  \"order\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/boards/{{board_id}}/columns",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards",
+								"{{board_id}}",
+								"columns"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update column by id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Second column updated\",\r\n  \"order\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/boards/{{board_id}}/columns/{{column_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards",
+								"{{board_id}}",
+								"columns",
+								"{{column_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete column by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/boards/{{board_id}}/columns/{{column_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards",
+								"{{board_id}}",
+								"columns",
+								"{{column_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get columns by ids or userId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/columnsSet/?ids=[{{column_id}}, \"636ddf67fdb989b4908dc2d2\"]&userId={{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"columnsSet",
+								""
+							],
+							"query": [
+								{
+									"key": "ids",
+									"value": "[{{column_id}}, \"636ddf67fdb989b4908dc2d2\"]"
+								},
+								{
+									"key": "userId",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change orders in list of columns",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"_id\": \"636dee8efdb989b4908dc328\",\r\n        \"order\": 3\r\n    },\r\n    {\r\n        \"_id\": \"636deec7fdb989b4908dc32f\",\r\n        \"order\": 2\r\n    },\r\n    {\r\n        \"_id\": \"636deecefdb989b4908dc332\",\r\n        \"order\": 1\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/columnsSet",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"columnsSet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create set of columns",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"title\": \"Fourth column\",\r\n        \"order\": 4,\r\n        \"boardId\": \"636dee86fdb989b4908dc326\"\r\n    },\r\n    {\r\n        \"title\": \"Fifth column\",\r\n        \"order\": 5,\r\n        \"boardId\": \"636dee86fdb989b4908dc326\"\r\n    },\r\n    {\r\n        \"title\": \"Sixth column\",\r\n        \"order\": 6,\r\n        \"boardId\": \"636dee86fdb989b4908dc326\"\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/columnsSet",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"columnsSet"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{jwt_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "Get tasks in column",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/boards/{{board_id}}/columns/{{column_id}}/tasks",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards",
+								"{{board_id}}",
+								"columns",
+								"{{column_id}}",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get task by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/boards/{{board_id}}/columns/{{column_id}}/tasks/{{task_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards",
+								"{{board_id}}",
+								"columns",
+								"{{column_id}}",
+								"tasks",
+								"{{task_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"should receive task id\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._id).to.not.empty;\r",
+									"\r",
+									"    pm.globals.set(\"task_id\", jsonData._id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Second task\",\r\n  \"order\": 0,\r\n  \"description\": \"Some description\",\r\n  \"userId\": \"{{user_id}}\",\r\n  \"users\": [\r\n    \"636dd99dfdb989b4908dc298\",\r\n    \"636ddb91fdb989b4908dc2a1\"\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/boards/{{board_id}}/columns/{{column_id}}/tasks",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards",
+								"{{board_id}}",
+								"columns",
+								"{{column_id}}",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"should receive task id\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._id).to.not.empty;\r",
+									"\r",
+									"    pm.globals.set(\"task_id\", jsonData._id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Second task updated\",\r\n    \"order\": 0,\r\n    \"description\": \"Some description updated\",\r\n    \"columnId\": \"636deecefdb989b4908dc332\",\r\n    \"userId\": \"636ddebafdb989b4908dc2bc\",\r\n    \"users\": [\r\n        \"636dd99dfdb989b4908dc298\",\r\n        \"636ddb91fdb989b4908dc2a1\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/boards/{{board_id}}/columns/{{column_id}}/tasks/{{task_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards",
+								"{{board_id}}",
+								"columns",
+								"{{column_id}}",
+								"tasks",
+								"{{task_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete task by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/boards/{{board_id}}/columns/{{column_id}}/tasks/{{task_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"boards",
+								"{{board_id}}",
+								"columns",
+								"{{column_id}}",
+								"tasks",
+								"{{task_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get tasks by list of ids, userId or search request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tasksSet/?ids=[{{task_id}}, \"636df314fdb989b4908dc34d\"]&userId={{user_id}}&search=Second",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasksSet",
+								""
+							],
+							"query": [
+								{
+									"key": "ids",
+									"value": "[{{task_id}}, \"636df314fdb989b4908dc34d\"]"
+								},
+								{
+									"key": "userId",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "search",
+									"value": "Second"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change order and column in list of tasks",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"_id\": \"636df314fdb989b4908dc34d\",\r\n        \"order\": 3,\r\n        \"columnId\": \"636deecefdb989b4908dc332\"\r\n    },\r\n    {\r\n        \"_id\": \"636df4f3fdb989b4908dc362\",\r\n        \"order\": 4,\r\n        \"columnId\": \"636deecefdb989b4908dc332\"\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/tasksSet",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasksSet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get tasks by boardId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tasksSet/{{board_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasksSet",
+								"{{board_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{jwt_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Files",
+			"item": [
+				{
+					"name": "Get files by list of ids, userId or taskId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/file/?userId={{user_id}}&taskId={{task_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"file",
+								""
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "taskId",
+									"value": "{{task_id}}"
+								},
+								{
+									"key": "ids",
+									"value": "[{{column_id}}]",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload file",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"should receive file id\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._id).to.not.empty;\r",
+									"\r",
+									"    pm.globals.set(\"file_id\", jsonData._id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "boardId",
+									"value": "{{board_id}}",
+									"type": "text"
+								},
+								{
+									"key": "taskId",
+									"value": "{{task_id}}",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"contentType": "image/jpeg",
+									"type": "file",
+									"src": "/C:/Users/Alexander/Desktop/cat.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/file",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"file"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete file",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/file/{{file_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"file",
+								"{{file_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get files by boardId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/file/{{board_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"file",
+								"{{board_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{jwt_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Points",
+			"item": [
+				{
+					"name": "Get points by list of id or UserId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/points?userId={{user_id}}&ids=[{{point_id}}]",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"points"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "ids",
+									"value": "[{{point_id}}]"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create point",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"should receive point id\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData._id).to.not.empty;\r",
+									"\r",
+									"    pm.globals.set(\"point_id\", jsonData._id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"New point2\",\r\n  \"taskId\": \"{{task_id}}\",\r\n  \"boardId\": \"{{board_id}}\",\r\n  \"done\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/points",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"points"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update set of Points",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n  {\r\n    \"_id\": \"636e23083c2bcb29c5b2c82b\",\r\n    \"done\": false\r\n  },\r\n    {\r\n    \"_id\": \"{{point_id}}\",\r\n    \"done\": true\r\n  }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/points",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"points"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get points by taskId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/points/{{task_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"points",
+								"{{task_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update single point",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"New point 3\",\r\n  \"done\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/points/{{point_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"points",
+								"{{point_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete point by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/points/{{point_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"points",
+								"{{point_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{jwt_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}
